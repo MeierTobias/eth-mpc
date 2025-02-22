@@ -100,73 +100,184 @@ if $A^c$ is invertible.
 
 \newpar{}
 \ptitle{Solution of DT LTI System}
-If the initial state $x(k)$ and the input sequence $\{u(k), \ldots, u(k+N-1)\}$ are known the the solution for the discrete time system at time $k+N$ is given by
+
+If the input sequence $\{u(k), \ldots, u(k+N-1)\}$ and the initial state $x(k)$ is known the the solution for the discrete time system at time $k+N$ is given by
 \begin{equation*}
     x(k+N) = A^N x(k) + \sum_{i=0}^{N-1} A^i B u(k+N-1-i)
 \end{equation*}
 
 
-\subsection{Linear System Analysis}
-\ptitle{DT Stability} $x(k+1) = Ax(k)$ stable iff $\lvert \lambda_j \rvert < 1, \forall j$ \\
-\ptitle{LTI DT Controllability} can reach $x^*$ from $x(0)$ in $n$ steps
+\subsection{LTI DT System Analysis}
+
+This section only summarizes the most important properties. Further details can be found in {\small\url{https://github.com/MeierTobias/eth-control-systems-2}}.
+
+\subsubsection{Coordinate Transformastions}
+
 \begin{align*}
-    \mathcal{C} =
+    \tilde{x}(k)   & = Tx(k); \qquad \det(T) \neq 0                                                    \\
+    \tilde{x}(k+1) & = \overbrace{TAT^{-1}}^{\tilde{A}} \tilde{x}(k) + \overbrace{TB}^{\tilde{B}} u(k) \\
+    y(k)           & = \underbrace{CT^{-1}}_{\tilde{C}} \tilde{x}(k) + \underbrace{D}_{\tilde{D}}u(k)
+\end{align*}
+
+\subsubsection{Stability}
+The DT LTI System
+\begin{equation*}
+    x(k+1) = Ax(k)
+\end{equation*}
+is globally asymptotically stable iff
+\begin{equation*}
+    \lvert \lambda_j \rvert < 1
+\end{equation*}
+for all eigenvalues $\lambda_j$ of $A$.
+
+\subsubsection{Reachability and Observability}
+\noindent\begin{equation*}
+    \mathcal{R} \subseteq \mathcal{C}, \quad \mathcal{R} \subset\mathcal{S}, \quad \mathcal{O} \subset \mathcal{D}
+\end{equation*}
+\input{diagrams/reach_observability.tex}
+
+\subsubsection{Controllability}
+
+A system is controllable if for any pair of states $x(0), x^*$ there exists a finite time N and a control sequence $u$ such that $x(N)=x^*$
+
+\newpar{}
+The \textbf{controllability matrix}
+\begin{equation*}
+    \mathcal{C} :=
     \begin{bmatrix}
-        B & \cdots & A^{n-1} B
+        B & AB & \cdots & A^{n-1} B
     \end{bmatrix}
-    \ \Rightarrow \ \mathrm{rank}(\mathcal{C}) \overset{!}{=} n
-\end{align*}
-\ptitle{DT Observability} uniquely distinguish IC from output
-\begin{align*}
-    \mathcal{O} =
+\end{equation*}
+has to have \textbf{full row rank}.
+\newpar{}
+\textbf{Stabilizability} iff all uncontrollable modes are stable
+\begin{itemize}
+    \item A system is stabilizable if all unstable modes are reachable.
+    \item Reachability always implies stabilizability
+\end{itemize}
+
+\subsubsection{Observability}
+
+
+A system is observable if there exists a finite $N$ such that for every $x(0)$ the measurements $y(0), \ldots, y(N-1)$ uniquely distinguish the initial state $x(0)$.
+\newpar{}
+The \textbf{observability matrix}
+\begin{equation*}
+    \mathcal{O} :=
     \begin{bmatrix}
-        C^\top & \cdots & (CA^{n-1})^\top
-    \end{bmatrix}^\top
-    \ \Rightarrow \ \mathrm{rank}(\mathcal{O}) \overset{!}{=} n
-\end{align*}
-\ptitle{Stabilizability} iff all uncontrollable modes stable
-\begin{align*}
-    \textrm{if } \mathrm{rank}([\lambda_j \mathbb{I}-A \mid B]) = n \ \forall \lambda_j \in \Lambda_A^+ \ \Rightarrow (A,B) \textrm{ stabilizable}
-\end{align*}
-\ptitle{Detectablitiy} iff all unobservable modes stable
-\begin{align*}
-    \textrm{if } \mathrm{rank}([A^\top - \lambda_j \mathbb{I} \mid C^\top]) = n \ \forall \lambda_j \in \Lambda_A^+ \ \Rightarrow (A,C) \textrm{ detect.}
-\end{align*}
+        C      \\
+        CA     \\
+        CA^2   \\
+        \vdots \\
+        CA^{n-1}
+    \end{bmatrix}
+\end{equation*}
+has to have \textbf{full column rank}.
+\newpar{}
+\textbf{Detectability}
+\begin{itemize}
+    \item A system is detectable if all unstable modes are observable.
+    \item Observability always implies detectability
+\end{itemize}
 
 
 \subsection{Nonlinear System Analysis}
-\ptitle{Lyapunov Stability} (w.r.t \textbf{eq. point} $\bar{x}$ of a system)
+
+\subsubsection{Lyapunov Stability}
+
+The equilibrium point $\bar{x}$ of a DT system is \textbf{Lyapunov stable} iff for every $\epsilon >0$ there exists a $\delta(\epsilon)$ such that
+\begin{equation*}
+    \lVert x(0) - \bar{x} \rVert < \delta(\epsilon) \to \lVert x(k) - \bar{x} \rVert < \epsilon, \; \forall k \geq 0
+\end{equation*}
+
+\begin{center}
+    \includegraphics[width=0.3\linewidth]{01_Lyapunov_stability.png}
+\end{center}
+
+\ptitle{Global Asymptotic Stability}
+
+An equilibrium point $\bar{x}$ of a system is globally asymptotically stable if it is Lyapunov stable and attractive
+
+\begin{equation*}
+    \lim_{k\to\infty} \lVert x(k) - \bar{x} \rVert = 0, \; \forall x(0) \in \mathbb{R}
+\end{equation*}
 
 
+\subsubsection{Global Lyapunov Function}
 
-\textbf{Lyapunov Stable} \\
-for every $\epsilon>0$ exists $\delta(\epsilon)$ s.t.\\
-$\lvert\lvert x(0) - \bar{x} \rvert\rvert < \delta(\epsilon) \to
-    \lvert\lvert x(k) - \bar{x} \rvert\rvert < \epsilon$
+Consider the equilibrium point $\bar{x}=0$. A function $V:\mathbb{R}^n\to \mathbb{R}$, continuous at the origin, finite $\forall x \in \mathbb{R}^n$, and such that
+\begin{gather*}
+    \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty\\
+    V(0)=0 \text{ and } V(x)>0, \quad \forall x \in \mathbb{R}^n \setminus\{0\}\\
+    V(g(x)) - V(x) \leq -\alpha(x) \quad \forall x \in \mathbb{R}^n
+\end{gather*}
+where $\alpha:\mathbb{R}^n\to \mathbb{R}$ is continuous positive definite, is called a \textbf{Lyapunov function}.
 
+\subsubsection{Global Lyapunov Stability}
 
-\textbf{Globally Asympt. Stable}\\
-Lyap. stable \& Attractive \\
-$\lim_{k\to\infty} \lvert\lvert x(k) - \bar{x} \rvert\rvert = 0 \ \forall x(0)$
+If a system admits a Lyapunov function $V(x)$, then $x=0$ is \textbf{globally asymptotically stable}.
+\newpar{}
+If $V(x)$ satisfies the conditions only with $\alpha(x)$ being positive \textbf{semi}definite, then $x=0$ is \textbf{globally Lyapunov stable}.
 
+\subsection{Global Lyapunov Stability of LTI DT System}
 
+For the LTI DT system
+\begin{equation*}
+    x(k+1)=Ax(k)
+\end{equation*}
+One can take
+\begin{equation*}
+    V(x) = x^\top Px
+\end{equation*}
+as a candidate Lyapunov function with $P>0$ (positive definite). It's easy to see that it satisfies
+\begin{gather*}
+    V(0) = 0 \text{ and } V(x) > 0 \\
+    \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty
+\end{gather*}
+to construct the $\alpha(x)$ function the ``energy decrease'' condition is used
+\begin{align*}
+    V(Ax) - V(x) & = x^\top A^\top PAx - x^\top Px                      \\
+                 & = x^\top \left(A^\top PA - P\right)x \leq -\alpha(x)
+\end{align*}
+If $\alpha(x)$ is chosen as
+\begin{equation*}
+    \alpha(x) = x^\top Qx, \quad Q > 0
+\end{equation*}
+the condition can be satisfied if a $P>0$ can be fouhnd that solves the \textbf{discrete-time Lyapunov equation}
+\begin{equation*}
+    A^\top PA -P = -Q, \quad Q > 0
+\end{equation*}
 
-\ptitle{Global Lyapunov Function} (Candidate)
+The discrete-time Lyapunov equation has a unique solution $P > 0$ iff $A$ has all eigenvalues inside the unit circle, i.e.\ iff the system $x(k + 1) = Ax(k)$ is stable.
 
-Consider eq point $\bar{x}=0$. $V:\mathbb{R}^n\to \mathbb{R}$, continuous at origin, finite $\forall x$,
-\begin{enumerate}[label=\textbf{(\arabic*)}]
-    \item $\lvert\lvert x \rvert\rvert \to \infty \Rightarrow V(x) \to \infty$
-    \item $V(0)=0, \quad V(x)>0 \quad \forall x \in \mathbb{R}^n \setminus\{0\}$
-    \item $V(g(x)) - V(x) \leq -\alpha(x) \quad \forall x \in \mathbb{R}^n$
-\end{enumerate}
-where $\alpha:\mathbb{R}^n\to \mathbb{R}$ continuous pos. def.
-
-
-\ptitle{Global Lyapunov Stability} \\
-
-If sys admits a $V(x)$ $\Rightarrow$ $x=0$ is \textbf{Globally Asympt. Stable}
-
-
-{\footnotesize
-    \ptitle{ACHTUNG} if $\alpha$ pos. \textbf{semi}def $\Rightarrow$ $x=0$ is \textbf{Globally Lyapunov Stable}
-}
+\begin{examplesection}[Example: Lyapunov Stability for Linear Systems]
+    Given the LTI DT system
+    \begin{equation*}
+        x(k+1) = \begin{bmatrix}
+            1 & 1 \\
+            0 & 1
+        \end{bmatrix} x(k) +
+        \begin{bmatrix}
+            1 \\
+            0.5
+        \end{bmatrix} u(k)
+    \end{equation*}
+    with
+    \begin{equation*}
+        u(k) = Kx(k) = -\begin{bmatrix}
+            0.1160 & 0.5385
+        \end{bmatrix} x(k)
+    \end{equation*}
+    We choose $Q=\mathbb{I}$ and solve the discrete time Lyapunov equation
+    \begin{gather*}
+        {\left(A+BK\right)}^\top P \left(A+BK\right) - P  = -Q \\
+        P = \begin{bmatrix}
+            3.3921 & 2.7757 \\
+            2.7757 & 7.7136
+        \end{bmatrix}
+    \end{gather*}
+    Since $V(x)=x^\top Px$ is a quadratic function, all level sets are ellipsoids with shape matrix $P$ and the closed loop evolution can be simulated as shown.
+    \begin{center}
+        \includegraphics[width=\linewidth]{01_LTI_DT_Lyapunov_example.png}
+    \end{center}
+\end{examplesection}
