@@ -1,0 +1,292 @@
+\section{System Theory}
+
+\subsection{Models of Dynamic Systems}
+
+The basic formulation of a nonlinear, time-invariant, continues-time, state space model can be stated as
+\begin{align*}
+    \dot{x} & = g(x,u) \\
+    y       & = h(x,u)
+\end{align*}
+with
+\begin{align*}
+    x & \in \mathbb{R}^n                                    &  & \text{state vector}    \\
+    u & \in \mathbb{R}^m                                    &  & \text{input vector}    \\
+    y & \in \mathbb{R}^p                                    &  & \text{output vector}   \\
+    g & : \mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^n &  & \text{system dynamics} \\
+    h & : \mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^p &  & \text{output function}
+\end{align*}
+
+
+\subsection{Linearization}
+
+The first order \textbf{Taylor Expansion} around an operating point $\bar{x}$ of $f(x)$ is given by
+\begin{equation*}
+    f(x) \approx f(\bar{x}) + \left. \frac{\partial f}{\partial x^\top} \right\rvert_{x=\bar{x}} (x-\bar{x})
+\end{equation*}
+with
+\begin{equation*}
+    \frac{\partial f}{\partial x^\top} = \begin{bmatrix}
+        \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} & \cdots & \frac{\partial f_1}{\partial x_n} \\
+        \vdots                            &                                   & \vdots                                     \\
+        \frac{\partial f_n}{\partial x_1} & \frac{\partial f_n}{\partial x_2} & \cdots & \frac{\partial f_n}{\partial x_n}
+    \end{bmatrix}
+\end{equation*}
+The linearized, time-invariant, continuous-time state space model around the stationary operating point $x_s, u_s$ can then be obtained with
+\begin{align*}
+    \dot{x}  & =
+    \overbrace{\left. \frac{\partial g}{\partial x^\top} \right\rvert_{\substack{x_s  \\u_s}}}^{A^c \in \mathbb{R}^{n\times n}} \Delta x +
+    \overbrace{\left. \frac{\partial g}{\partial u^\top} \right\rvert_{\substack{x_s  \\u_s}}}^{B^c \in \mathbb{R}^{n\times m}} \Delta u \\
+    \Delta y & =
+    \underbrace{\left. \frac{\partial h}{\partial x^\top} \right\rvert_{\substack{x_s \\u_s}}}_{C \in \mathbb{R}^{p\times n}} \Delta x +
+    \underbrace{\left. \frac{\partial h}{\partial u^\top} \right\rvert_{\substack{x_s \\u_s}}}_{D \in \mathbb{R}^{p \times m}} \Delta u
+\end{align*}
+where
+\begin{align*}
+    \dot{x}_s & = g(x_s,u_s) = 0 \\
+    y_s       & = h(x_s,u_s)
+\end{align*}
+and
+\begin{align*}
+    \Delta x       & = x - x_s                               \\
+    \Delta u       & = u - u_s                               \\
+    \Delta y       & = y - y_s                               \\
+    \Delta \dot{x} & = \dot{x} - \underbrace{\dot{x}_s}_{=0}
+\end{align*}
+
+\ptitle{Exact Solution for LTI CT SS Models}
+
+\begin{equation*}
+    x(t) = e^{A^c(t-t_0)}x_0 + \int_{t_0}^{t}e^{A^c(t-\tau)}B^c u(\tau)d\tau
+\end{equation*}
+where
+\begin{equation*}
+    e^{A^c t} := \sum_{n=0}^{\infty}\frac{{(A^c t)}^n}{n!}
+\end{equation*}
+
+\subsection{Discretization}
+
+\ptitle{Euler Discretization}
+\begin{equation*}
+    \dot{x}^c \approx \frac{x^c(t + T_s)-x^c(t)}{T_s}
+\end{equation*}
+with $T_s$ describing the sampling time, hence
+\begin{align*}
+    x(k) & := x^c(t_0 + kT_s) \\
+    u(k) & := u^c(t_0 + kT_s)
+\end{align*}
+Then the DT model is given by
+\begin{align*}
+    x(k+1) & = x(k) + T_s g^c (x(k),u(k)) & = g(x(k),u(k)) \\
+    y(k)   & = h^c(x(k),u(k))             & = h(x(k),u(k))
+\end{align*}
+Therefor a LTI system becomes
+\begin{align*}
+    x(k+1) & = \overbrace{\mathbb{I} + T_s A^c}^{=A^d} x(k) + \overbrace{T_s B^c}^{=B^d} u(k) \\
+    y(k)   & = \underbrace{C^c}_{C^d} x(k) + \underbrace{D^c}_{D^d} u(k)
+\end{align*}
+
+\newpar{}
+\ptitle{Exact Discretization of LTI}
+
+If the input $u$ is held constant over a sampling interval (ZOH) one can retrieve an exact discretization of the LTI system
+\begin{equation*}
+    x(t_{k+1}) = \underbrace{e^{A^c T_s}}_{=A} x(t_k) + \underbrace{\int_{0}^{T_s} e^{A^c(T_s - \tau)}B^c d\tau}_{B} u(t_k)
+\end{equation*}
+with
+\begin{equation*}
+    B={(A^c)}^{-1}(A-\mathbb{I})B^c
+\end{equation*}
+if $A^c$ is invertible.
+
+\newpar{}
+\ptitle{Solution of DT LTI System}
+
+If the input sequence $\{u(k), \ldots, u(k+N-1)\}$ and the initial state $x(k)$ is known the the solution for the discrete time system at time $k+N$ is given by
+\begin{equation*}
+    x(k+N) = A^N x(k) + \sum_{i=0}^{N-1} A^i B u(k+N-1-i)
+\end{equation*}
+
+
+\subsection{LTI DT System Analysis}
+
+This section only summarizes the most important properties. Further details can be found in {\small\url{https://github.com/MeierTobias/eth-control-systems-2}}.
+
+\subsubsection{Coordinate Transformastions}
+
+\begin{align*}
+    \tilde{x}(k)   & = Tx(k); \qquad \det(T) \neq 0                                                    \\
+    \tilde{x}(k+1) & = \overbrace{TAT^{-1}}^{\tilde{A}} \tilde{x}(k) + \overbrace{TB}^{\tilde{B}} u(k) \\
+    y(k)           & = \underbrace{CT^{-1}}_{\tilde{C}} \tilde{x}(k) + \underbrace{D}_{\tilde{D}}u(k)
+\end{align*}
+
+\subsubsection{Stability}
+The DT LTI System
+\begin{equation*}
+    x(k+1) = Ax(k)
+\end{equation*}
+is globally asymptotically stable iff
+\begin{equation*}
+    \lvert \lambda_j \rvert < 1
+\end{equation*}
+for all eigenvalues $\lambda_j$ of $A$.
+
+\subsubsection{Reachability and Observability}
+\noindent\begin{equation*}
+    \mathcal{R} \subseteq \mathcal{C}, \quad \mathcal{R} \subset\mathcal{S}, \quad \mathcal{O} \subset \mathcal{D}
+\end{equation*}
+\input{diagrams/reach_observability.tex}
+
+\subsubsection{Controllability}
+
+A system is controllable if for any pair of states $x(0), x^*$ there exists a finite time N and a control sequence $u$ such that $x(N)=x^*$
+
+\newpar{}
+The \textbf{controllability matrix}
+\begin{equation*}
+    \mathcal{C} :=
+    \begin{bmatrix}
+        B & AB & \cdots & A^{n-1} B
+    \end{bmatrix}
+\end{equation*}
+has to have \textbf{full row rank}.
+\newpar{}
+\textbf{Stabilizability} iff all uncontrollable modes are stable
+\begin{itemize}
+    \item A system is stabilizable if all unstable modes are reachable.
+    \item Reachability always implies stabilizability
+\end{itemize}
+
+\subsubsection{Observability}
+
+
+A system is observable if there exists a finite $N$ such that for every $x(0)$ the measurements $y(0), \ldots, y(N-1)$ uniquely distinguish the initial state $x(0)$.
+\newpar{}
+The \textbf{observability matrix}
+\begin{equation*}
+    \mathcal{O} :=
+    \begin{bmatrix}
+        C      \\
+        CA     \\
+        CA^2   \\
+        \vdots \\
+        CA^{n-1}
+    \end{bmatrix}
+\end{equation*}
+has to have \textbf{full column rank}.
+\newpar{}
+\textbf{Detectability}
+\begin{itemize}
+    \item A system is detectable if all unstable modes are observable.
+    \item Observability always implies detectability
+\end{itemize}
+
+
+\subsection{Nonlinear System Analysis}
+
+\subsubsection{Lyapunov Stability}
+
+The equilibrium point $\bar{x}$ of a DT system is \textbf{Lyapunov stable} iff for every $\epsilon >0$ there exists a $\delta(\epsilon)$ such that
+\begin{equation*}
+    \lVert x(0) - \bar{x} \rVert < \delta(\epsilon) \to \lVert x(k) - \bar{x} \rVert < \epsilon, \; \forall k \geq 0
+\end{equation*}
+
+\begin{center}
+    \includegraphics[width=0.3\linewidth]{01_Lyapunov_stability.png}
+\end{center}
+
+\ptitle{Global Asymptotic Stability}
+
+An equilibrium point $\bar{x}$ of a system is globally asymptotically stable if it is Lyapunov stable and attractive
+
+\begin{equation*}
+    \lim_{k\to\infty} \lVert x(k) - \bar{x} \rVert = 0, \; \forall x(0) \in \mathbb{R}
+\end{equation*}
+
+
+\subsubsection{Global Lyapunov Function}
+
+Consider the equilibrium point $\bar{x}=0$. A function $V:\mathbb{R}^n\to \mathbb{R}$, continuous at the origin, finite $\forall x \in \mathbb{R}^n$, and such that
+\begin{gather*}
+    \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty\\
+    V(0)=0 \text{ and } V(x)>0, \quad \forall x \in \mathbb{R}^n \setminus\{0\}\\
+    V(g(x)) - V(x) \leq -\alpha(x) \quad \forall x \in \mathbb{R}^n
+\end{gather*}
+where $\alpha:\mathbb{R}^n\to \mathbb{R}$ is continuous positive definite, is called a \textbf{Lyapunov function}.
+
+\subsubsection{Global Lyapunov Stability}
+
+If a system admits a Lyapunov function $V(x)$, then $x=0$ is \textbf{globally asymptotically stable}.
+\newpar{}
+If $V(x)$ satisfies the conditions only with $\alpha(x)$ being positive \textbf{semi}definite, then $x=0$ is \textbf{globally Lyapunov stable}.
+
+\subsection{Global Lyapunov Stability of LTI DT System}
+
+For the LTI DT system
+\begin{equation*}
+    x(k+1)=Ax(k)
+\end{equation*}
+One can take
+\begin{equation*}
+    V(x) = x^\top Px
+\end{equation*}
+as a candidate Lyapunov function with $P>0$ (positive definite). It's easy to see that it satisfies
+\begin{gather*}
+    V(0) = 0 \text{ and } V(x) > 0 \\
+    \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty
+\end{gather*}
+To construct the $\alpha(x)$ function the ``energy decrease'' condition is used
+\begin{align*}
+    V(Ax) - V(x) & = x^\top A^\top PAx - x^\top Px                      \\
+                 & = x^\top \left(A^\top PA - P\right)x \leq -\alpha(x)
+\end{align*}
+If $\alpha(x)$ is chosen as
+\begin{equation*}
+    \alpha(x) = x^\top Qx, \quad Q > 0
+\end{equation*}
+the condition can be satisfied if a $P>0$ can be found that solves the \textbf{discrete-time Lyapunov equation}
+\begin{equation*}
+    A^\top PA -P = -Q, \quad Q > 0
+\end{equation*}
+
+The discrete-time Lyapunov equation has a unique solution $P > 0$ iff $A$ has all eigenvalues inside the unit circle, i.e.\ iff the system $x(k + 1) = Ax(k)$ is stable.
+
+%Double check if this is correct:
+\newpar{}
+\ptitle{Closed Loop Control}
+
+When using LQR, the matrix $P$ that satisfies the DARE equation also satisfies the Lyapunov equation
+\begin{equation*}
+    {(A+BK)}^\top P{(A+BK)} -P = -Q, \quad Q>0
+\end{equation*}
+
+\begin{examplesection}[Example: Lyapunov Stability for Linear Systems]
+    Given the LTI DT system
+    \begin{equation*}
+        x(k+1) = \begin{bmatrix}
+            1 & 1 \\
+            0 & 1
+        \end{bmatrix} x(k) +
+        \begin{bmatrix}
+            1 \\
+            0.5
+        \end{bmatrix} u(k)
+    \end{equation*}
+    with
+    \begin{equation*}
+        u(k) = Kx(k) = -\begin{bmatrix}
+            0.1160 & 0.5385
+        \end{bmatrix} x(k)
+    \end{equation*}
+    We choose $Q=\mathbb{I}$ and solve the discrete time Lyapunov equation
+    \begin{gather*}
+        {\left(A+BK\right)}^\top P \left(A+BK\right) - P  = -Q \\
+        P = \begin{bmatrix}
+            3.3921 & 2.7757 \\
+            2.7757 & 7.7136
+        \end{bmatrix}
+    \end{gather*}
+    Since $V(x)=x^\top Px$ is a quadratic function, all level sets are ellipsoids with shape matrix $P$ and the closed loop evolution can be simulated as shown.
+    \begin{center}
+        \includegraphics[width=\linewidth]{01_LTI_DT_Lyapunov_example.png}
+    \end{center}
+\end{examplesection}
