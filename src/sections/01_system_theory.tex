@@ -108,8 +108,16 @@ If the initial state $x(k)$ and the input sequence $\{u(k), \ldots, u(k+N-1)\}$ 
 
 
 \subsection{Linear System Analysis}
-\ptitle{DT Stability} $x(k+1) = Ax(k)$ stable iff $\lvert \lambda_j \rvert < 1, \forall j$ \\
-\ptitle{LTI DT Controllability} can reach $x^*$ from $x(0)$ in $n$ steps
+
+\ptitle{DT Stability}
+
+\noindent\begin{equation*}
+    x(k+1) = Ax(k),\quad \mathrm{stable\ iff\ } \lvert \lambda_j \rvert < 1, \forall j
+\end{equation*}
+
+\ptitle{LTI DT Controllability}
+
+can reach $x^*$ from $x(0)$ in $n$ steps
 \begin{align*}
     \mathcal{C} =
     \begin{bmatrix}
@@ -117,6 +125,7 @@ If the initial state $x(k)$ and the input sequence $\{u(k), \ldots, u(k+N-1)\}$ 
     \end{bmatrix}
     \ \Rightarrow \ \mathrm{rank}(\mathcal{C}) \overset{!}{=} n
 \end{align*}
+
 \ptitle{DT Observability} uniquely distinguish IC from output
 \begin{align*}
     \mathcal{O} =
@@ -140,7 +149,7 @@ If the initial state $x(k)$ and the input sequence $\{u(k), \ldots, u(k+N-1)\}$ 
 
 \ptitle{Lyapunov Stable}
 
-For every $\epsilon>0$ exists $\delta(\epsilon)$ s.t.\\
+For every $\epsilon>0$ exists $\delta(\epsilon)$ s.t.\
 \noindent\begin{equation*}
     \lvert\lvert x(0) - \bar{x} \rvert\rvert < \delta(\epsilon) \to
     \lvert\lvert x(k) - \bar{x} \rvert\rvert < \epsilon
