@@ -100,6 +100,7 @@ if $A^c$ is invertible.
 
 \newpar{}
 \ptitle{Solution of DT LTI System}
+
 If the initial state $x(k)$ and the input sequence $\{u(k), \ldots, u(k+N-1)\}$ are known the the solution for the discrete time system at time $k+N$ is given by
 \begin{equation*}
     x(k+N) = A^N x(k) + \sum_{i=0}^{N-1} A^i B u(k+N-1-i)
@@ -120,53 +121,52 @@ If the initial state $x(k)$ and the input sequence $\{u(k), \ldots, u(k+N-1)\}$ 
 \begin{align*}
     \mathcal{O} =
     \begin{bmatrix}
-        C^\top & \cdots & (CA^{n-1})^\top
+        C^\top & \cdots & {(CA^{n-1})}^\top
     \end{bmatrix}^\top
     \ \Rightarrow \ \mathrm{rank}(\mathcal{O}) \overset{!}{=} n
 \end{align*}
-\ptitle{Stabilizability} iff all uncontrollable modes stable
+\ptitle{Stabilizability} iff all uncontrollable modes are stable
 \begin{align*}
     \textrm{if } \mathrm{rank}([\lambda_j \mathbb{I}-A \mid B]) = n \ \forall \lambda_j \in \Lambda_A^+ \ \Rightarrow (A,B) \textrm{ stabilizable}
 \end{align*}
-\ptitle{Detectablitiy} iff all unobservable modes stable
+\ptitle{Detectablitiy} iff all unobservable modes are stable
 \begin{align*}
     \textrm{if } \mathrm{rank}([A^\top - \lambda_j \mathbb{I} \mid C^\top]) = n \ \forall \lambda_j \in \Lambda_A^+ \ \Rightarrow (A,C) \textrm{ detect.}
 \end{align*}
 
 
 \subsection{Nonlinear System Analysis}
-\ptitle{Lyapunov Stability} (w.r.t \textbf{eq. point} $\bar{x}$ of a system)
+\subsubsection[Lyapunov Stability]{Lyapunov Stability (w.r.t \textbf{eq.\ point} $\bar{x}$ of a system)}
 
+\ptitle{Lyapunov Stable}
 
+For every $\epsilon>0$ exists $\delta(\epsilon)$ s.t.\\
+\noindent\begin{equation*}
+    \lvert\lvert x(0) - \bar{x} \rvert\rvert < \delta(\epsilon) \to
+    \lvert\lvert x(k) - \bar{x} \rvert\rvert < \epsilon
+\end{equation*}
 
-\textbf{Lyapunov Stable} \\
-for every $\epsilon>0$ exists $\delta(\epsilon)$ s.t.\\
-$\lvert\lvert x(0) - \bar{x} \rvert\rvert < \delta(\epsilon) \to
-    \lvert\lvert x(k) - \bar{x} \rvert\rvert < \epsilon$
+\paragraph{Globally Asympt. Stable}
+Lyapunov stable \& Attractive
+\noindent\begin{equation*}
+    \lim_{k\to\infty} \lvert\lvert x(k) - \bar{x} \rvert\rvert = 0 \ \forall x(0)
+\end{equation*}
 
-
-\textbf{Globally Asympt. Stable}\\
-Lyap. stable \& Attractive \\
-$\lim_{k\to\infty} \lvert\lvert x(k) - \bar{x} \rvert\rvert = 0 \ \forall x(0)$
-
-
-
+\newpar{}
 \ptitle{Global Lyapunov Function} (Candidate)
 
 Consider eq point $\bar{x}=0$. $V:\mathbb{R}^n\to \mathbb{R}$, continuous at origin, finite $\forall x$,
-\begin{enumerate}[label=\textbf{(\arabic*)}]
+\begin{enumerate}
     \item $\lvert\lvert x \rvert\rvert \to \infty \Rightarrow V(x) \to \infty$
     \item $V(0)=0, \quad V(x)>0 \quad \forall x \in \mathbb{R}^n \setminus\{0\}$
     \item $V(g(x)) - V(x) \leq -\alpha(x) \quad \forall x \in \mathbb{R}^n$
 \end{enumerate}
-where $\alpha:\mathbb{R}^n\to \mathbb{R}$ continuous pos. def.
+where $\alpha:\mathbb{R}^n\to \mathbb{R}$ continuous pos.\ def.
 
+\newpar{}
+\ptitle{Global Lyapunov Stability}
 
-\ptitle{Global Lyapunov Stability} \\
+If system admits a global Lyapunov function $V(x)$ then $x=0$ is \textbf{Globally Asympt. Stable}
 
-If sys admits a $V(x)$ $\Rightarrow$ $x=0$ is \textbf{Globally Asympt. Stable}
-
-
-{\footnotesize
-    \ptitle{ACHTUNG} if $\alpha$ pos. \textbf{semi}def $\Rightarrow$ $x=0$ is \textbf{Globally Lyapunov Stable}
-}
+\newpar{}
+\textbf{Note} that if $\alpha$ pos.\ \textbf{semi}def $\Rightarrow$ $x=0$ is \textbf{Globally Lyapunov Stable}
