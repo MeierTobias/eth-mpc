@@ -234,7 +234,7 @@ as a candidate Lyapunov function with $P>0$ (positive definite). It's easy to se
     V(0) = 0 \text{ and } V(x) > 0 \\
     \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty
 \end{gather*}
-to construct the $\alpha(x)$ function the ``energy decrease'' condition is used
+To construct the $\alpha(x)$ function the ``energy decrease'' condition is used
 \begin{align*}
     V(Ax) - V(x) & = x^\top A^\top PAx - x^\top Px                      \\
                  & = x^\top \left(A^\top PA - P\right)x \leq -\alpha(x)
@@ -243,7 +243,7 @@ If $\alpha(x)$ is chosen as
 \begin{equation*}
     \alpha(x) = x^\top Qx, \quad Q > 0
 \end{equation*}
-the condition can be satisfied if a $P>0$ can be fouhnd that solves the \textbf{discrete-time Lyapunov equation}
+the condition can be satisfied if a $P>0$ can be found that solves the \textbf{discrete-time Lyapunov equation}
 \begin{equation*}
     A^\top PA -P = -Q, \quad Q > 0
 \end{equation*}
@@ -253,8 +253,9 @@ The discrete-time Lyapunov equation has a unique solution $P > 0$ iff $A$ has al
 %Double check if this is correct:
 \newpar{}
 \ptitle{Closed Loop Control}
+
 When using LQR, the matrix $P$ that satisfies the DARE equation also satisfies the Lyapunov equation
-\noindent\begin{equation*}
+\begin{equation*}
     {(A+BK)}^\top P{(A+BK)} -P = -Q, \quad Q>0
 \end{equation*}
 
