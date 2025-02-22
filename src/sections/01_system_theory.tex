@@ -250,6 +250,14 @@ the condition can be satisfied if a $P>0$ can be fouhnd that solves the \textbf{
 
 The discrete-time Lyapunov equation has a unique solution $P > 0$ iff $A$ has all eigenvalues inside the unit circle, i.e.\ iff the system $x(k + 1) = Ax(k)$ is stable.
 
+%Double check if this is correct:
+\newpar{}
+\ptitle{Closed Loop Control}
+When using LQR, the matrix $P$ that satisfies the DARE equation also satisfies the Lyapunov equation
+\noindent\begin{equation*}
+    {(A+BK)}^\top P{(A+BK)} -P = -Q, \quad Q>0
+\end{equation*}
+
 \begin{examplesection}[Example: Lyapunov Stability for Linear Systems]
     Given the LTI DT system
     \begin{equation*}
