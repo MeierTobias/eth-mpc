@@ -170,3 +170,26 @@ If system admits a global Lyapunov function $V(x)$ then $x=0$ is \textbf{Globall
 
 \newpar{}
 \textbf{Note} that if $\alpha$ pos.\ \textbf{semi}def $\Rightarrow$ $x=0$ is \textbf{Globally Lyapunov Stable}
+
+\paragraph{Global Lyapunov Stability of Linear Systems}
+Given a time-discrete linear system 
+\noindent\begin{equation*}
+    x(k+1) = Ax(k)
+\end{equation*}
+The Lyapunov functions 
+\noindent\begin{equation*}
+    V(x) = x^\top P x, \quad P>0
+\end{equation*}
+is a global Lyapunov function since it satisfies condition 1,2 per definition and 3 if the \textit{discrete time Lyapunov equation}
+\noindent\begin{equation*}
+    A^\top PA -P = -Q, \quad Q>0
+\end{equation*}
+holds.
+
+%Double check if this is correct:
+\newpar{}
+\ptitle{Closed Loop Control}
+When using LQR, the matrix $P$ that satisfies the DARE equation also satisfies the Lyapunov equation
+\noindent\begin{equation*}
+    {(A+BK)}^\top P{(A+BK)} -P = -Q, \quad Q>0
+\end{equation*}
