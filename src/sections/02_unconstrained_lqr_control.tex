@@ -1,0 +1,127 @@
+\section{Unconstrained Linear Quadratic Optimal Control}
+In this section, DT LTI systems with quadratic cost function are treated.
+\subsection{Finite Horizon LQR}
+
+The \textbf{unconstrained finite horizon control problem} has the objective of finding a sequence of inputs
+\noindent\begin{equation*}
+    U := \begin{bmatrix} u_0^\top & u_1^\top & \dots & u_{N-1}^\top \end{bmatrix}^\top
+\end{equation*}
+that minimizes the objective function:
+\noindent\begin{align*}
+    J^*(x(0))                & := \min_U J(x_0,U)                                                                          \\
+                             & = \min_U \left( x_N^\top P x_N + \sum_{i=0}^{N-1} (x_i^\top Q x_i + u_i^\top R u_i) \right) \\
+    \text{subj.\ to }x_{i+1} & = A x_i + B u_i, \quad i = 0, \dots, N-1                                                    \\
+    x_0                      & = x(0)
+\end{align*}
+In practice, the optimization variables include also $x_0, x_1, \dots, x_N$.
+
+\newpar{}
+\ptitle{Weight Matrices}
+
+\begin{itemize}
+    \item $P \succeq 0$, with $P = P^\top$ is the terminal weight.
+    \item $Q \succeq 0$, with $Q = Q^\top$ is the state weight.
+    \item $R \succ 0$, with $R = R^\top$ is the input weight.
+    \item $N$ is the horizon length.
+\end{itemize}
+
+\subsubsection{Batch Approach}
+The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$.
+
+\newpar{}
+\ptitle{Definitions}% TODO: Initial condition response + forced response?
+
+Defining
+\noindent\begin{align*}
+    X:                        & =S^x x(0)+S^u U \\
+    \left.\left[
+    \begin{array}
+            {c}x_0 \\
+            x_1    \\
+            \vdots \\
+            \vdots \\
+            x_N
+        \end{array}\right.\right] & =
+    \begin{bmatrix}
+        l      \\
+        A      \\
+        \vdots \\
+        \vdots \\
+        A^N
+    \end{bmatrix}x(0)+
+    \begin{bmatrix}
+        0        & \cdots & \cdots & 0 \\
+        B        & 0      & \cdots & 0 \\
+        AB       & B      & \cdots & 0 \\
+        \vdots   & \ddots & \ddots & 0 \\
+        A^{N-1}B & \cdots & AB     & B
+    \end{bmatrix}
+    \begin{bmatrix}
+        u_0    \\
+        u_1    \\
+        \vdots \\
+        \vdots \\
+        u_{N-1}
+    \end{bmatrix}
+\end{align*}
+and the blockdiagonal weight matrices
+\noindent\begin{equation*}
+    \overline{Q}:=\mathrm{blockdiag}(Q,...,Q,P)\quad\mathrm{and}\quad\overline{R}:=\mathrm{blockdiag}(R,...,R)
+\end{equation*}
+the finite horizon cost becomes the positive definite quadratic function in $U$
+\noindent\begin{gather*}
+    J(x(0), U) =U^{\top}HU+2{x(0)}^{\top}FU+{x(0)}^{\top}S^{x^{\top}}\overline{Q}S^{x}x(0)\\
+    \text{where } H:={(S^u)}^\top\overline{Q} S^u+\overline{R} > 0 \mathrm{~and~}F:={(S^x)}^\top\overline{Q} S^u
+\end{gather*}
+
+\newpar{}
+\ptitle{Optimal Control Solution}
+
+Setting the gradient to zero yields the optimal control action
+\noindent\begin{equation*}
+    U^*(x(0)) = -H^{-1}F^\top x(0)
+\end{equation*}
+Note that
+\begin{itemize}
+    \item This is linear in $x(0)$.
+    \item $H^{-1}$ always exists as $H>0$ i.e.\ full rank.
+\end{itemize}
+
+The optimal cost $J^*(x(0))$ is
+    {\footnotesize
+        \noindent\begin{equation*}
+            {x(0)}^{\top}\left({(S^{x})}^{\top}\overline{Q}S^{x}-{(S^{x})}^{\top}\overline{Q}S^{u}{({(S^{u})}^{\top}\overline{Q}S^{u}+\overline{R})}^{-1}{(S^{u})}^{\top}\overline{Q}S^{x}\right)x(0)
+        \end{equation*}
+    }
+
+\subsubsection{Recursive Approach}
+The recursive approach uses Dynamic Programming (DP) to compute an optimal policy, i.e.\ an optimal control action per state.
+
+\newpar{}
+\ptitle{Definitions}
+
+We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$) as the optimal cost attainable for the step j problem
+\noindent\begin{align*}
+    J_j^\star(x(j)) & :=\min_{U_{j\to N}}x_N^\top Px_N+\sum_{i=j}^{N-1}(x_i^\top Qx_i+u_i^\top Ru_i) \\
+                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,...,N-1                                 \\
+                    & x_j=x(j)
+\end{align*}
+
+\newpar{}
+\ptitle{Optimal Control Solution}
+
+Solving the local subproblem yields the optimal control input as
+\noindent\begin{equation*}
+    \begin{aligned}
+        u_{N-1}^{\star} & =-(B^\top P_NB+R)^{-1}B^\top P_NAx_{N-1} \\
+                        & :=F_{N-1}x_{N-1}
+    \end{aligned}
+\end{equation*}
+
+The optimal cost $J^*(x(0))$ is
+    {\small
+        \noindent\begin{align*}
+            J_{N-1}^{\star}(x_{N-1}) & =x_{N-1}^{\top}P_{N-1}x_{N-1}                                    \\
+            P_{N-1}                  & =A^\top P_N A+Q-A^\top P_N B{(B^\top P_N B+R)}^{-1}B^\top P_N A.
+        \end{align*}
+    }
