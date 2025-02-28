@@ -71,8 +71,8 @@ DT systems are of the general form
 \end{align*}
 or for the LTI case
 \begin{align*}
-    x(k+1) & =A_d x(k)+B_d u(k) \\
-    y(k)   & =C_d x(k)+D_d u(k)
+    x(k+1) & =A x(k)+B u(k) \\
+    y(k)   & =C x(k)+D u(k)
 \end{align*}
 
 \ptitle{Euler Discretization}
@@ -91,8 +91,8 @@ Then the DT model is given by
 \end{align*}
 Therefore a LTI system becomes
 \begin{align*}
-    x(k+1) & = \overbrace{(\mathbb{I} + T_s A^c)}^{=A^d} x(k) + \overbrace{T_s B^c}^{=B^d} u(k) \\
-    y(k)   & = \underbrace{C^c}_{C^d} x(k) + \underbrace{D^c}_{D^d} u(k)
+    x(k+1) & = \overbrace{(\mathbb{I} + T_s A^c)}^{=A} x(k) + \overbrace{T_s B^c}^{=B} u(k) \\
+    y(k)   & = \underbrace{C^c}_{Cd} x(k) + \underbrace{D^c}_{D} u(k)
 \end{align*}
 
 \newpar{}
@@ -100,11 +100,11 @@ Therefore a LTI system becomes
 
 If the input $u$ is held constant over a sampling interval (ZOH) one can retrieve an exact discretization of the LTI system
 \begin{equation*}
-    x(t_{k+1}) = \underbrace{e^{A^c T_s}}_{=A_d} x(t_k) + \underbrace{\int_{0}^{T_s} e^{A^c(T_s - \tau)}B^c d\tau}_{B_d} u(t_k)
+    x(t_{k+1}) = \underbrace{e^{A^c T_s}}_{=A} x(t_k) + \underbrace{\int_{0}^{T_s} e^{A^c(T_s - \tau)}B^c d\tau}_{B} u(t_k)
 \end{equation*}
 with
 \begin{equation*}
-    B_d={(A^c)}^{-1}(A-\mathbb{I})B^c
+    B={(A^c)}^{-1}(A-\mathbb{I})B^c
 \end{equation*}
 if $A^c$ is invertible.
 
@@ -122,7 +122,6 @@ which is linear in the input sequence and initial condition.
 This section only summarizes the most important properties. Further details can be found in {\small\url{https://github.com/MeierTobias/eth-control-systems-2}}.
 
 \subsubsection{Coordinate Transformastions}
-
 \begin{align*}
     \tilde{x}(k)   & = Tx(k); \qquad \det(T) \neq 0                                                    \\
     \tilde{x}(k+1) & = \overbrace{TAT^{-1}}^{\tilde{A}} \tilde{x}(k) + \overbrace{TB}^{\tilde{B}} u(k) \\
