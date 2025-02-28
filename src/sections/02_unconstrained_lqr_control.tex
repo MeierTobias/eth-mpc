@@ -64,7 +64,7 @@ Defining
         u_{N-1}
     \end{bmatrix}
 \end{align*}
-and the blockdiagonal weight matrices
+and the block diagonal weight matrices
 \noindent\begin{equation*}
     \overline{Q}:=\mathrm{blockdiag}(Q,...,Q,P)\quad\mathrm{and}\quad\overline{R}:=\mathrm{blockdiag}(R,...,R)
 \end{equation*}
@@ -87,12 +87,17 @@ Note that
     \item $H^{-1}$ always exists as $H>0$ i.e.\ full rank.
 \end{itemize}
 
-The optimal cost $J^*(x(0))$ is
-    {\footnotesize
-        \noindent\begin{equation*}
-            {x(0)}^{\top}\left({(S^{x})}^{\top}\overline{Q}S^{x}-{(S^{x})}^{\top}\overline{Q}S^{u}{({(S^{u})}^{\top}\overline{Q}S^{u}+\overline{R})}^{-1}{(S^{u})}^{\top}\overline{Q}S^{x}\right)x(0)
-        \end{equation*}
-    }
+\newpar{}
+The \textbf{optimal cost} $J^*(x(0))$ is
+    % {\footnotesize
+    %     \noindent\begin{equation*}
+    %         {x(0)}^{\top}\left({(S^{x})}^{\top}\overline{Q}S^{x}-{(S^{x})}^{\top}\overline{Q}S^{u}{({(S^{u})}^{\top}\overline{Q}S^{u}+\overline{R})}^{-1}{(S^{u})}^{\top}\overline{Q}S^{x}\right)x(0)
+    %     \end{equation*}
+    % }
+
+\noindent\begin{equation*}
+    J^*(x(0)) = {x(0)}^{\top}\left({(S^{x})}^{\top}\overline{Q}S^{x}- F H^{-1} F^\top\right)x(0)
+\end{equation*}
 
 \subsubsection{Recursive Approach}
 The recursive approach uses Dynamic Programming (DP) to compute an optimal policy, i.e.\ an optimal control action per state.
@@ -113,15 +118,25 @@ We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$)
 Solving the local subproblem yields the optimal control input as
 \noindent\begin{equation*}
     \begin{aligned}
-        u_{N-1}^{\star} & =-(B^\top P_NB+R)^{-1}B^\top P_NAx_{N-1} \\
-                        & :=F_{N-1}x_{N-1}
+        u_{i}^{\star} & =-{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} Ax_{i} \\
+                        & :=F_{i}x_{i}
     \end{aligned}
 \end{equation*}
 
-The optimal cost $J^*(x(0))$ is
-    {\small
-        \noindent\begin{align*}
-            J_{N-1}^{\star}(x_{N-1}) & =x_{N-1}^{\top}P_{N-1}x_{N-1}                                    \\
-            P_{N-1}                  & =A^\top P_N A+Q-A^\top P_N B{(B^\top P_N B+R)}^{-1}B^\top P_N A.
-        \end{align*}
-    }
+The optimal cost-to-go $J_i^*(x_i)$ is
+    % {\small
+    %     \noindent\begin{align*}
+    %         J_{N-1}^{\star}(x_{N-1}) & =x_{N-1}^{\top}P_{N-1}x_{N-1}                                    \\
+    %         P_{N-1}                  & =A^\top P_N A+Q-A^\top P_N B{(B^\top P_N B+R)}^{-1}B^\top P_N A.
+    %     \end{align*}
+    % }
+
+    \noindent\begin{gather*}
+        J_{i}^{\star}(x_{i})  = x_{i}^{\top}P_{i}x_{i}                                    \\
+        P_{i} = A^\top P_{i+1} A+Q-A^\top P_N B{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A.
+    \end{gather*}
+
+and the \textbf{optimal cost} $J^*(x(0))$ is
+\noindent\begin{equation*}
+    {x(0)}^\top P_0 x(0)
+\end{equation*}
