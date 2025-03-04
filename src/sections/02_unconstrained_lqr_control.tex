@@ -1,5 +1,5 @@
 \section{Unconstrained Linear Quadratic Optimal Control}
-In this section, DT LTI systems with quadratic cost function are treated.
+In this section, DT LTI systems with quadratic cost function are treated, where the goal is to regulate the state to the origin, without any state or input constraints.
 \subsection{Finite Horizon LQR}
 
 The \textbf{unconstrained finite horizon control problem} has the objective of finding a sequence of inputs
@@ -26,7 +26,7 @@ In practice, the optimization variables include also $x_0, x_1, \dots, x_N$.
 \end{itemize}
 
 \subsubsection{Batch Approach}
-The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$.
+The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$. A constrained problem could theoretically still yield a solution through matrix inversion, which however might be unfeasible.
 
 \newpar{}
 \ptitle{Definitions}% TODO: Initial condition response + forced response?
@@ -68,7 +68,7 @@ and the block diagonal weight matrices
 \noindent\begin{equation*}
     \overline{Q}:=\mathrm{blockdiag}(Q,...,Q,P)\quad\mathrm{and}\quad\overline{R}:=\mathrm{blockdiag}(R,...,R)
 \end{equation*}
-the finite horizon cost becomes the positive definite quadratic function in $U$
+the finite horizon cost $J(x(0), U) = X^{\top}\bar{Q}X + U^{\top}\bar{R}U$ becomes the positive definite quadratic function in $U$
 \noindent\begin{gather*}
     J(x(0), U) =U^{\top}HU+2{x(0)}^{\top}FU+{x(0)}^{\top}S^{x^{\top}}\overline{Q}S^{x}x(0)\\
     \text{where } H:={(S^u)}^\top\overline{Q} S^u+\overline{R} > 0 \mathrm{~and~}F:={(S^x)}^\top\overline{Q} S^u
@@ -102,10 +102,23 @@ The \textbf{optimal cost} $J^*(x(0))$ is
 \subsubsection{Recursive Approach}
 The recursive approach uses Dynamic Programming (DP) to compute an optimal policy, i.e.\ an optimal control action per state.
 
-\newpar{}
+\paragraph{Bellman's Principle of Optimality}
+
+Bellman's Principle of Optimality justifies the recursive approach, stating that:
+
+\textit{For any solution for steps $0$ to $N$ to be optimal, any solution for steps $j$ to $N$ with $j \geq 0$, taken from the $0$ to $N$ solution, must itself be optimal for the $j$-to-$N$ problem.}
+
+Hence, for any $j=0\dots N$
+\begin{align*}
+    J_{j}^{\star}(x_{j})     & =\min_{u_{j}}I(x_{i},u_{i})+J_{j+1}^{\star}(x_{j+1}) \\
+    \text{subj.\ to }x_{j+1} & =Ax_{j}+Bu_{j}
+\end{align*}
+
+\paragraph{Optimal Control Method}
+
 \ptitle{Definitions}
 
-We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$) as the optimal cost attainable for the step j problem
+We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$) as the optimal cost attainable for the step $j$ problem
 \noindent\begin{align*}
     J_j^\star(x(j)) & :=\min_{U_{j\to N}}x_N^\top Px_N+\sum_{i=j}^{N-1}(x_i^\top Qx_i+u_i^\top Ru_i) \\
                     & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,...,N-1                                 \\
@@ -116,20 +129,50 @@ We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$)
 \ptitle{Optimal Control Solution}
 
 Solving the local subproblem yields the optimal control input as
-\noindent\begin{equation*}
-    \begin{aligned}
-        u_{i}^{\star} & =-{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} Ax_{i} \\
-                      & :=F_{i}x_{i}
-    \end{aligned}
-\end{equation*}
+\noindent\begin{align*}
+    u_{i}^{\star} & =F_{i} x_{i}                                   \\
+    F_{i}         & :=-{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A
+\end{align*}
 
 The optimal cost-to-go $J_i^*(x_i)$ is
-\noindent\begin{gather*}
-    J_{i}^{\star}(x_{i})  = x_{i}^{\top}P_{i}x_{i}                                    \\
-    P_{i} = A^\top P_{i+1} A+Q-A^\top P_{i+1} B{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A.
-\end{gather*}
-
-and the \textbf{optimal cost} $J^*(x(0))$ is
+\noindent\begin{equation*}
+    J_{i}^{\star}(x_{i})  = x_{i}^{\top}P_{i}x_{i}
+\end{equation*}
+with cost matrices found from the Discrete Time Riccati equation / \textbf{Riccati Difference equation} (\textbf{RDE}):
+\noindent\begin{align*}
+     & P_{i} = A^\top P_{i+1} A+Q-A^\top P_{i+1} B{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A \\
+     & P_{N} = P \text{ (init.\ with terminal weight)}
+\end{align*}
+and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
 \noindent\begin{equation*}
     {x(0)}^\top P_0 x(0)
 \end{equation*}
+
+\subsubsection{Comparison: Batch vs.\ Recursive Approach}
+
+The recursive approach yields a policy instead of a fixed input sequence. Hence, in presence of \textbf{disturbances} or noise, the recursive approach is more robust. Additionally, the problem is broken down into smaller \textbf{subproblems}, avoiding large matrix inversions (Hessian in the batch approach). However, the batch approach is more favorable for \textbf{constrained} problems as constrained minimization can be performed.
+
+\subsection{Receding Horizon LQR}
+
+Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
+
+\begin{center}
+    \includegraphics[width = 0.8\linewidth]{receding_LQR.png}
+\end{center}
+
+\newpar{}
+\ptitle{Stability of Finite Horizon Control Law}
+
+Not only tuning of the weight matrices but also the horizon length can influence stability of the control law.
+
+\begin{center}
+    \includegraphics[width = 0.6\linewidth]{horizon_stability.png}
+\end{center}
+
+\subsection{Infinite Horizon LQR}
+
+
+
+
+
+
