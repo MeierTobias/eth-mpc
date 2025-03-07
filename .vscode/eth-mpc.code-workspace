@@ -29,6 +29,7 @@
 		"latex-workshop.latex.recipe.default": "latexmk (xelatex)",
 
 		// use latex indent as formatter
-		"latex-workshop.formatting.latex": "latexindent"
+		"latex-workshop.formatting.latex": "latexindent",
+		"editor.formatOnSave": true
 	}
 }

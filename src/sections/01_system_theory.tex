@@ -2,7 +2,7 @@
 
 \subsection{Models of Dynamic Systems}
 
-The basic formulation of a nonlinear, time-invariant, continues-time, state space model can be stated as
+The basic formulation of a nonlinear, time-invariant, continuous-time, state space model can be stated as
 \begin{align*}
     \dot{x} & = g(x,u) \\
     y       & = h(x,u)
@@ -64,6 +64,16 @@ where
 \end{equation*}
 
 \subsection{Discretization}
+DT systems are of the general form
+\begin{align*}
+    x(k+1) & =g(x(k),u(k)) \\
+    y(k)   & =h(x(k),u(k))
+\end{align*}
+or for the LTI case
+\begin{align*}
+    x(k+1) & =A x(k)+B u(k) \\
+    y(k)   & =C x(k)+D u(k)
+\end{align*}
 
 \ptitle{Euler Discretization}
 \begin{equation*}
@@ -79,10 +89,10 @@ Then the DT model is given by
     x(k+1) & = x(k) + T_s g^c (x(k),u(k)) & = g(x(k),u(k)) \\
     y(k)   & = h^c(x(k),u(k))             & = h(x(k),u(k))
 \end{align*}
-Therefor a LTI system becomes
+Therefore a LTI system becomes
 \begin{align*}
-    x(k+1) & = \overbrace{\mathbb{I} + T_s A^c}^{=A^d} x(k) + \overbrace{T_s B^c}^{=B^d} u(k) \\
-    y(k)   & = \underbrace{C^c}_{C^d} x(k) + \underbrace{D^c}_{D^d} u(k)
+    x(k+1) & = \overbrace{(\mathbb{I} + T_s A^c)}^{=A} x(k) + \overbrace{T_s B^c}^{=B} u(k) \\
+    y(k)   & = \underbrace{C^c}_{Cd} x(k) + \underbrace{D^c}_{D} u(k)
 \end{align*}
 
 \newpar{}
@@ -105,14 +115,13 @@ If the input sequence $\{u(k), \ldots, u(k+N-1)\}$ and the initial state $x(k)$ 
 \begin{equation*}
     x(k+N) = A^N x(k) + \sum_{i=0}^{N-1} A^i B u(k+N-1-i)
 \end{equation*}
-
+which is linear in the input sequence and initial condition.
 
 \subsection{LTI DT System Analysis}
 
 This section only summarizes the most important properties. Further details can be found in {\small\url{https://github.com/MeierTobias/eth-control-systems-2}}.
 
 \subsubsection{Coordinate Transformastions}
-
 \begin{align*}
     \tilde{x}(k)   & = Tx(k); \qquad \det(T) \neq 0                                                    \\
     \tilde{x}(k+1) & = \overbrace{TAT^{-1}}^{\tilde{A}} \tilde{x}(k) + \overbrace{TB}^{\tilde{B}} u(k) \\
@@ -138,30 +147,63 @@ for all eigenvalues $\lambda_j$ of $A$.
 
 \subsubsection{Controllability}
 
-A system is controllable if for any pair of states $x(0), x^*$ there exists a finite time N and a control sequence $u$ such that $x(N)=x^*$
+A system is controllable if for any pair of states $x(0), x^*$ there exists a finite time N and a control sequence $u$ such that
+\noindent\begin{align*}
+    x(N) & =x^*         \\
+         & = A^N x(0) +
+    \underbrace{\begin{bmatrix}
+                        B & AB & \cdots & A^{N-1}B
+                    \end{bmatrix}}_{=\mathcal{C}\text{ if }n=N}
+    \begin{bmatrix}
+        u(N-1) \\
+        u(N-2) \\
+        \vdots \\
+        u(0)
+    \end{bmatrix}
+\end{align*}
 
 \newpar{}
-The \textbf{controllability matrix}
+The system has a unique solution in $u(0)\dots u(N-1)$ iff the \textbf{controllability matrix}
 \begin{equation*}
     \mathcal{C} :=
     \begin{bmatrix}
         B & AB & \cdots & A^{n-1} B
     \end{bmatrix}
 \end{equation*}
-has to have \textbf{full row rank}.
+has \textbf{full row rank}.
 \newpar{}
 \textbf{Stabilizability} iff all uncontrollable modes are stable
 \begin{itemize}
-    \item A system is stabilizable if all unstable modes are reachable.
-    \item Reachability always implies stabilizability
+    \item A system is stabilizable if all unstable modes are controllable.
+    \item Controllability always implies stabilizability
 \end{itemize}
+Stabilizability can be checked in the modal basis or via
+\noindent\begin{equation*}
+    \text{rank}\left(\left[\lambda_{j}I-A\mid B\right]\right)=n\quad\forall\lambda_{j}\in\Lambda_{A}^{+}\Rightarrow(A,B)\text{ is stabilizable}
+\end{equation*}
+where $\Lambda_{A}^{+}$ is the set of unstable eigenvalues.
+\newpar{}
+\textbf{Reachability} is used for CT systems.
 
 \subsubsection{Observability}
 
-
 A system is observable if there exists a finite $N$ such that for every $x(0)$ the measurements $y(0), \ldots, y(N-1)$ uniquely distinguish the initial state $x(0)$.
-\newpar{}
-The \textbf{observability matrix}
+The system
+\noindent\begin{equation*}
+    \begin{bmatrix}
+        y(0)   \\
+        y(1)   \\
+        \vdots \\
+        y(N-1)
+    \end{bmatrix}=
+    \underbrace{\begin{bmatrix}
+            C      \\
+            CA     \\
+            \vdots \\
+            CA^{N-1}
+        \end{bmatrix}}_{=\mathcal{O}\text{ if }n=N}x(0)
+\end{equation*}
+has a unique solution iff the \textbf{observability matrix}
 \begin{equation*}
     \mathcal{O} :=
     \begin{bmatrix}
@@ -172,19 +214,28 @@ The \textbf{observability matrix}
         CA^{n-1}
     \end{bmatrix}
 \end{equation*}
-has to have \textbf{full column rank}.
+has \textbf{full column rank}.
 \newpar{}
-\textbf{Detectability}
+\textbf{Detectability} iff all unobservable modes are stable
 \begin{itemize}
     \item A system is detectable if all unstable modes are observable.
-    \item Observability always implies detectability
+    \item Observability always implies detectability.
 \end{itemize}
-
+Detectability can be checked in modal basis or via
+    {\footnotesize
+        \noindent\begin{equation*}
+            \text{if rank }\left(\left[A^{\top}-\lambda_{j}I\mid C^{\top}\right]\right)=n\quad\forall\lambda_{j}\in\Lambda_{A}^{+}\Rightarrow (A,C) \text{ is detectable}
+        \end{equation*}
+    }
 
 \subsection{Nonlinear System Analysis}
+Lyapunov stability analysis is for instance useful if the linearization yields eigenvalues on the imaginary axis or the unit circle respectively. Lyapunov functions are often found via
+\begin{enumerate}
+    \item definition of general form of the Lyapunov function.
+    \item search for parameter values via optimization.
+\end{enumerate}
 
 \subsubsection{Lyapunov Stability}
-
 The equilibrium point $\bar{x}$ of a DT system is \textbf{Lyapunov stable} iff for every $\epsilon >0$ there exists a $\delta(\epsilon)$ such that
 \begin{equation*}
     \lVert x(0) - \bar{x} \rVert < \delta(\epsilon) \to \lVert x(k) - \bar{x} \rVert < \epsilon, \; \forall k \geq 0
@@ -207,11 +258,11 @@ An equilibrium point $\bar{x}$ of a system is globally asymptotically stable if 
 
 Consider the equilibrium point $\bar{x}=0$. A function $V:\mathbb{R}^n\to \mathbb{R}$, continuous at the origin, finite $\forall x \in \mathbb{R}^n$, and such that
 \begin{gather*}
-    \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty\\
+    \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty \text{ (radially unbounded)}\\
     V(0)=0 \text{ and } V(x)>0, \quad \forall x \in \mathbb{R}^n \setminus\{0\}\\
     V(g(x)) - V(x) \leq -\alpha(x) \quad \forall x \in \mathbb{R}^n
 \end{gather*}
-where $\alpha:\mathbb{R}^n\to \mathbb{R}$ is continuous positive definite, is called a \textbf{Lyapunov function}.
+where $\alpha:\mathbb{R}^n\to \mathbb{R}$ is continuous positive definite, is called a \textbf{Lyapunov function}, a system theoretic generalization of energy. For mechanical systems: total mechanical energy.
 
 \subsubsection{Global Lyapunov Stability}
 
@@ -220,7 +271,6 @@ If a system admits a Lyapunov function $V(x)$, then $x=0$ is \textbf{globally as
 If $V(x)$ satisfies the conditions only with $\alpha(x)$ being positive \textbf{semi}definite, then $x=0$ is \textbf{globally Lyapunov stable}.
 
 \subsection{Global Lyapunov Stability of LTI DT System}
-
 For the LTI DT system
 \begin{equation*}
     x(k+1)=Ax(k)
