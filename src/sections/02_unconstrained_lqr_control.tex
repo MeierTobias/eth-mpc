@@ -29,7 +29,7 @@ In practice, the optimization variables include also $x_0, x_1, \dots, x_N$.
 The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$. A constrained problem could theoretically still yield a solution through matrix inversion, which however might be unfeasible.
 
 \newpar{}
-\ptitle{Problem Setup}% TODO: Is this just the nitial condition response + forced response?
+\ptitle{Problem Setup}% TODO: Is this just the initial condition response + forced response?
 
 Defining
 \noindent\begin{align*}
@@ -66,7 +66,7 @@ Defining
 \end{align*}
 and the block diagonal weight matrices
 \noindent\begin{equation*}
-    \overline{Q}:=\mathrm{blockdiag}(Q,...,Q,P)\quad\mathrm{and}\quad\overline{R}:=\mathrm{blockdiag}(R,...,R)
+    \overline{Q}:=\mathrm{blockdiag}(Q,\dots,Q,P),\; \overline{R}:=\mathrm{blockdiag}(R,\dots,R)
 \end{equation*}
 the finite horizon cost $J(x(0), U) = X^{\top}\bar{Q}X + U^{\top}\bar{R}U$ becomes the positive definite quadratic function in $U$
 \noindent\begin{gather*}
@@ -116,7 +116,7 @@ Hence, for any $j=0\dots N$
 We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$) as the optimal cost attainable for the step $j$ problem
 \noindent\begin{align*}
     J_j^\star(x(j)) & :=\min_{U_{j\to N}}x_N^\top Px_N+\sum_{i=j}^{N-1}(x_i^\top Qx_i+u_i^\top Ru_i) \\
-                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,...,N-1                                 \\
+                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,\dots,N-1                               \\
                     & x_j=x(j)
 \end{align*}
 
@@ -147,6 +147,26 @@ and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
 
 The recursive approach yields a policy instead of a fixed input sequence. Hence, in presence of \textbf{disturbances} or noise, the recursive approach is more robust. Additionally, the problem is broken down into smaller \textbf{subproblems}, avoiding large matrix inversions (Hessian in the batch approach). However, the batch approach is more favorable for \textbf{constrained} problems as constrained minimization can be performed.
 
+\subsubsection{Stability of Finite Horizon LQR}
+
+There are three common choices for the terminal weight $P$ in finite horizon LQR to ensure CL stability.
+\begin{enumerate}
+    \item Choose $P$ s.t.\ it matches the infinite horizon LQR solution
+          \begin{equation*}
+              P=A^\top PA+Q-A^\top PB{(B^\top PB+R)}^{-1}B^\top PA
+          \end{equation*}
+    \item Choose $P$ assuming no control action after the end of the finite horizon
+          \begin{align*}
+              x(k+1)        & =Ax(k),k=N,\dots ,\infty      \\
+              A^{\top}PA +Q & = P\text{ (solve LE for $P$)}
+          \end{align*}
+          This approach only makes sense if the system is asymptotically stable (or no positive definite solution $P$ will exist).
+    \item Force both state and input both to be zero after the end of the finite horizon. No $P$ is needed but the constraint
+          \begin{equation*}
+              x_{i+N} = 0
+          \end{equation*}
+\end{enumerate}
+
 \subsection{Receding Horizon LQR}
 
 Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
@@ -170,7 +190,7 @@ Not only tuning of the weight matrices but also the horizon length can influence
 
 \begin{align*}
     J_\infty(x(0)) & =\min_{u(\cdot)}\sum_{i=0}^\infty\left(x_i^\top Qx_i+u_i^\top Ru_i\right) \\
-                   & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,\quad i=0,1,2,...,\infty,              \\
+                   & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,\quad i=0,1,2,\dots,\infty,            \\
                    & x_0=x(0)
 \end{align*}
 
@@ -184,7 +204,7 @@ Solving the local subproblem yields the optimal control input
 \end{align*}
 The optimal cost-to-go
 \begin{equation*}
-    J_\infty(x(k))=x(k)^\top P_\infty x(k)
+    J_\infty(x(k))={x(k)}^\top P_\infty x(k)
 \end{equation*}
 is the solution of the \textbf{Algebraic Riccati equation (ARE)} where $P_i = P_{i+1} = P_{\infty}$
 \begin{equation*}
@@ -202,10 +222,11 @@ Assuming
 \end{itemize}
 then the RDE (initialized with $Q$ at $i = \infty$ and solved for $i\searrow 0$) converges to $P_{\infty}$.
 
-\newpar{}
-\ptitle{Stability}
+\subsubsection{Stability of Infinite Horizon LQR}
 
 If the technical conditions are fulfilled, the optimal value function $J^{\star} (x) = x^T P_{\infty} x$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.
+
+This can be shown by substituting the CL system into the Lyapunov function $J^{\star} (x)$.
 
 
 
