@@ -149,6 +149,7 @@ The recursive approach yields a policy instead of a fixed input sequence. Hence,
 
 \subsubsection{Stability of Finite Horizon LQR}
 \ptitle{Choice of Terminal Weight}
+
 There are three common choices for the terminal weight $P$ in finite horizon LQR to ensure CL stability.
 \begin{enumerate}
     \item Choose $P$ s.t.\ it matches the infinite horizon LQR solution
@@ -214,7 +215,7 @@ The optimal cost-to-go
 \begin{equation*}
     J_\infty(x(k))={x(k)}^\top P_\infty x(k)
 \end{equation*}
-is the solution of the \textbf{Algebraic Riccati equation (ARE)} where $P_i = P_{i+1} = P_{\infty}$
+uses the solution of the \textbf{Algebraic Riccati equation (ARE)} where $P_i = P_{i+1} = P_{\infty}$
 \begin{equation*}
     P_\infty=A^\top P_\infty A+Q-A^\top P_\infty B{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
 \end{equation*}
@@ -234,7 +235,7 @@ then the RDE (initialized with $Q$ at $i = \infty$ and solved for $i\searrow 0$)
 
 If the technical conditions are fulfilled, the optimal value function $J^{\star} (x) = x^T P_{\infty} x$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.
 
-This can be shown by substituting the CL system into the Lyapunov function $J^{\star} (x)$.
+This can be shown by substituting the CL dynamics into the Lyapunov function $J^{\star} (x)$.
 
 
 
