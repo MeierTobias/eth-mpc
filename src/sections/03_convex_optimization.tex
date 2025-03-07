@@ -1,0 +1,241 @@
+\section{Convex Optimization}
+\subsection{Problem Formulation and Terminology}
+\noindent\begin{align*}
+    \min_{x\in\mathrm{dom}(f)} & f(x)                          \\
+    \text{subj.\ to\;\; }      & g_i(x)\leq0\quad i=1,\ldots,m \\
+                               & h_{i}(x)=0\quad i=1,\ldots,p
+\end{align*}
+where
+\renewcommand{\arraystretch}{1.3}
+\setlength{\oldtabcolsep}{\tabcolsep}\setlength\tabcolsep{3pt}
+
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+    $x=\begin{bmatrix}
+               x_1 & \cdots & x_n
+           \end{bmatrix}^\top$
+                                                                                            & \multicolumn{2}{l}{Decision/optimization variable                                }  \\
+    $f:\;\mathrm{dom}(f) \to \mathbb{R}$                                                    & \multicolumn{2}{l}{Objective function ($\mathrm{dom}(f) \subseteq \mathbb{R}^n$) }  \\
+    $g_i:\;\mathbb{R}^n \to \mathbb{R}$                                                     & \multicolumn{2}{l}{Inequality constraint functions                               }  \\
+    $h_i:\;\mathbb{R}^n \to \mathbb{R}$                                                     & \multicolumn{2}{l}{Equality constraint functions                                  } \\
+    \multicolumn{2}{l}{$\mathcal{X} := \{ x\in \mathrm{dom}(f) | g_i(x)\leq0, h_i(x)=0 \}$} & Feasible set
+\end{tabularx}
+
+\newpar{}
+\ptitle{Terminology}
+\begin{itemize}
+    \item \textbf{Feasible point:} point in the feasible set $\mathcal{X}$
+    \item \textbf{Strictly feasible point:}\newline point in the interior of $\mathcal{X}$ (i.e., $g_i(x)<0$)
+    \item \textbf{Optimal value:} $p^*=f(x^*) = \min\limits_{x\in\mathcal{X}} f(x)$
+    \item \textbf{Optimizer:}\newline $x^*$ that achieves $p^*$ i.e.\ $f(x^*)\leq f(x)\; \forall x\in \mathcal{X}$.\newline Not necessarily unique.
+    \item \textbf{Unbounded below:} $p^*=-\infty$
+    \item \textbf{Infeasible:} $\mathcal{X}=\emptyset$ i.e.\ $p^* = \infty$
+    \item \textbf{Unconstrained:} $\mathcal{X}=\mathbb{R}^n$
+\end{itemize}
+
+\renewcommand{\arraystretch}{1}
+\setlength\tabcolsep{\oldtabcolsep}
+
+\subsubsection{Constraints}
+$g_i(x)$ is \textbf{active} at $\bar{x}$ if $g_i(\bar{x})=0$. Thus, equality constraints are always active.
+
+\newpar{}
+A \textbf{redundant} constraint does not change the feasible set.
+
+\subsubsection{Optimality}
+$x\in \mathcal{X}$ is \textbf{locally optimal} if, for some $R>0$
+\begin{equation*}
+    y\in \mathcal{X},\; {\|x-y\|}<R\quad \Rightarrow\quad f(x)\leq f(y)
+\end{equation*}
+$x\in \mathcal{X}$ is \textbf{globally optimal} if
+\begin{equation*}
+    f(x)\leq f(y)\quad \forall y\in \mathcal{X}
+\end{equation*}
+
+
+\subsection{Convex Sets}
+A set $\mathcal{X}$ is convex if and only if for any pair of points x and y in $\mathcal{X}$:
+\begin{equation*}
+    \lambda x+(1-\lambda)y\in\mathcal{X},\forall\lambda\in[0,1],\forall x,y\in\mathcal{X}
+\end{equation*}
+\subsubsection{Hyperplanes and Halfspaces}
+A \textbf{hyperplane} is defined by $\left\{x \in \mathbb{R}^n \mid a^\top x = b\right\}$ for $a \neq 0$, where $a \in \mathbb{R}^n$ is the normal vector to the hyperplane.
+\newpar{}
+A \textbf{halfspace} is everything on one side of a hyperplane $\left\{x \in \mathbb{R}^n \mid a^\top x \leq b\right\}$ for $a \neq 0$. It can either be open (strict inequality) or closed (non-strict inequality).
+
+\subsubsection{Polyhedra and Polytopes}
+A \textbf{polyhedron} is the intersection of a finite number of closed halfspaces:
+\begin{equation*}
+    P := \left\{ x \mid a_i^\top x \leq b_i, i = 1, \ldots, m \right\} = \left\{ x \mid Ax \leq b \right\}
+\end{equation*}
+where
+\begin{equation*}
+    A := \begin{bmatrix} a_1 & a_2 & \ldots & a_m \end{bmatrix}^\top \quad \text{and} \quad b := \begin{bmatrix} b_1 & b_2 & \ldots & b_m \end{bmatrix}^\top
+\end{equation*}
+\newpar{}
+A \textbf{polytope} is a bounded polyhedron.
+
+\subsubsection{Ellipsoids}
+An ellipsoid is a set defined as
+\begin{equation*}
+    \{x \mid {(x - x_c)}^\top A^{-1}(x - x_c) \leq 1\}
+\end{equation*}
+where $x_c$ is the centre of the ellipsoid, and $A > 0$ (i.e. $A$ is positive definite).
+\subsubsection{Norm Balls}
+The norm ball, defined by $\{x|\;||x-x_{\mathrm{c}}||\leq r\}$ where $x_{\mathrm{c}}$ is the centre of the ball
+and $r\geq0$ is the radius, is always convex for any norm.
+
+
+\subsubsection{Set Operations}
+The intersection of convex sets is convex, whereas the union of convex sets is not necessarily convex.
+\subsection{Convex Functions}
+A function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is convex iff $\text{dom}(f)$ is convex and $\forall x,y \in \text{dom}(f)$
+\begin{equation*}
+    f(\lambda x + (1-\lambda)y) \leq \lambda f(x) + (1-\lambda)f(y),\quad \forall \lambda \in (0,1)
+\end{equation*}
+In words, a line connecting any two points on the graph of the function lies above the graph (epigraph).
+
+\newpar{}
+The function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is strictly convex if this inequality is strict.
+
+\newpar{}
+\ptitle{First Order Condition}
+
+A differentiable function $f: \operatorname{dom}(f) \to \mathbb{R}$ with a convex domain is convex if
+\begin{equation*}
+    f(y) \geq f(x) + \nabla {f(x)}^{\top}(y-x), \quad \forall x, y \in \operatorname{dom}(f)
+\end{equation*}
+
+\newpar{}
+\ptitle{Second Order Condition}
+
+A twice-differentiable function $f : \text{dom}\,(f) \to \mathbb{R}$ with convex domain $\text{dom}\,(f)$ is convex iff
+\begin{equation*}
+    \nabla^2 f(x) \geq 0, \quad \forall x \in \text{dom}\,(f), \quad \nabla^2 {f(x)}_{ij} = \frac{\partial^2 f(x)}{\partial x_i \partial x_j}
+\end{equation*}
+
+\subsubsection{Level and Sublevel Sets}
+The \textbf{level set} $L_{\alpha}$ of a function $f$ for value $\alpha$ is the set of all $x \in \operatorname{dom}(f)$ for which $f(x) = \alpha$:
+\begin{equation*}
+    L_{\alpha} := \{ x | x \in \operatorname{dom}(f),\; f(x) = \alpha \}
+\end{equation*}
+\newpar{}
+For $f:\mathbb{R}^2 \to \mathbb{R}$ these are \textbf{contour lines} of constant height.
+
+The \textbf{sublevel set} $C_{\alpha}$ of a function $f$ for value $\alpha$ is defined by
+\begin{equation*}
+    C_{\alpha} := \{x | x \in \text{dom}(f),\; f(x) \leq \alpha\}
+\end{equation*}
+
+\newpar{}
+$f$ is convex $\Rightarrow$ sublevel sets of $f$ are convex $\forall \alpha$.
+
+\subsubsection{Examples of Convex Functions}
+\ptitle{Convex}
+\begin{itemize}
+    \item Affine functions: $ Ax + b,\; \forall a,b\in \mathbb{R}$
+    \item Exponential functions: $e^{ax}\; \forall a\in \mathbb{R}$
+    \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $\alpha \leq 0, \alpha \geq1$
+    \item Vector norms on $\mathbb{R}^n$: $||x||_p$
+\end{itemize}
+\newpar{}
+\ptitle{Convexitys Preserving Operations}
+\begin{itemize}
+    \item Nonnegative weighted sums: $\sum_{i=1}^{n} \theta_i f_i(x)$ for $\theta_i \geq 0$
+    \item Composition with an affine function: $f(Ax+b)$
+    \item Pointwise maximum/supremum: $\max(f_1(x),f_2(x))$
+    \item Partial minimization
+\end{itemize}
+
+\newpar{}
+\ptitle{Concave}
+
+\begin{itemize}
+    \item Affine functions: $ Ax + b$
+    \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $0\leq\alpha \leq 1$
+    \item Logarithm: $\log(x)$ on domain $\mathbb{R}_{++}$
+    \item Entropy: $-x\log(x)$ on domain $\mathbb{R}_{++}$
+\end{itemize}
+
+\subsection{Convex Optimization Problems}
+\noindent\begin{align*}
+    \min_{x\in\mathrm{dom}(f)} & f(x)                                   \\
+    \text{subj.\ to\;\; }      & g_i(x)\leq0\quad i=1,\ldots,m          \\
+                               & Ax =b\quad A\in \mathbb{R}^{p\times m}
+\end{align*}
+\begin{equation*}
+    \begin{cases}
+        f,g             & \text{convex functions} \\
+        \mathrm{dom}(f) & \text{convex set}       \\
+        Ax=b            & \text{affine functions}
+    \end{cases}
+\end{equation*}
+As a result, the feasible set $\mathcal{X}$ is convex.
+
+\subsubsection{Local and Global Optimality}
+For any convex optimization problem, any local optimal solution is globally optimal.
+
+\subsubsection{Equivalent Optimization Problems}
+\ptitle{Equality Constraints}
+\begin{align*}
+    \min\;           & f(A_0x + b_0)                               \\
+    \mathrm{s.t.} \; & g_i(A_i x + b_i) \leq 0 &  & i = 1,\ldots,m
+\end{align*}
+
+is equivalent to
+\begin{align*}
+    \min\;          & f(y_0)                                   \\
+    \mathrm{s.t.}\; & g_i(y_i) \leq 0,   &  & i = 1,\ldots,m   \\
+                    & A_i x + b_i = y_i, &  & i = 0,1,\ldots,m
+\end{align*}
+
+\ptitle{Slack Variables}
+\begin{align*}
+    \min\;          & f(x)                                \\
+    \mathrm{s.t.}\; & A_i x \leq b_i, &  & i = 1,\ldots,m
+\end{align*}
+is equivalent to
+\begin{align*}
+    \min\;          & f(x)                                 \\
+    \mathrm{s.t.}\; & A_i x +s_i= b_i, &  & i = 1,\ldots,m \\
+                    & s_i \geq 0,      &  & i = 1,\ldots,m
+\end{align*}
+
+\subsubsection{Linear Program (LP)}
+\begin{align*}
+    \min\;          & c^\top x  \\
+    \mathrm{s.t.}\; & Gx \leq h \\
+                    & Ax = b
+\end{align*}
+where the feasible set $\mathcal{P}$ is a polyhedron (convex).
+
+\newpar{}
+Generally, three cases can occur:
+\begin{enumerate}
+    \item \textbf{Unbounded} $\mathcal{P}$ is unbounded below
+    \item \textbf{Bounded with unique optimizer}
+    \item \textbf{Bounded with multiple optimizers}
+\end{enumerate}
+\begin{center}
+    \includegraphics[width=\linewidth]{images/03_LP_cases.png}
+\end{center}
+
+\subsubsection{Quadratic Program (QP)}
+\begin{align*}
+    \min\;          & \frac{1}{2}x^\top H x + q^\top x + r \\
+    \mathrm{s.t.}\; & Gx \leq h                            \\
+                    & Ax = b
+\end{align*}
+where $H$ is positive semi-definite ($H\succeq 0$).
+
+\newpar{}
+Generally, two cases can occur:
+\begin{enumerate}
+    \item \textbf{Case 1}: optimizer lies strictly inside the feasible polyhedron
+    \item \textbf{Case 2}: optimizer lies on the boundary of the feasible polyhedron
+\end{enumerate}
+\begin{center}
+    \includegraphics[width=\linewidth]{images/03_QP_cases.png}
+\end{center}
+
+
+\subsection{Optimality Conditions}
