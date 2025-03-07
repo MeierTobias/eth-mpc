@@ -148,7 +148,7 @@ and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
 The recursive approach yields a policy instead of a fixed input sequence. Hence, in presence of \textbf{disturbances} or noise, the recursive approach is more robust. Additionally, the problem is broken down into smaller \textbf{subproblems}, avoiding large matrix inversions (Hessian in the batch approach). However, the batch approach is more favorable for \textbf{constrained} problems as constrained minimization can be performed.
 
 \subsubsection{Stability of Finite Horizon LQR}
-
+\ptitle{Choice of Terminal Weight}
 There are three common choices for the terminal weight $P$ in finite horizon LQR to ensure CL stability.
 \begin{enumerate}
     \item Choose $P$ s.t.\ it matches the infinite horizon LQR solution
@@ -167,22 +167,30 @@ There are three common choices for the terminal weight $P$ in finite horizon LQR
           \end{equation*}
 \end{enumerate}
 
-\subsection{Receding Horizon LQR}
-
-Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
-
-\begin{center}
-    \includegraphics[width = 0.8\linewidth]{receding_LQR.png}
-\end{center}
-
 \newpar{}
-\ptitle{Stability of Finite Horizon Control Law}
+\ptitle{Horizon Length}
 
 Not only tuning of the weight matrices but also the horizon length can influence stability of the control law.
 
 \begin{center}
     \includegraphics[width = 0.6\linewidth]{horizon_stability.png}
 \end{center}
+
+\subsection{Receding Horizon LQR}
+
+Receding horizon control calculates OL control sequences, yet introducing FB through repeated calculation, which takes the actual state evolution into account.
+
+\begin{center}
+    \includegraphics[width = 0.8\linewidth]{receding_LQR.png}
+\end{center}
+
+\subsubsection{Stability of Receding Horizon LQR}
+
+Depending on the specific situation
+\begin{itemize}
+    \item receding horizon \textit{can} result in a stable CL trajectory with a horizon length that would yield an unstable trajectory in the OL case. However, receding horizon LQR does \textbf{not} guarantee a stable CL in general.
+    \item OL control can be sufficient to achieve stability, i.e.\ receding horizon is not always needed in theory.
+\end{itemize}
 
 \subsection{Infinite Horizon LQR}
 
