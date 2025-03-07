@@ -29,7 +29,7 @@ In practice, the optimization variables include also $x_0, x_1, \dots, x_N$.
 The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$. A constrained problem could theoretically still yield a solution through matrix inversion, which however might be unfeasible.
 
 \newpar{}
-\ptitle{Problem Setup}% TODO: Is this just the initial condition response + forced response?
+\ptitle{Problem Setup}% Is this just the initial condition response + forced response? yes: this is just the state evolution under the control input u
 
 Defining
 \noindent\begin{align*}
@@ -105,7 +105,7 @@ Bellman's Principle of Optimality justifies the recursive approach, stating that
 
 Hence, for any $j=0\dots N$
 \begin{align*}
-    J_{j}^{\star}(x_{j})     & =\min_{u_{j}}I(x_{i},u_{i})+J_{j+1}^{\star}(x_{j+1}) \\
+    J_{j}^{\star}(x_{j})     & =\min_{u_{j}}J(x_{i},u_{i})+J_{j+1}^{\star}(x_{j+1}) \\
     \text{subj.\ to }x_{j+1} & =Ax_{j}+Bu_{j}
 \end{align*}
 
@@ -131,7 +131,7 @@ Solving the local subproblem yields the optimal control input
 
 The optimal cost-to-go is
 \noindent\begin{equation*}
-    J_{i}^{\star}(x_{i})  = x_{i}^{\top}P_{i}x_{i}
+    J_{i}^{\star}(x_{i})  = {x(i)}^{\top}P_{i}x(i)
 \end{equation*}
 with cost matrices found from the Discrete Time Riccati equation / \textbf{Riccati Difference equation} (\textbf{RDE}):
 \noindent\begin{align*}
@@ -145,7 +145,20 @@ and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
 
 \subsubsection{Comparison: Batch vs.\ Recursive Approach}
 
-The recursive approach yields a policy instead of a fixed input sequence. Hence, in presence of \textbf{disturbances} or noise, the recursive approach is more robust. Additionally, the problem is broken down into smaller \textbf{subproblems}, avoiding large matrix inversions (Hessian in the batch approach). However, the batch approach is more favorable for \textbf{constrained} problems as constrained minimization can be performed.
+\ptitle{Batch Approach}
+\begin{itemize}
+    \item open-loop control sequence
+    \item [+] Allows for constraints
+    \item [-] large matrix inversions
+\end{itemize}
+
+\newpar{}
+\ptitle{Recursive Approach}
+\begin{itemize}
+    \item [+] feedback policy $\to$ disturbance robustness
+\end{itemize}
+
+% The recursive approach yields a policy instead of a fixed input sequence. Hence, in presence of \textbf{disturbances} or noise, the recursive approach is more robust. Additionally, the problem is broken down into smaller \textbf{subproblems}, avoiding large matrix inversions (Hessian in the batch approach). However, the batch approach is more favorable for \textbf{constrained} problems as constrained minimization can be performed.
 
 \subsubsection{Stability of Finite Horizon LQR}
 
@@ -169,7 +182,8 @@ There are three common choices for the terminal weight $P$ in finite horizon LQR
 
 \subsection{Receding Horizon LQR}
 
-Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
+% Read the picture
+% Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
 
 \begin{center}
     \includegraphics[width = 0.8\linewidth]{receding_LQR.png}
@@ -178,7 +192,7 @@ Receding horizon control calculates open-loop control sequences, yet introducing
 \newpar{}
 \ptitle{Stability of Finite Horizon Control Law}
 
-Not only tuning of the weight matrices but also the horizon length can influence stability of the control law.
+Stability depends on the choice of the weight matrices $Q, R, P$ and the horizon length $N$.
 
 \begin{center}
     \includegraphics[width = 0.6\linewidth]{horizon_stability.png}
@@ -188,7 +202,7 @@ Not only tuning of the weight matrices but also the horizon length can influence
 
 \ptitle{Problem Setup}
 
-\begin{align*}
+\noindent\begin{align*}
     J_\infty(x(0)) & =\min_{u(\cdot)}\sum_{i=0}^\infty\left(x_i^\top Qx_i+u_i^\top Ru_i\right) \\
                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,\quad i=0,1,2,\dots,\infty,            \\
                    & x_0=x(0)
@@ -202,15 +216,15 @@ Solving the local subproblem yields the optimal control input
     u^\star(k) & = F_\infty x(k)                                       \\
     F_\infty   & := -{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty Ax(k)
 \end{align*}
-The optimal cost-to-go
+The optimal cost-to-go is
 \begin{equation*}
     J_\infty(x(k))={x(k)}^\top P_\infty x(k)
 \end{equation*}
-is the solution of the \textbf{Algebraic Riccati equation (ARE)} where $P_i = P_{i+1} = P_{\infty}$
+where $P_\infty$ is the solution of the \textbf{Algebraic Riccati equation (ARE)} ($P_i = P_{i+1} = P_{\infty}$)
 \begin{equation*}
     P_\infty=A^\top P_\infty A+Q-A^\top P_\infty B{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
 \end{equation*}
-is \textbf{unique} and \textbf{positive definite}.
+
 
 \newpar{}
 \ptitle{Technical Conditions}
@@ -220,11 +234,11 @@ Assuming
     \item $(A,B)$ stabilizable
     \item $(Q^{\frac{1}{2}}, A)$ detectable,
 \end{itemize}
-then the RDE (initialized with $Q$ at $i = \infty$ and solved for $i\searrow 0$) converges to $P_{\infty}$.
+then the RDE (initialized with $Q$ at $i = \infty$ and solved for $i\searrow 0$) converges to the \textbf{unique positive definite} solution $P_{\infty}$.
 
 \subsubsection{Stability of Infinite Horizon LQR}
 
-If the technical conditions are fulfilled, the optimal value function $J^{\star} (x) = x^T P_{\infty} x$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.
+If the technical conditions are fulfilled, the optimal value function $J^{\star} (x) = x^T P_{\infty} x = V(x)$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.
 
 This can be shown by substituting the CL system into the Lyapunov function $J^{\star} (x)$.
 
