@@ -53,14 +53,24 @@ $x\in \mathcal{X}$ is \textbf{globally optimal} if
 
 
 \subsection{Convex Sets}
-A set $\mathcal{X}$ is convex if and only if for any pair of points x and y in $\mathcal{X}$:
+A set $\mathcal{X}$ is convex \textbf{iff} for any pair of points $x$ and $y$ in $\mathcal{X}$:
 \begin{equation*}
     \lambda x+(1-\lambda)y\in\mathcal{X},\forall\lambda\in[0,1],\forall x,y\in\mathcal{X}
 \end{equation*}
+\newpar{}
+\ptitle{Convex Combination}
+
+Any point $x$ of the form
+\begin{equation*}
+    x=\theta_1x_1+\theta_2x_2+...+\theta_k x_k\mathrm{~with~}\theta_1+...+\theta_k=1,\theta_i\geq0
+\end{equation*}
+is called convex combination of $x_1,\cdots,x_k$.
 \subsubsection{Hyperplanes and Halfspaces}
 A \textbf{hyperplane} is defined by $\left\{x \in \mathbb{R}^n \mid a^\top x = b\right\}$ for $a \neq 0$, where $a \in \mathbb{R}^n$ is the normal vector to the hyperplane.
 \newpar{}
 A \textbf{halfspace} is everything on one side of a hyperplane $\left\{x \in \mathbb{R}^n \mid a^\top x \leq b\right\}$ for $a \neq 0$. It can either be open (strict inequality) or closed (non-strict inequality).
+\newpar{}
+Hyperplanes are affine and convex, halfspaces are convex.
 
 \subsubsection{Polyhedra and Polytopes}
 A \textbf{polyhedron} is the intersection of a finite number of closed halfspaces:
@@ -73,22 +83,27 @@ where
 \end{equation*}
 \newpar{}
 A \textbf{polytope} is a bounded polyhedron.
-
+\newpar{}
+Polyhedra and polytopes are always convex.
 \subsubsection{Ellipsoids}
 An ellipsoid is a set defined as
 \begin{equation*}
     \{x \mid {(x - x_c)}^\top A^{-1}(x - x_c) \leq 1\}
 \end{equation*}
 where $x_c$ is the centre of the ellipsoid, and $A > 0$ (i.e. $A$ is positive definite).
+
 \subsubsection{Norm Balls}
 The norm ball, defined by $\{x|\;||x-x_{\mathrm{c}}||\leq r\}$ where $x_{\mathrm{c}}$ is the centre of the ball
 and $r\geq0$ is the radius, is always convex for any norm.
+\newpar{}
+\ptitle{Euclidian Ball}
 
+The Euclidean ball $B(x_c,r)$ is a special case of the ellipsoid, for which $A=r^2 \mathbb{I}$, so that $B(x_c,r):=\{x| \|x-x_c\|_2\leq r\}$
 
 \subsubsection{Set Operations}
 The intersection of convex sets is convex, whereas the union of convex sets is not necessarily convex.
 \subsection{Convex Functions}
-A function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is convex iff $\text{dom}(f)$ is convex and $\forall x,y \in \text{dom}(f)$
+A function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is convex \textbf{iff} $\text{dom}(f)$ is convex and $\forall x,y \in \text{dom}(f)$
 \begin{equation*}
     f(\lambda x + (1-\lambda)y) \leq \lambda f(x) + (1-\lambda)f(y),\quad \forall \lambda \in (0,1)
 \end{equation*}
@@ -98,19 +113,28 @@ In words, a line connecting any two points on the graph of the function lies abo
 The function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is strictly convex if this inequality is strict.
 
 \newpar{}
+The function $f$ is \textbf{concave} \textbf{iff} $\operatorname{dom}(f)$ is convex and $-f$ is convex.
+
+\newpar{}
 \ptitle{First Order Condition}
 
-A differentiable function $f: \operatorname{dom}(f) \to \mathbb{R}$ with a convex domain is convex if
+A differentiable function $f: \operatorname{dom}(f) \to \mathbb{R}$ with a convex domain is convex \textbf{iff}
 \begin{equation*}
     f(y) \geq f(x) + \nabla {f(x)}^{\top}(y-x), \quad \forall x, y \in \operatorname{dom}(f)
 \end{equation*}
+i.e.\ the first-order approximation must be a global underestimator.
 
 \newpar{}
 \ptitle{Second Order Condition}
 
-A twice-differentiable function $f : \text{dom}\,(f) \to \mathbb{R}$ with convex domain $\text{dom}\,(f)$ is convex iff
+A twice-differentiable function $f : \text{dom}\,(f) \to \mathbb{R}$ with convex domain $\text{dom}\,(f)$ is convex \textbf{iff}
 \begin{equation*}
     \nabla^2 f(x) \geq 0, \quad \forall x \in \text{dom}\,(f), \quad \nabla^2 {f(x)}_{ij} = \frac{\partial^2 f(x)}{\partial x_i \partial x_j}
+\end{equation*}
+\newpar{}
+$f$ is called \textbf{strictly convex} if $\text{dom}(f)$ is convex and the Hessian fulfills
+\begin{equation*}
+    \nabla^2 f(x) > 0, \quad \forall x\in \operatorname{dom}(f)
 \end{equation*}
 
 \subsubsection{Level and Sublevel Sets}
@@ -129,19 +153,25 @@ The \textbf{sublevel set} $C_{\alpha}$ of a function $f$ for value $\alpha$ is d
 \newpar{}
 $f$ is convex $\Rightarrow$ sublevel sets of $f$ are convex $\forall \alpha$.
 
+But, sublevel sets of $f$ are convex $\forall \alpha \nRightarrow f$ is convex.
+
 \subsubsection{Examples of Convex Functions}
 \ptitle{Convex}
 \begin{itemize}
-    \item Affine functions: $ Ax + b,\; \forall a,b\in \mathbb{R}$
+    \item Affine functions: $ ax + b,\; \forall a,b\in \mathbb{R}$
     \item Exponential functions: $e^{ax}\; \forall a\in \mathbb{R}$
     \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $\alpha \leq 0, \alpha \geq1$
-    \item Vector norms on $\mathbb{R}^n$: $||x||_p$
+    \item Vector norms on $\mathbb{R}^n$:
+          \begin{align*}
+              ||x||_p      & =(\sum_{i=1}^n|x|^p)^{1/p},\mathrm{~for~}p\geq1 \\
+              ||x||_\infty & =\max_i|x_i|
+          \end{align*}
 \end{itemize}
 \newpar{}
 \ptitle{Convexitys Preserving Operations}
 \begin{itemize}
     \item Nonnegative weighted sums: $\sum_{i=1}^{n} \theta_i f_i(x)$ for $\theta_i \geq 0$
-    \item Composition with an affine function: $f(Ax+b)$
+    \item Composition with an affine function: $f(ax+b)$
     \item Pointwise maximum/supremum: $\max(f_1(x),f_2(x))$
     \item Partial minimization
 \end{itemize}
@@ -150,7 +180,7 @@ $f$ is convex $\Rightarrow$ sublevel sets of $f$ are convex $\forall \alpha$.
 \ptitle{Concave}
 
 \begin{itemize}
-    \item Affine functions: $ Ax + b$
+    \item Affine functions: $ ax + b$
     \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $0\leq\alpha \leq 1$
     \item Logarithm: $\log(x)$ on domain $\mathbb{R}_{++}$
     \item Entropy: $-x\log(x)$ on domain $\mathbb{R}_{++}$
@@ -158,15 +188,16 @@ $f$ is convex $\Rightarrow$ sublevel sets of $f$ are convex $\forall \alpha$.
 
 \subsection{Convex Optimization Problems}
 \noindent\begin{align*}
-    \min_{x\in\mathrm{dom}(f)} & f(x)                                   \\
-    \text{subj.\ to\;\; }      & g_i(x)\leq0\quad i=1,\ldots,m          \\
-                               & Ax =b\quad A\in \mathbb{R}^{p\times m}
+    \min_{x\in\mathrm{dom}(f)} & f(x)                                     \\
+    \text{subj.\ to\;\; }      & g_i(x)\leq0\quad i=1,\ldots,m            \\
+                               & a_i^{\top} x=b_i \quad i=1,\ldots,p      \\
+                               & (Ax =b\quad A\in \mathbb{R}^{p\times n})
 \end{align*}
 \begin{equation*}
     \begin{cases}
-        f,g             & \text{convex functions} \\
-        \mathrm{dom}(f) & \text{convex set}       \\
-        Ax=b            & \text{affine functions}
+        f,g_i                    & \text{convex functions} \\
+        \mathrm{dom}(f)          & \text{convex set}       \\
+        h_i(x) = a_i^{\top} x -b & \text{affine functions}
     \end{cases}
 \end{equation*}
 As a result, the feasible set $\mathcal{X}$ is convex.
@@ -175,20 +206,21 @@ As a result, the feasible set $\mathcal{X}$ is convex.
 For any convex optimization problem, any local optimal solution is globally optimal.
 
 \subsubsection{Equivalent Optimization Problems}
-\ptitle{Equality Constraints}
+Two problems are called equivalent if the solution to one can be (easily) inferred from the solution to the other, and vice versa.
+\newpar{}
+\ptitle{Introducing Equality Constraints}
 \begin{align*}
     \min\;           & f(A_0x + b_0)                               \\
     \mathrm{s.t.} \; & g_i(A_i x + b_i) \leq 0 &  & i = 1,\ldots,m
 \end{align*}
-
 is equivalent to
 \begin{align*}
     \min\;          & f(y_0)                                   \\
     \mathrm{s.t.}\; & g_i(y_i) \leq 0,   &  & i = 1,\ldots,m   \\
                     & A_i x + b_i = y_i, &  & i = 0,1,\ldots,m
 \end{align*}
-
-\ptitle{Slack Variables}
+\newpar{}
+\ptitle{Introducing Slack Variables}
 \begin{align*}
     \min\;          & f(x)                                \\
     \mathrm{s.t.}\; & A_i x \leq b_i, &  & i = 1,\ldots,m
@@ -202,33 +234,37 @@ is equivalent to
 
 \subsubsection{Linear Program (LP)}
 \begin{align*}
-    \min\;          & c^\top x  \\
-    \mathrm{s.t.}\; & Gx \leq h \\
-                    & Ax = b
+    \min_{x\in\mathbb{R}^n}\; & c^\top x  \\
+    \mathrm{s.t.}\;           & Gx \leq h \\
+                              & Ax = b
 \end{align*}
 where the feasible set $\mathcal{P}$ is a polyhedron (convex).
 
 \newpar{}
-Generally, three cases can occur:
+For the set of optimizers $\mathcal{X}_{opt}$, generally, three cases can occur:
 \begin{enumerate}
     \item \textbf{Unbounded} $\mathcal{P}$ is unbounded below
-    \item \textbf{Bounded with unique optimizer}
-    \item \textbf{Bounded with multiple optimizers}
+    \item \textbf{Bounded with unique optimizer}: $\mathcal{X}_{opt}$ is a \textbf{singleton}
+    \item \textbf{Bounded with multiple optimizers}: $\mathcal{X}_{opt}$ is a (bounded or unbounded) subset of $\mathbb{R}^s$. In this case, the solution is sensitive to noise.       % TODO: Why "s"?
 \end{enumerate}
 \begin{center}
     \includegraphics[width=\linewidth]{images/03_LP_cases.png}
 \end{center}
 
 \subsubsection{Quadratic Program (QP)}
+The general QP
 \begin{align*}
-    \min\;          & \frac{1}{2}x^\top H x + q^\top x + r \\
-    \mathrm{s.t.}\; & Gx \leq h                            \\
-                    & Ax = b
+    \min_{x\in\mathbb{R}^n}\; & \frac{1}{2}x^\top H x + q^\top x + r \\
+    \mathrm{s.t.}\;           & Gx \leq h                            \\
+                              & Ax = b
 \end{align*}
-where $H$ is positive semi-definite ($H\succeq 0$).
+is convex if $H>0$.
+\newpar{}
+Problems with concave objective $H<0$ are quadratic programs, but hard.
+% where $H$ is positive semi-definite ($H\succeq 0$).       % TODO: Where is this from? It's basically everything except for the lecture content :O.
 
 \newpar{}
-Generally, two cases can occur:
+If feasible, in general two cases can occur:
 \begin{enumerate}
     \item \textbf{Case 1}: optimizer lies strictly inside the feasible polyhedron
     \item \textbf{Case 2}: optimizer lies on the boundary of the feasible polyhedron
@@ -236,6 +272,5 @@ Generally, two cases can occur:
 \begin{center}
     \includegraphics[width=\linewidth]{images/03_QP_cases.png}
 \end{center}
-
 
 \subsection{Optimality Conditions}
