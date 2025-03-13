@@ -1,7 +1,8 @@
 \section{Constraint Finite Time Optimal Control (CFTOC)}
 
-The general CFTOC problem is given by
+\subsection{Constraint Linear Optimal Control}
 
+For a linear model the CFTOC problem is given by
 \begin{align*}
     J^*(x(k)) =            & \min_U \: I_f(x_N) + \sum_{i=0}^{N-1}I(x_i,u_i)                    \\
     \text{subject to}\quad & x_{i+1} = Ax_i +Bu_i, \quad i = 0, \ldots, N-1                     \\
@@ -9,19 +10,160 @@ The general CFTOC problem is given by
                            & x_N \in \mathcal{X}_f                                              \\
                            & x_0 = x(k)
 \end{align*}
-where $I(x_i,u_i)$ is the stage cost, $I_f(x_N)$ represents an approximation of the tail cost and $\mathcal{X}_f$ of the tail constraints, respectively.
+where $I(x_i,u_i)$ is the stage cost, $I_f(x_N)$ represents an approximation of the tail cost and $\mathcal{X}_f$ of the tail constraints, respectively. $N$ is the time horizon and $\mathcal{X,U,X}_f$ are polyhedral regions.
 
-\subsection{Constraint Linear Optimal Control}
+\newpar{}
+\ptitle{Feasible Set}
+
+The feasible set describes a set of states for which the optimal control problem is feasible:
+\begin{align*}
+    \mathcal{X}_N = & \left\{ x_0 \in \mathbb{R}^n | \exists\left(u_0, \ldots, u_{N-1}\right) \text{such that } x_i\in\mathcal{X}, u_i\in\mathcal{U} \right. \\
+                    & \left.i=0,\ldots, N-1, x_N\in\mathcal{X}_f, \text{where } x_{i+1}=Ax_i + Bu_i\right\}
+\end{align*}
+
+Or in other words, the feasible set describes initial conditions from which it is possible to get into the final set $\mathcal{X}_f$ within $N-1$ steps.
 
 \subsubsection{Quadratic Cost}
 
+The cost function that incorporates a squared euclidean norm is composed of
+\begin{align*}
+    I_f(x_N)   & = x_N^T P x_N                     \\
+    I(x_i,U_i) & = x_i^\top Q x_i + u_i^\top R u_i
+\end{align*}
+with $P\succeq0, Q\succeq0, R\succ0$.
+
+\newpar{}
+
+The quadratic cost CFTOC problem
+\begin{align*}
+    J^*(x(k)) =            & \min_U \: x_N^T P x_N + \sum_{i=0}^{N-1}x_i^\top Q x_i + u_i^\top R u_i \\
+    \text{subject to}\quad & x_{i+1} = Ax_i +Bu_i, \quad i = 0, \ldots, N-1                          \\
+                           & x_i \in \mathcal{X}, u_i \in \mathcal{U}, \quad i = 0, \ldots, N-1      \\
+                           & x_N \in \mathcal{X}_f                                                   \\
+                           & x_0 = x(k)
+\end{align*}
+
+can be transformed into a QP problem
+\begin{align*}
+    \min_{z\in\mathbb{R}^n} & \frac{1}{2}z^\top Hz + q^\top z + r \\
+    \text{subject to}\quad  & Gz \leq h                           \\
+                            & Az = b
+\end{align*}
+
+either with or without substitution of the future states $X$.
+
 \paragraph{Construction of QP without Substitution}
+
+This approach keeps the state equations as equality constraints. The CFTOC problem is transformed into the QP problem
+\begin{align*}
+    J^*(x(k)) =            & \min_{z}\begin{bmatrix}
+                                         z^\top & x(t)
+                                     \end{bmatrix}
+    \begin{bmatrix}
+        \bar{H} & 0 \\
+        0       & Q
+    \end{bmatrix}
+    \begin{bmatrix}
+        z^\top & x(k)^\top
+    \end{bmatrix}^\top                                         \\
+    \text{subject to}\quad & G_{in} z \leq w_{in} +E_{in} x(k) \\
+                           & G_{eq} z = E_{eq} x(k)
+\end{align*}
+where
+\begin{equation*}
+    z = \begin{bmatrix}
+        x_1^\top & \cdots & x_N^\top & u_0^\top & \cdots & u_{N-1}^\top
+    \end{bmatrix}^\top
+\end{equation*}
+the equalities are given from the system dynamics
+\begin{equation*}
+    x_{i+1} = Ax_i + Bu_i
+\end{equation*}
+resulting in
+\begin{gather*}
+    G_{eq} = \left[
+        \begin{array}{cccc|cccc} % ChkTex 44
+            I  &   &        &   & -B &    &        &    \\
+            -A & I &        &   &    & -B &        &    \\
+               &   & \ddots &   &    &    & \ddots &    \\
+               &   & -A     & I &    &    &        & -B
+        \end{array}
+        \right] \\
+    E_{eq} = \begin{bmatrix}
+        A & 0 & \cdots & 0
+    \end{bmatrix}^\top
+\end{gather*}
+
+The inequalities
+\begin{equation*}
+    G_{in} z \leq w_{in} + E_{in} x(k)
+\end{equation*}
+given by
+\begin{gather*}
+    \mathcal{X} = \{x|A_x x \leq b_x\} \\
+    \mathcal{U} = \{u|A_u u \leq b_u\} \\
+    \mathcal{X}_f = \{x|A_f x \leq b_f\}
+\end{gather*}
+are constructed as
+\begin{gather*}
+    G_{in} = \left[
+        \begin{array}{cccc|cccc} % ChkTex 44
+            0   &        &     &     & 0   &        &        &     \\
+            \hline % ChkTex 44
+            A_x &        &     &     & 0   &        &        &     \\
+                & \ddots &     &     &     & \ddots &        &     \\
+                &        & A_x &     &     &        & 0      &     \\
+                &        &     & A_f &     &        &        & 0   \\
+            \hline % ChkTex 44
+            0   &        &     &     & A_u &        &        &     \\
+                & \ddots &     &     &     & A_u    &        &     \\
+                &        & 0   &     &     &        & \ddots &     \\
+                &        &     & 0   &     &        &        & A_u
+        \end{array}
+        \right]\\
+    w_{in} = \left[
+        \begin{array}{ccccc|ccccc} % ChkTex 44
+            b_x & b_x & \cdots & b_x & b_f & b_u & b_u & \cdots & b_u & b_u
+        \end{array}^\top
+        \right]\\
+    E_{in} =\begin{bmatrix}
+        -A_x^\top & 0 & \cdots & 0
+    \end{bmatrix}^\top
+\end{gather*}
+and finally the cost matrix $\bar{H}$ is
+\begin{equation*}
+    \bar{H} = \left[
+        \begin{array}{cccc|cccc} % ChkTex 44
+            Q &        &   &   &   &        &   \\
+              & \ddots &   &   &   &        &   \\
+              &        & Q &   &   &        &   \\
+              &        &   & P &   &        &   \\
+            \hline % ChkTex 44
+              &        &   &   & R &        &   \\
+              &        &   &   &   & \ddots &   \\
+              &        &   &   &   &        & R
+        \end{array}
+        \right]
+\end{equation*}
+
+This can be constructed using the Matlab function
+
+\begin{small}
+    \texttt{barH = blkdiag(kron(eye(N-1),Q),P,kron(eye(N),R))}
+\end{small}
 
 \paragraph{Construction of QP with Substitution}
 
 \paragraph{State Feedback Solution}
 
 \subsubsection[1-Norm and Inf-Norm Cost]{1-Norm and $\infty$-Norm Cost}
+
+The cost function that incorporates the $p=1$ or $p=\infty$ norm is composed of
+\begin{align*}
+    I_f(x_N)   & = {\lVert Px_N \rVert}_p                          \\
+    I(x_i,U_i) & = {\lVert Qx_i \rVert}_p + {\lVert Ru_i \rVert}_p
+\end{align*}
+with $P,Q,R$ having full column rank.
 
 \paragraph{Construction of LP with Substitution}
 
