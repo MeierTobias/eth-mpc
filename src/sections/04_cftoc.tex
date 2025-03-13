@@ -1,0 +1,28 @@
+\section{Constraint Finite Time Optimal Control (CFTOC)}
+
+The general CFTOC problem is given by
+
+\begin{align*}
+    J^*(x(k)) =            & \min_U \: I_f(x_N) + \sum_{i=0}^{N-1}I(x_i,u_i)                    \\
+    \text{subject to}\quad & x_{i+1} = Ax_i +Bu_i, \quad i = 0, \ldots, N-1                     \\
+                           & x_i \in \mathcal{X}, u_i \in \mathcal{U}, \quad i = 0, \ldots, N-1 \\
+                           & x_N \in \mathcal{X}_f                                              \\
+                           & x_0 = x(k)
+\end{align*}
+where $I(x_i,u_i)$ is the stage cost, $I_f(x_N)$ represents an approximation of the tail cost and $\mathcal{X}_f$ of the tail constraints, respectively.
+
+\subsection{Constraint Linear Optimal Control}
+
+\subsubsection{Quadratic Cost}
+
+\paragraph{Construction of QP without Substitution}
+
+\paragraph{Construction of QP with Substitution}
+
+\paragraph{State Feedback Solution}
+
+\subsubsection[1-Norm and Inf-Norm Cost]{1-Norm and $\infty$-Norm Cost}
+
+\paragraph{Construction of LP with Substitution}
+
+\paragraph{State Feedback Solution}
