@@ -161,6 +161,7 @@ and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
 % The recursive approach yields a policy instead of a fixed input sequence. Hence, in presence of \textbf{disturbances} or noise, the recursive approach is more robust. Additionally, the problem is broken down into smaller \textbf{subproblems}, avoiding large matrix inversions (Hessian in the batch approach). However, the batch approach is more favorable for \textbf{constrained} problems as constrained minimization can be performed.
 
 \subsubsection{Stability of Finite Horizon LQR}
+\ptitle{Choice of Terminal Weight}
 
 There are three common choices for the terminal weight $P$ in finite horizon LQR to ensure CL stability.
 \begin{enumerate}
@@ -182,7 +183,6 @@ There are three common choices for the terminal weight $P$ in finite horizon LQR
 
 \subsection{Receding Horizon LQR}
 
-% Read the picture
 % Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
 
 \begin{center}
@@ -190,13 +190,29 @@ There are three common choices for the terminal weight $P$ in finite horizon LQR
 \end{center}
 
 \newpar{}
-\ptitle{Stability of Finite Horizon Control Law}
+\ptitle{Horizon Length}
 
 Stability depends on the choice of the weight matrices $Q, R, P$ and the horizon length $N$.
 
 \begin{center}
     \includegraphics[width = 0.6\linewidth]{horizon_stability.png}
 \end{center}
+
+\subsection{Receding Horizon LQR}
+
+Receding horizon control calculates OL control sequences, yet introducing FB through repeated calculation, which takes the actual state evolution into account.
+
+\begin{center}
+    \includegraphics[width = 0.8\linewidth]{receding_LQR.png}
+\end{center}
+
+\subsubsection{Stability of Receding Horizon LQR}
+
+Depending on the specific situation
+\begin{itemize}
+    \item receding horizon \textit{can} result in a stable CL trajectory with a horizon length that would yield an unstable trajectory in the OL case. However, receding horizon LQR does \textbf{not} guarantee a stable CL in general.
+    \item OL control can be sufficient to achieve stability, i.e.\ receding horizon is not always needed in theory.
+\end{itemize}
 
 \subsection{Infinite Horizon LQR}
 
@@ -240,7 +256,7 @@ then the RDE (initialized with $Q$ at $i = \infty$ and solved for $i\searrow 0$)
 
 If the technical conditions are fulfilled, the optimal value function $J^{\star} (x) = x^T P_{\infty} x = V(x)$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.
 
-This can be shown by substituting the CL system into the Lyapunov function $J^{\star} (x)$.
+This can be shown by substituting the CL dynamics into the Lyapunov function $J^{\star} (x)$.
 
 
 
