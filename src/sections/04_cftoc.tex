@@ -50,9 +50,9 @@ can be transformed into a QP problem
                             & Az = b
 \end{align*}
 
-either with or without substitution of the future states $X$.
+either with (\ref{cftoc_QP_with_subs}) or without (\ref{cftoc_QP_without_subs}) substitution of the future states $X$.
 
-\paragraph{Construction of QP without Substitution}
+\paragraph{Construction of QP without Substitution}\label{cftoc_QP_without_subs}
 
 This approach keeps the state equations as equality constraints. The CFTOC problem is transformed into the QP problem
 \begin{align*}
@@ -64,8 +64,8 @@ This approach keeps the state equations as equality constraints. The CFTOC probl
         0       & Q
     \end{bmatrix}
     \begin{bmatrix}
-        z^\top & x(k)^\top
-    \end{bmatrix}^\top                                         \\
+        z^\top & {x(k)}^\top
+    \end{bmatrix}^\top                                       \\
     \text{subject to}\quad & G_{in} z \leq w_{in} +E_{in} x(k) \\
                            & G_{eq} z = E_{eq} x(k)
 \end{align*}
@@ -152,9 +152,117 @@ This can be constructed using the Matlab function
     \texttt{barH = blkdiag(kron(eye(N-1),Q),P,kron(eye(N),R))}
 \end{small}
 
-\paragraph{Construction of QP with Substitution}
+\paragraph{Construction of QP with Substitution}\label{cftoc_QP_with_subs}
+
+The future states are only dependent on the current state and the applied input sequence, hence they can be uniquely constructed from these and can therefore be substituted. To do so the same method as for the LQR batch approach (\ref{unconst_lqr}) is used:
+\begin{align*}
+    \underbrace{\begin{bmatrix}
+                        x_1    \\
+                        x_2    \\
+                        \vdots \\
+                        x_N
+                    \end{bmatrix}}_{X} = &
+    \underbrace{\begin{bmatrix}
+                        A      \\
+                        A^2    \\
+                        \vdots \\
+                        A^N
+                    \end{bmatrix}}_{S^x} x(k) +
+    \underbrace{\begin{bmatrix}
+                        B        & 0      & \cdots & 0 \\
+                        AB       & B      & \cdots & 0 \\
+                        \vdots   & \ddots & \ddots & 0 \\
+                        A^{N-1}B & \cdots & AB     & B
+                    \end{bmatrix}}_{S^u}
+    \underbrace{\begin{bmatrix}
+                        u_0    \\
+                        u_1    \\
+                        \vdots \\
+                        u_{N-1}
+                    \end{bmatrix}}_{U}                 \\
+    X =                         & S^x x(k) + S^u U
+\end{align*}
+By substituting the $X$ vector in the cost function of \ref{cftoc_QP_without_subs} with this formulation, one can rewrite the cost only depending on $U$ and $x(k)$
+\begin{align*}
+    J(x(k), U) & = U^\top HU + 2{x(k)}^\top FU + {x(k)}^\top Y x(k) \\
+               & = \begin{bmatrix}
+                       U^\top & {x(k)}^\top
+                   \end{bmatrix}
+    \begin{bmatrix}
+        H & F^\top \\
+        F & Y
+    \end{bmatrix}
+    {\begin{bmatrix}
+         U^\top & {x(k)}^\top
+     \end{bmatrix}}^\top
+\end{align*}
+where $\begin{bmatrix}H&F^\top\\F&Y\end{bmatrix}\succeq0$ since $J(x(k),U) \geq 0$ by assumption.
+\newpar{}
+The inequality constraints can be rewritten as
+\begin{equation*}
+    GU\leq w + Ex(k)
+\end{equation*}
+for
+\begin{gather*}
+    \mathcal{X} = \{x|A_x x \leq b_x\} \\
+    \mathcal{U} = \{u|A_u u \leq b_u\} \\
+    \mathcal{X}_f = \{x|A_f x \leq b_f\}
+\end{gather*}
+with
+\begin{gather*}
+    G = \begin{bmatrix}
+        A_u           & 0             & \cdots & 0      \\
+        0             & A_u           & \cdots & 0      \\
+        \vdots        & \vdots        & \ddots & \vdots \\
+        0             & 0             & \cdots & A_u    \\
+        0             & 0             & \cdots & 0      \\
+        A_x B         & 0             & \cdots & 0      \\
+        A_x AB        & A_x B         & \cdots & 0      \\
+        \vdots        & \vdots        & \ddots & \vdots \\
+        A_f A^{N-1} B & A_f A^{N-2} B & \cdots & A_f B
+    \end{bmatrix}\\
+    E = \begin{bmatrix}
+        0        \\
+        0        \\
+        \vdots   \\
+        0        \\
+        -A_x     \\
+        -A_x A   \\
+        -A_x A^2 \\
+        \vdots   \\
+        -A_f A^N
+    \end{bmatrix}, \quad
+    w = \begin{bmatrix}
+        b_u    \\
+        b_u    \\
+        \vdots \\
+        b_u    \\
+        b_x    \\
+        b_x    \\
+        b_x    \\
+        \vdots \\
+        b_f
+    \end{bmatrix}
+\end{gather*}
+
+With this substitutions the final QP problem becomes
+\begin{align*}
+    J^*(x(k), U) =         & \min_{U}\begin{bmatrix}
+                                         U^\top & {x(k)}^\top
+                                     \end{bmatrix}
+    \begin{bmatrix}
+        H & F^\top \\
+        F & Y
+    \end{bmatrix}
+    {\begin{bmatrix}
+         U^\top & {x(k)}^\top
+     \end{bmatrix}}^\top                                 \\
+    \text{subject to}\quad & GU \leq w + Ex(k)
+\end{align*}
 
 \paragraph{State Feedback Solution}
+
+%TODO: Lecture 5 
 
 \subsubsection[1-Norm and Inf-Norm Cost]{1-Norm and $\infty$-Norm Cost}
 
@@ -165,6 +273,12 @@ The cost function that incorporates the $p=1$ or $p=\infty$ norm is composed of
 \end{align*}
 with $P,Q,R$ having full column rank.
 
+%TODO: Lecture 5 
+
 \paragraph{Construction of LP with Substitution}
 
+%TODO: Lecture 5 
+
 \paragraph{State Feedback Solution}
+
+%TODO: Lecture 5 

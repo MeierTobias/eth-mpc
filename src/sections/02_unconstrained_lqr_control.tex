@@ -26,7 +26,7 @@ In practice, the optimization variables include also the state $x_0, x_1, \dots,
     \item $N$ is the horizon length.
 \end{itemize}
 
-\subsubsection{Batch Approach}
+\subsubsection{Batch Approach}\label{unconst_lqr}
 The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$. A constrained problem could theoretically still yield a solution through matrix inversion, which however might be unfeasible.
 
 \newpar{}
@@ -34,17 +34,16 @@ The batch approach yields a FFW series $U$ of numerical values for the input, as
 
 Defining
 \begin{align*}
-    X:                        & =S^x x(0)+S^u U \\
-    \left.\left[
-    \begin{array}
-            {c}x_0 \\
-            x_1    \\
-            \vdots \\
-            \vdots \\
-            x_N
-        \end{array}\right.\right] & =
+    X:              & =S^x x(0)+S^u U \\
     \begin{bmatrix}
-        l      \\
+        x_0    \\
+        x_1    \\
+        \vdots \\
+        \vdots \\
+        x_N
+    \end{bmatrix} & =
+    \begin{bmatrix}
+        1      \\
         A      \\
         \vdots \\
         \vdots \\
