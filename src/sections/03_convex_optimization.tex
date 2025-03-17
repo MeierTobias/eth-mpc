@@ -277,6 +277,127 @@ If feasible, in general two cases can occur:
 
 \subsubsection{Lagrange Dual Problem}
 
+The standard (possible non-convex) optimization problem
+\begin{align*}
+    \min_{x\in\text{dom}(f)} & f(x)                                \\
+    \text{subject to}\quad   & g_i(x)\leq 0 \quad i = 1, \ldots, m \\
+                             & h_i(x) = 0 \quad i = 1, \ldots m p
+\end{align*}
+with (primal) decision variable $x$, domain dom$(f)$ and optimal value $p^*$ can be transformed into a dual problem using the \textbf{Lagrangian Function} $L$
+\begin{equation*}
+    L(x,\lambda,\nu)=f(x)+\sum_{i=1}^{m}\lambda_i g_i(x) + \sum_{i=1}^{p}\nu_i h_i(x)
+\end{equation*}
+with
+\begin{equation*}
+    \lambda_i \geq 0
+\end{equation*}
+
+The \textbf{dual function} $d$ is then given by
+\begin{equation*}
+    d(\lambda, \nu) = \underset{x\in\text{dom}(f)}{\text{inf}} L(x,\lambda,\nu)
+\end{equation*}
+
+This dual function $d(\lambda,\nu)$ is always a concave function and is a lower bound for $p^*$
+\begin{equation*}
+    d(\lambda,\nu)\leq p^*, \quad \forall(\lambda \geq 0, \nu \in \mathbb{R}^p)
+\end{equation*}
+
+The dual problem
+\begin{gather*}
+    \max_{\lambda,\nu} d(\lambda, \nu) \\
+    \text{subject to}\quad \lambda \geq 0
+\end{gather*}
+\begin{itemize}
+    \item is \text{convex}, even if the primal is not.
+    \item has an optimal value $d^* \leq p^*$.
+    \item the point $(\lambda,\nu)$ is \textbf{dual feasible} if $\lambda \geq 0$ and $(\lambda, \nu) \in \text{dom}(d)$.
+\end{itemize}
+
+\paragraph{Dual of a Linaer Program (LP)}
+The primal problem is given by
+\begin{align*}
+    \min_{x\in\mathbb{R}^n} & c^\top x    \\
+    \text{subject to}\quad  & Ax-b = 0    \\
+                            & Cx-e \leq 0
+\end{align*}
+
+With the \textbf{duel function}
+\begin{align*}
+    d(\lambda, \nu) & = \min_{x\in\mathbb{R}^n} \left[c^\top x + \nu^\top (Ax-b) + \lambda^\top(Cx-e)\right]                              \\
+                    & = \min_{x\in\mathbb{R}^n} \left[{\left(A^\top\nu+C^\top\lambda+c\right)}^\top x - b^\top\nu - e^\top \lambda\right] \\
+                    & =\begin{cases*}
+                           -b^\top\nu - e^\top \lambda & if $A^\top\nu+ C^\top\lambda+c = 0$ \\
+                           -\infty                     & otherwise
+                       \end{cases*}
+\end{align*}
+the \textbf{dual problem} is then given by
+\begin{align*}
+    \max_{\lambda,\nu}     & - b^\top \nu - e^\top\lambda  \\
+    \text{subject to}\quad & A^\top\nu+C^\top\lambda+c = 0 \\
+                           & \lambda \geq 0
+\end{align*}
+this optimal value $d^*$ is then a lower bound for the primal problem.
+\begin{equation*}
+    d^* \leq p^*
+\end{equation*}
+The dual of a linear program is also a linear program.
+
+\paragraph{Dual of a Quadratic Program (QP)}
+
+The primal problem of a QP is
+\begin{align*}
+    \min_{x\in\mathbb{R}^n} & \frac{1}{2}x^\top Qx + c^\top x \\
+    \text{subject to}\quad  & Cx-e \leq 0                     \\
+                            & Q \succ 0
+\end{align*}
+
+the dual function is therefore
+
+\begin{align*}
+    d(\lambda) & = \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + c^\top x \lambda^\top(Cx-e)\right]               \\
+               & =  \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x {(c+C^\top\lambda)}^\top x - e^\top\lambda\right]
+\end{align*}
+to get the optimal $x$ the dual function is differentiated and set equal to zero
+\begin{gather*}
+    Qx + c +C^\top\lambda=0 \Leftrightarrow \\
+    x = -Q^{-1}(c + C^\top\lambda)
+\end{gather*}
+This can then be substituted into the dual function
+\begin{equation*}
+    d(\lambda) = -\frac{1}{2}{\left(c+C^\top\lambda\right)}^\top Q^{-1}\left(c+C^\top\lambda\right) -e^\top\lambda
+\end{equation*}
+
+hence the dual problem is to maximize $d(\lambda)$ over $\lambda\geq0$, or equivalently
+\begin{gather*}
+    \min_{\lambda} \frac{1}{2}\lambda^\top C Q^{-1}C^\top\lambda+{\left(CQ^{-1}c+e\right)}^\top + \frac{1}{2}c^\top Q^{-1}c \\
+    \text{subject to}\quad \lambda \geq 0
+\end{gather*}
+
+The dual problem of a QP is another QP.
+
 \subsubsection{Weak and String Duality}
+
+\ptitle{Weak Duality}
+
+It is \text{always} true that
+\begin{equation*}
+    d^* \leq p^*.
+\end{equation*}
+
+\newpar{}
+\ptitle{Strong Duality}
+
+If the \textbf{Slater Condition} holds, this implies
+\begin{equation*}
+    p^* = d^*
+\end{equation*}
+
+\newpar{}
+\ptitle{Slater Condition}
+
+There exists at least one \textbf{strictly feasible point}, i.e.
+\begin{equation*}
+    \left\{x | Ax = b, g_i(x) < 0 m \forall i \in \left\{1, \ldots, m\right\}\right\} \neq \emptyset
+\end{equation*}
 
 \subsubsection{Sensitivity Analysis}
