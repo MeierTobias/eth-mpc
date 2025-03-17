@@ -461,5 +461,57 @@ If $x^*$ and $(\lambda^*,\nu^*)$ are primal and dual optimal solutions and stron
     \end{align*}
 \end{examplesection}
 
-
 \subsubsection{Sensitivity Analysis}
+
+To analyze the sensitivity of a solution one can add a perturbation term to the constraints. The perturbed primal becomes
+\begin{align*}
+    \min_{x} \quad         & f(x)            \\
+    \text{subject to}\quad & g_i(x) \leq u_i \\
+                           & h_i(x) = v_i
+\end{align*}
+and the corresponding dual
+\begin{align*}
+    \max_{\lambda,\nu}\quad & d(\lambda,\nu) - u^\top \lambda - v^\top \nu \\
+    \text{subject to}\quad  & \lambda \geq 0
+\end{align*}
+where $u$ and $v$ represent the perturbation.
+
+\newpar{}
+
+In the case where strong duality holds for the unperturbed problem, the weak duality of the perturbed problem implies
+\begin{align*}
+    p^*(u,v) & \geq d^*(\lambda^*,\nu^*) - u^\top \lambda^* -v^\top\nu^* \\
+             & = p^*(0,0) - u^\top \lambda^* -v^\top\nu^*
+\end{align*}
+
+\newpar{}
+\ptitle{Global Sensitivity Analysis}
+\begin{align*}
+     & \lambda_i^* \text{ large and } u_i < 0              &  & \Rightarrow \text{(i)}  \\
+     & \lambda_i^* \text{ small and } u_i > 0              &  & \Rightarrow \text{(ii)} \\
+     & \begin{Bmatrix}
+            & \nu^* \text{ large and positive and } v_i < 0 \\
+            & \nu^* \text{ large and negative and } v_i > 0
+            &\end{Bmatrix} &  & \Rightarrow \text{(i)}                                 \\
+     & \begin{Bmatrix}
+            & \nu^* \text{ small and positive and } v_i > 0 \\
+            & \nu^* \text{ small and negative and } v_i < 0
+            &\end{Bmatrix} &  & \Rightarrow \text{(ii)}
+\end{align*}
+\begin{enumerate}[label=(\roman*), wide=0pt]
+    \item $p^*(u,v)$ increases greatly
+    \item $p^*(u,v)$ does not decrease much
+\end{enumerate}
+
+\newpar{}
+\ptitle{Local Sensitivity Analysis}
+
+If in addition $p^*(u,v)$ is differentiable at $(0,0)$, then
+\begin{equation*}
+    \lambda_i^* = -\frac{\partial p^*(0,0)}{\partial u_i}, \qquad  \nu_i^* = -\frac{\partial p^*(0,0)}{\partial v_i},
+\end{equation*}
+where
+\begin{itemize}
+    \item $\lambda_i^*$ is the sensitivity of $p^*$ relative to $i^{th}$ inequality.
+    \item $\nu_i^*$ is the sensitivity of $p^*$ relative to $i^{th}$ equality.
+\end{itemize}
