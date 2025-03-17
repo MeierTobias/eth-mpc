@@ -400,4 +400,66 @@ There exists at least one \textbf{strictly feasible point}, i.e.
     \left\{x | Ax = b, g_i(x) < 0 m \forall i \in \left\{1, \ldots, m\right\}\right\} \neq \emptyset
 \end{equation*}
 
+
+\subsubsection{Karush-Kuhn-Tucker (KKT) Conditions}
+
+Assume that $f$, all $g_i$ and $h_i$ are differentiable.
+\begin{enumerate}
+    \item Primal Feasibility:
+          \begin{gather*}
+              g_i(x^*) \leq 0 \quad i = 1, \ldots, m \\
+              h_i(x^*) = 0 \quad i = 1, \ldots, p
+          \end{gather*}
+    \item Dual Feasibility:
+          \begin{equation*}
+              \lambda^* \geq 0
+          \end{equation*}
+    \item Complementary Slackness:
+          \begin{equation*}
+              \lambda_i^*g_i(x^*)=0 \quad i = 1, \ldots, m
+          \end{equation*}
+    \item Stationarity:
+          \begin{align*}
+              \nabla_x L(x^*, \lambda^*, \nu^*) =\nabla f(x^*) +\sum_{i=1}^{m}\lambda_i^*\nabla g_i(x^*) \\
+              \ldots+\sum_{i=1}^{p}\nu_i^*\nabla h_i(x^*) = 0
+          \end{align*}
+\end{enumerate}
+
+\newpar{}
+\ptitle{Convex Problems}
+
+Iff $(x^*,\lambda^*,\nu^*)$ satisfy the KKT conditions, then they are optimal and Slater's condition holds, hence strong duality holds\begin{equation*}
+    p^*=d^*.
+\end{equation*}
+
+\newpar{}
+\ptitle{General Problems}
+
+For a general optimization problem there is only a necessary condition that states:
+
+If $x^*$ and $(\lambda^*,\nu^*)$ are primal and dual optimal solutions and strong duality holds, then $x^*$ and $(\lambda^*,\nu^*)$ satisfy the KKT conditions.
+
+\begin{examplesection}[Example: KKT Conditions for a QP]
+    Given the following QP
+    \begin{align*}
+        \min_{x\in\mathbb{R}^n} & \frac{1}{2}x^\top Qx + c^\top x \\
+        \text{subject to}\quad  & Ax=b                            \\
+                                & x\geq 0                         \\
+                                & Q \succeq 0
+    \end{align*}
+    The Lagrangian is
+    \begin{equation*}
+        L(x,\lambda,\nu) = \frac{1}{2}x^\top Qx +c^\top x +\nu^\top(Ax-b) -\lambda^\top x
+    \end{equation*}
+    The KKT conditions are:
+    \begin{align*}
+        \nabla_x L(x,\lambda,\nu) = Qx + A^\top \nu -\lambda +c = 0 &  & \text{KKT 4}                  \\
+        Ax=b                                                        &  & \text{KKT 1}                  \\
+        x\geq 0                                                     &  & \text{KKT 1}                  \\
+        \lambda \geq 0                                              &  & \text{KKT 2}                  \\
+        x_i\lambda_i = 0                                            &  & i=1\ldots n \quad\text{KKT 3}
+    \end{align*}
+\end{examplesection}
+
+
 \subsubsection{Sensitivity Analysis}
