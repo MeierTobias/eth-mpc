@@ -15,7 +15,7 @@ where $I(x_i,u_i)$ is the stage cost, $I_f(x_N)$ represents an approximation of 
 \newpar{}
 \ptitle{Feasible Set}
 
-The feasible set describes a set of states for which the optimal control problem is feasible:
+The feasible set describes a set of initial states for which the optimal control problem is feasible:
 \begin{align*}
     \mathcal{X}_N = & \left\{ x_0 \in \mathbb{R}^n | \exists\left(u_0, \ldots, u_{N-1}\right) \text{such that } x_i\in\mathcal{X}, u_i\in\mathcal{U} \right. \\
                     & \left.i=0,\ldots, N-1, x_N\in\mathcal{X}_f, \text{where } x_{i+1}=Ax_i + Bu_i\right\}
@@ -23,7 +23,7 @@ The feasible set describes a set of states for which the optimal control problem
 
 Or in other words, the feasible set describes initial conditions from which it is possible to get into the final set $\mathcal{X}_f$ within $N-1$ steps.
 
-\subsubsection{Quadratic Cost}
+\subsubsection{Quadratic Cost CFTOC}
 
 The cost function that incorporates a squared euclidean norm is composed of
 \begin{align*}
@@ -34,7 +34,7 @@ with $P\succeq0, Q\succeq0, R\succ0$.
 
 \newpar{}
 
-The quadratic cost CFTOC problem
+The \textbf{quadratic cost CFTOC problem}
 \begin{align*}
     J^*(x(k)) =            & \min_U \: x_N^T P x_N + \sum_{i=0}^{N-1}x_i^\top Q x_i + u_i^\top R u_i \\
     \text{subject to}\quad & x_{i+1} = Ax_i +Bu_i, \quad i = 0, \ldots, N-1                          \\
@@ -52,12 +52,12 @@ can be transformed into a QP problem
 
 either with (\ref{cftoc_QP_with_subs}) or without (\ref{cftoc_QP_without_subs}) substitution of the future states $X$.
 
-\paragraph{Construction of QP without Substitution}\label{cftoc_QP_without_subs}
+\paragraph{Construction of QP Without Substitution}\label{cftoc_QP_without_subs}
 
 This approach keeps the state equations as equality constraints. The CFTOC problem is transformed into the QP problem
 \begin{align*}
     J^*(x(k)) =            & \min_{z}\begin{bmatrix}
-                                         z^\top & x(t)
+                                         z^\top & x(k)
                                      \end{bmatrix}
     \begin{bmatrix}
         \bar{H} & 0 \\
@@ -75,62 +75,11 @@ where
         x_1^\top & \cdots & x_N^\top & u_0^\top & \cdots & u_{N-1}^\top
     \end{bmatrix}^\top
 \end{equation*}
-the equalities are given from the system dynamics
-\begin{equation*}
-    x_{i+1} = Ax_i + Bu_i
-\end{equation*}
-resulting in
-\begin{gather*}
-    G_{eq} = \left[
-        \begin{array}{cccc|cccc} % ChkTex 44
-            I  &   &        &   & -B &    &        &    \\
-            -A & I &        &   &    & -B &        &    \\
-               &   & \ddots &   &    &    & \ddots &    \\
-               &   & -A     & I &    &    &        & -B
-        \end{array}
-        \right] \\
-    E_{eq} = \begin{bmatrix}
-        A & 0 & \cdots & 0
-    \end{bmatrix}^\top
-\end{gather*}
 
-The inequalities
-\begin{equation*}
-    G_{in} z \leq w_{in} + E_{in} x(k)
-\end{equation*}
-given by
-\begin{gather*}
-    \mathcal{X} = \{x|A_x x \leq b_x\} \\
-    \mathcal{U} = \{u|A_u u \leq b_u\} \\
-    \mathcal{X}_f = \{x|A_f x \leq b_f\}
-\end{gather*}
-are constructed as
-\begin{gather*}
-    G_{in} = \left[
-        \begin{array}{cccc|cccc} % ChkTex 44
-            0   &        &     &     & 0   &        &        &     \\
-            \hline % ChkTex 44
-            A_x &        &     &     & 0   &        &        &     \\
-                & \ddots &     &     &     & \ddots &        &     \\
-                &        & A_x &     &     &        & 0      &     \\
-                &        &     & A_f &     &        &        & 0   \\
-            \hline % ChkTex 44
-            0   &        &     &     & A_u &        &        &     \\
-                & \ddots &     &     &     & A_u    &        &     \\
-                &        & 0   &     &     &        & \ddots &     \\
-                &        &     & 0   &     &        &        & A_u
-        \end{array}
-        \right]\\
-    w_{in} = \left[
-        \begin{array}{ccccc|ccccc} % ChkTex 44
-            b_x & b_x & \cdots & b_x & b_f & b_u & b_u & \cdots & b_u & b_u
-        \end{array}^\top
-        \right]\\
-    E_{in} =\begin{bmatrix}
-        -A_x^\top & 0 & \cdots & 0
-    \end{bmatrix}^\top
-\end{gather*}
-and finally the cost matrix $\bar{H}$ is
+\newpar{}
+\ptitle{Cost}
+
+The cost submatrix $\bar{H}$ is
 \begin{equation*}
     \bar{H} = \left[
         \begin{array}{cccc|cccc} % ChkTex 44
@@ -151,6 +100,78 @@ This can be constructed using the Matlab function
 \begin{small}
     \texttt{barH = blkdiag(kron(eye(N-1),Q),P,kron(eye(N),R))}
 \end{small}
+
+\newpar{}
+\ptitle{Equality Constraints}
+
+The equalities are given from the system dynamics
+\begin{equation*}
+    x_{i+1} = Ax_i + Bu_i
+\end{equation*}
+resulting in
+\begin{gather*}
+    G_{eq} = \left[
+        \begin{array}{cccc|cccc} % ChkTex 44
+            I  &   &        &   & -B &    &        &    \\
+            -A & I &        &   &    & -B &        &    \\
+               &   & \ddots &   &    &    & \ddots &    \\
+               &   & -A     & I &    &    &        & -B
+        \end{array}
+        \right] \\
+    E_{eq} = \begin{bmatrix}
+        A^\top & 0 & \cdots & 0
+    \end{bmatrix}^\top
+\end{gather*}
+
+\newpar{}
+\ptitle{Inequality Constraints}
+
+The inequality constraints
+\begin{gather*}
+    \mathcal{X} = \{x|A_x x \leq b_x\} \\
+    \mathcal{U} = \{u|A_u u \leq b_u\} \\
+    \mathcal{X}_f = \{x|A_f x \leq b_f\}
+\end{gather*}
+can be rewritten as
+\begin{equation*}
+    G_{in} z \leq w_{in} + E_{in} x(k)
+\end{equation*}
+with
+\begin{gather*}
+    G_{in} = \left[
+        \begin{array}{cccc|cccc} % ChkTex 44
+            0   &        &     &     & 0   &        &        &     \\
+            \hline % ChkTex 44
+            A_x &        &     &     & 0   &        &        &     \\
+                & \ddots &     &     &     & \ddots &        &     \\
+                &        & A_x &     &     &        & 0      &     \\
+                &        &     & A_f &     &        &        & 0   \\
+            \hline % ChkTex 44
+            0   &        &     &     & A_u &        &        &     \\
+                & \ddots &     &     &     & A_u    &        &     \\
+                &        & 0   &     &     &        & \ddots &     \\
+                &        &     & 0   &     &        &        & A_u
+        \end{array}
+        \right]\\
+    w_{in} = \begin{bmatrix}
+        b_x                    \\
+        b_x                    \\
+        \vdots                 \\
+        b_x                    \\
+        b_f                    \\
+        \cmidrule(lr){1-1} b_u \\
+        b_u                    \\
+        \vdots                 \\
+        b_u                    \\
+        b_u
+    \end{bmatrix}, \quad
+    E_{in} =\begin{bmatrix}
+        -A_x   \\
+        0      \\
+        \vdots \\
+        0
+    \end{bmatrix}
+\end{gather*}
 
 \paragraph{Construction of QP with Substitution}\label{cftoc_QP_with_subs}
 
@@ -182,32 +203,43 @@ The future states are only dependent on the current state and the applied input 
                     \end{bmatrix}}_{U}                 \\
     X =                         & S^x x(k) + S^u U
 \end{align*}
-By substituting the $X$ vector in the cost function of~\ref{cftoc_QP_without_subs} with this formulation, one can rewrite the cost only depending on $U$ and $x(k)$
+
+\newpar{}
+\ptitle{Cost}
+
+By substituting the $X$ vector in the cost function of~\ref{cftoc_QP_without_subs}, one can rewrite the cost only depending on $U$ and $x(k)$
 \begin{align*}
-    J(x(k), U) & = U^\top HU + 2{x(k)}^\top FU + {x(k)}^\top Y x(k) \\
-               & = \begin{bmatrix}
-                       U^\top & {x(k)}^\top
-                   \end{bmatrix}
+    J^*(x(k), U)=          & \min_{U}\begin{bmatrix}
+                                         U^\top & {x(k)}^\top
+                                     \end{bmatrix}
     \begin{bmatrix}
         H & F^\top \\
         F & Y
     \end{bmatrix}
     {\begin{bmatrix}
          U^\top & {x(k)}^\top
-     \end{bmatrix}}^\top
+     \end{bmatrix}}^\top                                 \\
+    \text{subject to}\quad & GU \leq w + Ex(k)
 \end{align*}
-where $\begin{bmatrix}H&F^\top\\F&Y\end{bmatrix}\succeq0$ since $J(x(k),U) \geq 0$ by assumption.
-\newpar{}
-The inequality constraints can be rewritten as
+Note that
 \begin{equation*}
-    GU\leq w + Ex(k)
+    \begin{bmatrix}H&F^\top\\F&Y\end{bmatrix}\succeq0
 \end{equation*}
-for
+since $J(x(k),U) \geq 0$ by assumption.
+
+\newpar{}
+\ptitle{Inequality Constraints}
+
+The inequality constraints
 \begin{gather*}
     \mathcal{X} = \{x|A_x x \leq b_x\} \\
     \mathcal{U} = \{u|A_u u \leq b_u\} \\
     \mathcal{X}_f = \{x|A_f x \leq b_f\}
 \end{gather*}
+also encode the equality constraints and can be rewritten as
+\begin{equation*}
+    GU\leq w + Ex(k)
+\end{equation*}
 with
 \begin{gather*}
     G = \begin{bmatrix}
@@ -221,44 +253,31 @@ with
         \vdots        & \vdots        & \ddots & \vdots \\
         A_f A^{N-1} B & A_f A^{N-2} B & \cdots & A_f B
     \end{bmatrix}\\
-    E = \begin{bmatrix}
-        0        \\
-        0        \\
-        \vdots   \\
-        0        \\
-        -A_x     \\
-        -A_x A   \\
-        -A_x A^2 \\
-        \vdots   \\
-        -A_f A^N
-    \end{bmatrix}, \quad
     w = \begin{bmatrix}
-        b_u    \\
-        b_u    \\
-        \vdots \\
-        b_u    \\
-        b_x    \\
-        b_x    \\
-        b_x    \\
-        \vdots \\
+        b_u                    \\
+        b_u                    \\
+        \vdots                 \\
+        b_u                    \\
+        \cmidrule(lr){1-1} b_u \\
+        b_x                    \\
+        b_x                    \\
+        b_x                    \\
+        \vdots                 \\
         b_f
+    \end{bmatrix}, \quad
+    E = \begin{bmatrix}
+        0                       \\
+        0                       \\
+        \vdots                  \\
+        0                       \\
+        \cmidrule(lr){1-1} -A_x \\
+        -A_x A                  \\
+        -A_x A^2                \\
+        \vdots                  \\
+        -A_f A^N
     \end{bmatrix}
 \end{gather*}
-
-With this substitutions the final QP problem becomes
-\begin{align*}
-    J^*(x(k), U) =         & \min_{U}\begin{bmatrix}
-                                         U^\top & {x(k)}^\top
-                                     \end{bmatrix}
-    \begin{bmatrix}
-        H & F^\top \\
-        F & Y
-    \end{bmatrix}
-    {\begin{bmatrix}
-         U^\top & {x(k)}^\top
-     \end{bmatrix}}^\top                                 \\
-    \text{subject to}\quad & GU \leq w + Ex(k)
-\end{align*}
+Note that $w$ is structurally different to $w_{in}$ from~\ref{cftoc_QP_without_subs}.
 
 \paragraph{State Feedback Solution}
 
