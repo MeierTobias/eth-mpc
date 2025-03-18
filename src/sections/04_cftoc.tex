@@ -15,13 +15,15 @@ where $I(x_i,u_i)$ is the stage cost, $I_f(x_N)$ represents an approximation of 
 \newpar{}
 \ptitle{Feasible Set}
 
-The feasible set describes a set of initial states for which the optimal control problem is feasible:
+The feasible set describes a set of initial states for which the optimal control problem is feasible. It is defined only by the constraints and not by the cost:
 \begin{align*}
     \mathcal{X}_N = & \left\{ x_0 \in \mathbb{R}^n | \exists\left(u_0, \ldots, u_{N-1}\right) \text{such that } x_i\in\mathcal{X}, u_i\in\mathcal{U} \right. \\
                     & \left.i=0,\ldots, N-1, x_N\in\mathcal{X}_f, \text{where } x_{i+1}=Ax_i + Bu_i\right\}
 \end{align*}
 
 Or in other words, the feasible set describes initial conditions from which it is possible to get into the final set $\mathcal{X}_f$ within $N-1$ steps.
+\newpar{}
+In the convex case, the convex hull of a set of feasible solutions can be used as approximation of $\mathcal{X}_N$.
 
 \subsubsection{Quadratic Cost CFTOC}
 
@@ -67,7 +69,7 @@ In the following we use
 
 \paragraph{Construction of QP Without Substitution}\label{cftoc_QP_without_subs}
 
-This approach keeps the state equations as equality constraints. The CFTOC problem is transformed into the QP problem parametrized in the initial condition $x(k)$
+This approach keeps the state equations as equality constraints. The CFTOC problem is transformed into the QP problem parametrized in the initial condition $x(k)$  % TODO: In the lecture they say this approach would be more efficient. In terms of comp. cost or just for matrix bastli?
 \begin{align*}
     J^*(x(k)) =            & \min_{z}\begin{bmatrix}
                                          z^\top & x(k)
