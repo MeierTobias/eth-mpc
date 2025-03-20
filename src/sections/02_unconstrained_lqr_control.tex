@@ -3,17 +3,18 @@ In this section, DT LTI systems with quadratic cost function are treated, where 
 \subsection{Finite Horizon LQR}
 
 The \textbf{unconstrained finite horizon control problem} has the objective of finding a sequence of inputs
-\noindent\begin{equation*}
+\begin{equation*}
     U := \begin{bmatrix} u_0^\top & u_1^\top & \dots & u_{N-1}^\top \end{bmatrix}^\top
 \end{equation*}
 that minimizes the objective function:
-\noindent\begin{align*}
+\begin{align*}
     J^*(x(0))                & := \min_U J(x_0,U)                                                                          \\
                              & = \min_U \left( x_N^\top P x_N + \sum_{i=0}^{N-1} (x_i^\top Q x_i + u_i^\top R u_i) \right) \\
     \text{subj.\ to }x_{i+1} & = A x_i + B u_i, \quad i = 0, \dots, N-1                                                    \\
     x_0                      & = x(0)
 \end{align*}
-In practice, the optimization variables include also $x_0, x_1, \dots, x_N$.
+
+In practice, the optimization variables include also the state $x_0, x_1, \dots, x_N$.
 
 \newpar{}
 \ptitle{Weight Matrices}
@@ -25,25 +26,24 @@ In practice, the optimization variables include also $x_0, x_1, \dots, x_N$.
     \item $N$ is the horizon length.
 \end{itemize}
 
-\subsubsection{Batch Approach}
+\subsubsection{Batch Approach}\label{unconst_lqr}
 The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$. A constrained problem could theoretically still yield a solution through matrix inversion, which however might be unfeasible.
 
 \newpar{}
 \ptitle{Problem Setup}% Is this just the initial condition response + forced response? yes: this is just the state evolution under the control input u
 
 Defining
-\noindent\begin{align*}
-    X:                        & =S^x x(0)+S^u U \\
-    \left.\left[
-    \begin{array}
-            {c}x_0 \\
-            x_1    \\
-            \vdots \\
-            \vdots \\
-            x_N
-        \end{array}\right.\right] & =
+\begin{align*}
+    X:              & =S^x x(0)+S^u U \\
     \begin{bmatrix}
-        l      \\
+        x_0    \\
+        x_1    \\
+        \vdots \\
+        \vdots \\
+        x_N
+    \end{bmatrix} & =
+    \begin{bmatrix}
+        1      \\
         A      \\
         \vdots \\
         \vdots \\
@@ -65,11 +65,11 @@ Defining
     \end{bmatrix}
 \end{align*}
 and the block diagonal weight matrices
-\noindent\begin{equation*}
+\begin{equation*}
     \overline{Q}:=\mathrm{blockdiag}(Q,\dots,Q,P),\; \overline{R}:=\mathrm{blockdiag}(R,\dots,R)
 \end{equation*}
 the finite horizon cost $J(x(0), U) = X^{\top}\bar{Q}X + U^{\top}\bar{R}U$ becomes the positive definite quadratic function in $U$
-\noindent\begin{gather*}
+\begin{gather*}
     J(x(0), U) =U^{\top}HU+2{x(0)}^{\top}FU+{x(0)}^{\top}S^{x^{\top}}\overline{Q}S^{x}x(0)\\
     \text{where } H:={(S^u)}^\top\overline{Q} S^u+\overline{R} > 0 \mathrm{~and~}F:={(S^x)}^\top\overline{Q} S^u
 \end{gather*}
@@ -78,7 +78,7 @@ the finite horizon cost $J(x(0), U) = X^{\top}\bar{Q}X + U^{\top}\bar{R}U$ becom
 \ptitle{Optimal Control Solution}
 
 Setting the gradient to zero yields the optimal control action
-\noindent\begin{equation*}
+\begin{equation*}
     U^*(x(0)) = -H^{-1}F^\top x(0)
 \end{equation*}
 Note that
@@ -90,7 +90,7 @@ Note that
 \newpar{}
 The \textbf{optimal cost} is
 
-\noindent\begin{equation*}
+\begin{equation*}
     J^*(x(0)) = {x(0)}^{\top}\left({(S^{x})}^{\top}\overline{Q}S^{x}- F H^{-1} F^\top\right)x(0)
 \end{equation*}
 
@@ -114,7 +114,7 @@ Hence, for any $j=0\dots N$
 \ptitle{Problem Setup}
 
 We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$) as the optimal cost attainable for the step $j$ problem
-\noindent\begin{align*}
+\begin{align*}
     J_j^\star(x(j)) & :=\min_{U_{j\to N}}x_N^\top Px_N+\sum_{i=j}^{N-1}(x_i^\top Qx_i+u_i^\top Ru_i) \\
                     & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,\dots,N-1                               \\
                     & x_j=x(j)
@@ -124,22 +124,22 @@ We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$)
 \ptitle{Optimal Control Solution}
 
 Solving the local subproblem yields the optimal control input
-\noindent\begin{align*}
+\begin{align*}
     u_{i}^{\star} & =F_{i} x_{i}                                   \\
     F_{i}         & :=-{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A
 \end{align*}
 
 The optimal cost-to-go is
-\noindent\begin{equation*}
+\begin{equation*}
     J_{i}^{\star}(x_{i})  = {x(i)}^{\top}P_{i}x(i)
 \end{equation*}
 with cost matrices found from the Discrete Time Riccati equation / \textbf{Riccati Difference equation} (\textbf{RDE}):
-\noindent\begin{align*}
+\begin{align*}
      & P_{i} = A^\top P_{i+1} A+Q-A^\top P_{i+1} B{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A \\
      & P_{N} = P \text{ (init.\ with terminal weight)}
 \end{align*}
 and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
-\noindent\begin{equation*}
+\begin{equation*}
     {x(0)}^\top P_0 x(0)
 \end{equation*}
 
@@ -217,8 +217,7 @@ Depending on the specific situation
 \subsection{Infinite Horizon LQR}
 
 \ptitle{Problem Setup}
-
-\noindent\begin{align*}
+\begin{align*}
     J_\infty(x(0)) & =\min_{u(\cdot)}\sum_{i=0}^\infty\left(x_i^\top Qx_i+u_i^\top Ru_i\right) \\
                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,\quad i=0,1,2,\dots,\infty,            \\
                    & x_0=x(0)

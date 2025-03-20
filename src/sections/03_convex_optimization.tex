@@ -163,12 +163,12 @@ But, sublevel sets of $f$ are convex $\forall \alpha \nRightarrow f$ is convex.
     \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $\alpha \leq 0, \alpha \geq1$
     \item Vector norms on $\mathbb{R}^n$:
           \begin{align*}
-              ||x||_p      & =(\sum_{i=1}^n|x|^p)^{1/p},\mathrm{~for~}p\geq1 \\
+              ||x||_p      & ={(\sum_{i=1}^n|x|^p)}^{1/p},\mathrm{~for~}p\geq1 \\
               ||x||_\infty & =\max_i|x_i|
           \end{align*}
 \end{itemize}
 \newpar{}
-\ptitle{Convexitys Preserving Operations}
+\ptitle{Convexity Preserving Operations}
 \begin{itemize}
     \item Nonnegative weighted sums: $\sum_{i=1}^{n} \theta_i f_i(x)$ for $\theta_i \geq 0$
     \item Composition with an affine function: $f(ax+b)$
@@ -274,3 +274,258 @@ If feasible, in general two cases can occur:
 \end{center}
 
 \subsection{Optimality Conditions}
+
+\subsubsection{Lagrange Dual Problem}
+
+The standard (possibly non-convex) optimization problem
+\begin{align*}
+    \min_{x\in\text{dom}(f)} & f(x)                                \\
+    \text{subject to}\quad   & g_i(x)\leq 0 \quad i = 1, \ldots, m \\
+                             & h_i(x) = 0 \quad i = 1, \ldots m p
+\end{align*}
+with (primal) decision variable $x$, domain dom$(f)$ and optimal value $p^*$ can be transformed into a dual problem using the \textbf{Lagrangian Function} $L: \mathrm{dom}\left(f\right)\times\mathbb{R}^m\times\mathbb{R}^p\to\mathbb{R}$ is a weighted sum of the objective and constraint functions
+\begin{equation*}
+    L(x,\lambda,\nu)=f(x)+\sum_{i=1}^{m}\lambda_i g_i(x) + \sum_{i=1}^{p}\nu_i h_i(x)
+\end{equation*}
+with
+\begin{equation*}
+    \lambda_i \geq 0
+\end{equation*}
+
+The \textbf{dual function} $d$ is then given by
+\begin{equation*}
+    d(\lambda, \nu) = \underset{x\in\text{dom}(f)}{\text{inf}} L(x,\lambda,\nu)
+\end{equation*}
+
+$L(x,\lambda,\nu)$ is affine. Hence, $d(\lambda, \nu)$ (the pointwise infimum in $x$) is always a concave function and is a lower bound for $p^*$
+\begin{equation*}
+    d(\lambda,\nu)\leq p^*, \quad \forall(\lambda \geq 0, \nu \in \mathbb{R}^p)
+\end{equation*}
+
+The \textbf{dual problem}
+\begin{gather*}
+    \max_{\lambda,\nu} d(\lambda, \nu) \\
+    \text{subject to}\quad \lambda \geq 0
+\end{gather*}
+\begin{itemize}
+    \item is \text{convex} ($\min_{\lambda,\nu} -d(\lambda, \nu) $), even if the primal is not. % Does this always hold?
+    \item has an optimal value $d^* \leq p^*$.
+    \item the point $(\lambda,\nu)$ is \textbf{dual feasible} if $\lambda \geq 0$ and $(\lambda, \nu) \in \text{dom}(d)$.
+    \item Can often impose the constraint $(\lambda, \nu)\in \mathrm{dom}(d)$ explicitly. % TODO ?
+\end{itemize}
+
+\paragraph{Dual of a Linear Program (LP)}
+The primal problem is given by
+\begin{align*}
+    \min_{x\in\mathbb{R}^n} & c^\top x    \\
+    \text{subject to}\quad  & Ax-b = 0    \\
+                            & Cx-e \leq 0
+\end{align*}
+
+% With the \textbf{duel function}   % sounds Frazzolish :)
+With the \textbf{dual function}
+\begin{align*}
+    d(\lambda, \nu) & = \min_{x\in\mathbb{R}^n} \left[c^\top x + \nu^\top (Ax-b) + \lambda^\top(Cx-e)\right]                              \\
+                    & = \min_{x\in\mathbb{R}^n} \left[{\left(A^\top\nu+C^\top\lambda+c\right)}^\top x - b^\top\nu - e^\top \lambda\right] \\
+                    & =\begin{cases*}
+                           -b^\top\nu - e^\top \lambda & if $A^\top\nu+ C^\top\lambda+c = 0$ \\
+                           -\infty                     & otherwise
+                       \end{cases*}
+\end{align*}
+the \textbf{dual problem} is then given by
+\begin{align*}
+    \max_{\lambda,\nu}     & - b^\top \nu - e^\top\lambda  \\
+    \text{subject to}\quad & A^\top\nu+C^\top\lambda+c = 0 \\
+                           & \lambda \geq 0
+\end{align*}
+this optimal value $d^*$ is then a lower bound for the primal problem.
+\begin{equation*}
+    d^* \leq p^*
+\end{equation*}
+The dual of a linear program is also a linear program.
+\newpar{}
+The dual of a mixed integer linear program (MILP) is a linear program.
+
+\paragraph{Dual of a Quadratic Program (QP)}
+
+The primal problem of a QP is
+\begin{align*}
+    \min_{x\in\mathbb{R}^n} & \frac{1}{2}x^\top Qx + c^\top x \\
+    \text{subject to}\quad  & Cx-e \leq 0                     \\
+                            & Q \succ 0
+\end{align*}
+
+the \textbf{dual function} is therefore
+
+\begin{align*}
+    d(\lambda) & = \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + c^\top x \lambda^\top(Cx-e)\right]               \\
+               & =  \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x {(c+C^\top\lambda)}^\top x - e^\top\lambda\right]
+\end{align*}
+for which the unconstrained minimization over $x$ is convex for every $\lambda$. To get the optimal $x$ the dual function is differentiated and set equal to zero (requires $Q>0$)
+\begin{gather*}
+    Qx + c +C^\top\lambda=0 \Leftrightarrow \\
+    x = -Q^{-1}(c + C^\top\lambda)
+\end{gather*}
+This can then be substituted into the dual function
+\begin{equation*}
+    d(\lambda) = -\frac{1}{2}{\left(c+C^\top\lambda\right)}^\top Q^{-1}\left(c+C^\top\lambda\right) -e^\top\lambda
+\end{equation*}
+
+hence the \textbf{dual problem} is to maximize $d(\lambda)$ over $\lambda\geq0$, or equivalently
+\begin{gather*}
+    \min_{\lambda} \frac{1}{2}\lambda^\top C Q^{-1}C^\top\lambda+{\left(CQ^{-1}c+e\right)}^\top + \frac{1}{2}c^\top Q^{-1}c \\
+    \text{subject to}\quad \lambda \geq 0
+\end{gather*}
+
+The \textbf{dual problem} of a QP is another QP.
+
+\subsubsection{Weak and String Duality}
+
+\ptitle{Weak Duality}
+
+It is always true that
+\begin{equation*}
+    d^* \leq p^*.
+\end{equation*}
+
+\newpar{}
+\ptitle{Strong Duality}
+
+It is sometimes true that
+\begin{equation*}
+    p^* = d^*.
+\end{equation*}
+For non-convex problems this is usually not given.
+
+\newpar{}
+\ptitle{Slater Condition}
+
+If for an optimization problem $f$ and all $g_i$ are convex, i.e.\ the problem is \textbf{convex}, then the Slater condition states:
+\newpar{}
+If there exists at least one \textbf{strictly feasible point}, i.e.
+\begin{equation*}
+    \left\{x | Ax = b,\; g_i(x) < 0,\; \forall i \in \left\{1, \ldots, m\right\}\right\} \neq \emptyset
+\end{equation*}
+this \textbf{always implies strong duality}.
+
+\subsubsection{Karush-Kuhn-Tucker (KKT) Conditions}
+
+Assume that $f$, all $g_i$ and $h_i$ are differentiable.
+\begin{enumerate}
+    \item Primal Feasibility:
+          \begin{gather*}
+              g_i(x^*) \leq 0 \quad i = 1, \ldots, m \\
+              h_i(x^*) = 0 \quad i = 1, \ldots, p
+          \end{gather*}
+    \item Dual Feasibility:
+          \begin{equation*}
+              \lambda^* \geq 0
+          \end{equation*}
+    \item Complementary Slackness:
+          \begin{equation*}
+              \lambda_i^*g_i(x^*)=0 \quad i = 1, \ldots, m
+          \end{equation*}
+          implying
+          \begin{align*}
+              \lambda_{i}^{*} & =0\text{ for every }g_{i}(x^{*})<0.   \\
+              g_{i}(x^{*})    & =0\text{ for every }\lambda_{i}^{*}>0
+          \end{align*}
+    \item Stationarity:
+          \begin{align*}
+              \nabla_x L(x^*, \lambda^*, \nu^*) =\nabla f(x^*) +\sum_{i=1}^{m}\lambda_i^*\nabla g_i(x^*) \\
+              \ldots+\sum_{i=1}^{p}\nu_i^*\nabla h_i(x^*) = 0
+          \end{align*}
+\end{enumerate}
+
+\newpar{}
+\ptitle{Convex Problems}
+
+\textbf{Iff} $(x^*,\lambda^*,\nu^*)$ satisfy the KKT conditions, then they are optimal and Slater's condition holds, hence strong duality holds\begin{equation*}
+    p^*=d^*.
+\end{equation*}
+
+\newpar{}
+\ptitle{General Problems}
+
+For a general optimization problem there is only a necessary condition that states:
+
+If $x^*$ and $(\lambda^*,\nu^*)$ are primal and dual optimal solutions and strong duality holds, then $x^*$ and $(\lambda^*,\nu^*)$ satisfy the KKT conditions.
+
+\begin{examplesection}[Example: KKT Conditions for a QP]
+    Given the following QP
+    \begin{align*}
+        \min_{x\in\mathbb{R}^n} & \frac{1}{2}x^\top Qx + c^\top x \\
+        \text{subject to}\quad  & Ax=b                            \\
+                                & x\geq 0                         \\
+                                & Q \succeq 0
+    \end{align*}
+    The Lagrangian is
+    \begin{equation*}
+        L(x,\lambda,\nu) = \frac{1}{2}x^\top Qx +c^\top x +\nu^\top(Ax-b) -\lambda^\top x
+    \end{equation*}
+    The KKT conditions are:
+    \begin{align*}
+        \nabla_x L(x,\lambda,\nu) = Qx + A^\top \nu -\lambda +c = 0 &  & \text{KKT 4}                  \\
+        Ax=b                                                        &  & \text{KKT 1}                  \\
+        x\geq 0                                                     &  & \text{KKT 1}                  \\
+        \lambda \geq 0                                              &  & \text{KKT 2}                  \\
+        x_i\lambda_i = 0                                            &  & i=1\ldots n \quad\text{KKT 3}
+    \end{align*}
+\end{examplesection}
+
+\subsubsection{Sensitivity Analysis}
+
+To analyze the sensitivity of a solution one can add a perturbation term to the constraints. The perturbed primal becomes
+\begin{align*}
+    \min_{x} \quad         & f(x)            \\
+    \text{subject to}\quad & g_i(x) \leq u_i \\
+                           & h_i(x) = v_i
+\end{align*}
+and the corresponding dual
+\begin{align*}
+    \max_{\lambda,\nu}\quad & d(\lambda,\nu) - u^\top \lambda - v^\top \nu \\
+    \text{subject to}\quad  & \lambda \geq 0
+\end{align*}
+where $u$ and $v$ represent the perturbation.
+
+\newpar{}
+
+In the case where strong duality holds for the unperturbed problem, the weak duality of the perturbed problem implies
+\begin{align*}
+    p^*(u,v) & \geq d^*(\lambda^*,\nu^*) - u^\top \lambda^* -v^\top\nu^* \\
+             & = p^*(0,0) - u^\top \lambda^* -v^\top\nu^*
+\end{align*}
+
+\newpar{}
+\ptitle{Global Sensitivity Analysis}
+
+If a (large) Lagrangian multiplier and the corresponding perturbation have opposite sign, the problem is sensitive to the perturbation. In particular,
+\begin{align*}
+     & \lambda_i^* \text{ large and } u_i < 0              &  & \Rightarrow \text{(i)}  \\
+     & \lambda_i^* \text{ small and } u_i > 0              &  & \Rightarrow \text{(ii)} \\
+     & \begin{Bmatrix}
+            & \nu^* \text{ large and positive and } v_i < 0 \\
+            & \nu^* \text{ large and negative and } v_i > 0
+            &\end{Bmatrix} &  & \Rightarrow \text{(i)}                                 \\
+     & \begin{Bmatrix}
+            & \nu^* \text{ small and positive and } v_i > 0 \\
+            & \nu^* \text{ small and negative and } v_i < 0
+            &\end{Bmatrix} &  & \Rightarrow \text{(ii)}
+\end{align*}
+\begin{enumerate}[label=(\roman*), wide=0pt]
+    \item $p^*(u,v)$ increases greatly
+    \item $p^*(u,v)$ does not decrease much
+\end{enumerate}
+
+\newpar{}
+\ptitle{Local Sensitivity Analysis}
+
+If in addition $p^*(u,v)$ is differentiable at $(0,0)$, then
+\begin{equation*}
+    \lambda_i^* = -\frac{\partial p^*(0,0)}{\partial u_i}, \qquad  \nu_i^* = -\frac{\partial p^*(0,0)}{\partial v_i},
+\end{equation*}
+where
+\begin{itemize}
+    \item $\lambda_i^*$ is the sensitivity of $p^*$ relative to $i^{th}$ inequality.
+    \item $\nu_i^*$ is the sensitivity of $p^*$ relative to $i^{th}$ equality.
+\end{itemize}
