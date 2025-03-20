@@ -310,9 +310,47 @@ with
 \end{gather*}
 Note that $w$ is structurally different to $w_{in}$ from~\ref{cftoc_QP_without_subs}.
 
+\paragraph{Comparison: Substitution vs.\ No Substitution}
+
+\renewcommand{\arraystretch}{1.3}
+\setlength{\oldtabcolsep}{\tabcolsep}\setlength\tabcolsep{6pt}
+\begin{tabularx}{\linewidth}{@{}lll@{}}
+                   & Substitution                  & No Substitution               \\
+    \cmidrule{2-3}
+    \# opt.\ vars. & $N n_u$                       & $N(n_x + n_u)$                \\
+    benefits       & less opt.\ vars.              &                               \\
+                   & less constraints              & sparse constr.\ ($\propto N$) \\
+    drawbacks      & complicated constr.           & more opt.\ vars.              \\
+                   & more constr.\ ($\propto N^2$) &                               % TODO: Why?
+\end{tabularx}
+\renewcommand{\arraystretch}{1}
+\setlength\tabcolsep{\oldtabcolsep}
+Note that substitution transforms input constraints into state constraints, making them more involved in general. Hence, no substitution is often preferable. For small $N$ and large $n_x$ however, substitution can be more efficient.
+
 \paragraph{State Feedback Solution}
 
-%TODO: Lecture 5 
+As $n_x>=1$, the CFTOC problem is a \textbf{multiparametric quadratic program (mp-QP)} in general with the following solution properties:
+
+\begin{itemize}
+    \item $u_0^*$ is of the form
+          \begin{equation*}
+              u_0^\star=\kappa(x(k)),\quad\forall x(k)\in\mathcal{X}_0
+          \end{equation*}
+          with $\kappa:\mathbb{R}^n \to \mathbb{R}^m$ cont., piecewise affine on polyhedra
+          \begin{equation*}
+              \kappa  =\kappa(x)=F^j x + g^j, \quad\mathrm{if}\quad x\in CR^j,\quad j=1,\cdots,N^r
+          \end{equation*}
+    \item The polyhedral sets for the individual control laws
+          \begin{equation*}
+              CR^j=\{x\in\mathbb{R}^n|H^j x\leq K^j\},j=1,\cdots,N^r
+          \end{equation*}
+          are a partition of the feasible polyhedron $\mathcal{X}_0$.
+    \item $J^*(x(k))$ is \textbf{convex}, piecewise \textbf{quadratic} on polyhedra.
+\end{itemize}
+\textbf{Explicit MPC} addresses how to compute this solution.
+\begin{center}
+    \includegraphics[width = \linewidth]{04_CFTOC_control_law.png}
+\end{center}
 
 \subsubsection[1-Norm and Inf-Norm Cost]{1-Norm and $\infty$-Norm Cost CFTOC}
 
