@@ -334,9 +334,9 @@ As $n_x>=1$, the CFTOC problem is a \textbf{multiparametric quadratic program (m
 \begin{itemize}
     \item $u_0^*$ is of the form
           \begin{equation*}
-              u_0^\star=\kappa(x(k)),\quad\forall x(k)\in\mathcal{X}_0
+              u_0^*=\kappa(x(k)),\quad\forall x(k)\in\mathcal{X}_0
           \end{equation*}
-          with $\kappa:\mathbb{R}^n \to \mathbb{R}^m$ cont., piecewise affine on polyhedra
+          with $\kappa:\mathbb{R}^n \to \mathbb{R}^m$ cont., \textbf{piecewise affine} on polyhedra
           \begin{equation*}
               \kappa  =\kappa(x)=F^j x + g^j, \quad\mathrm{if}\quad x\in CR^j,\quad j=1,\cdots,N^r
           \end{equation*}
@@ -345,7 +345,7 @@ As $n_x>=1$, the CFTOC problem is a \textbf{multiparametric quadratic program (m
               CR^j=\{x\in\mathbb{R}^n|H^j x\leq K^j\},j=1,\cdots,N^r
           \end{equation*}
           are a partition of the feasible polyhedron $\mathcal{X}_0$.
-    \item $J^*(x(k))$ is \textbf{convex}, piecewise \textbf{quadratic} on polyhedra.
+    \item $J^*(x(k))$ is \textbf{convex}, \textbf{piecewise quadratic} on polyhedra.
 \end{itemize}
 \textbf{Explicit MPC} addresses how to compute this solution.
 \begin{center}
@@ -354,19 +354,149 @@ As $n_x>=1$, the CFTOC problem is a \textbf{multiparametric quadratic program (m
 
 \subsubsection[1-Norm and Inf-Norm Cost]{1-Norm and $\infty$-Norm Cost CFTOC}
 
-The cost function that incorporates the $p=1$ or $p=\infty$ norm is composed of
+% The cost function that incorporates the $p=1$ or $p=\infty$ norm is composed of
+% \begin{align*}
+%     I_f(x_N)   & = {\lVert Px_N \rVert}_p                          \\
+%     I(x_i,U_i) & = {\lVert Qx_i \rVert}_p + {\lVert Ru_i \rVert}_p
+% \end{align*}
+% with $P,Q,R$ having full column rank. % TODO: I didn't find it in the slides. But just uncomment it if it's important.
+
+The $1$-norm and $\infty$-norm cost CFTOC can be transformed into LPs of the form
 \begin{align*}
-    I_f(x_N)   & = {\lVert Px_N \rVert}_p                          \\
-    I(x_i,U_i) & = {\lVert Qx_i \rVert}_p + {\lVert Ru_i \rVert}_p
+    \min_{z\in\mathbb{R}^n}C^T z  \\
+    \text{subj.\ to } Gz & \leq h \\
+    Az                   & =b
 \end{align*}
-with $P,Q,R$ having full column rank.
+The key method is to reformulate the problem in \textbf{epigraph form} using auxiliary variables.
 
-%TODO: Lecture 5 
+\paragraph[linf Minimization]{$l_{\infty}$ Minimization}
 
-\paragraph{Construction of LP with Substitution}
+The constrained \(\ell_\infty\) (Chebyshev) minimization problem is:
+\begin{gather*}
+    \min_{x \in \mathbb{R}^n} \|x\|_\infty \\
+    \text{subj.\ to } Fx \leq g
+\end{gather*}
+The peak absolute value in $x$ is the largest value of all $\{-x_i, x_i\}$. Hence, the cost can be rewritten as maximum of linear functions
+\begin{equation*}
+    \min_{x \in \mathbb{R}^n} \left[\max \{x_1, \dots, x_n, -x_1, \dots, -x_n\}\right]
+\end{equation*}
 
-%TODO: Lecture 5 
+\newpar{}
+\ptitle{Auxiliary Variable Formulation}
 
-\paragraph{State Feedback Solution}
+In order to obtain a LP, one uses an equivalent formulation with \textit{one} auxiliary variable $t$:
+\begin{gather*}
+    \min_{x, t} t \\
+    \text{subj.\ to } -\mathbf{1} t \leq x \leq \mathbf{1} t\\
+    Fx \leq g
+\end{gather*}
+where $\mathbf{1}$ indicates a vector of ones and $-\mathbf{1} t \leq x \leq \mathbf{1} t$ bounds the absolute value of every element of $x$ with a \textit{common} scalar variable $t$.
 
-%TODO: Lecture 5 
+\newpar{}
+\ptitle{Application to CFTOC}\label{l_inf_CFTOC}
+
+The $\infty$-norm minimization CFTOC reformulation introduces a \textit{scalar} auxiliary variable for each state of the trajectory
+\begin{align*}
+    z & := \{ \varepsilon_{0}^x, \dots, \varepsilon_{N}^x, \varepsilon_{0}^u, \dots, \varepsilon_{N-1}^u, u_0^\top, \dots, u_{N-1}^\top \} \in \mathbb{R}^s, \\
+    s & := (m + 1) N + N + 1
+\end{align*}
+This yields the $\infty$-norm minimization CFTOC \textbf{cost}
+\begin{equation*}
+    \min_z \varepsilon_{0}^x + \dots + \varepsilon_{N}^x + \varepsilon_{0}^u + \dots + \varepsilon_{N-1}^u
+\end{equation*}
+Using
+\begin{align*}
+    x_i & = A^i x_0 + \sum_{j=0}^{i-1} A^j B u_{i-1-j} \\
+    x_N & = A^N x_0 + \sum_{j=0}^{N-1} A^j B u_{N-1-j}
+\end{align*}
+the state and input \textbf{norm constraints} amount to
+\begin{align*}
+    \text{subj.\ to } \  & -1_n \varepsilon_{x_i} \leq \pm Q x_i, \\
+                         & -1_r \varepsilon_{x_N} \leq \pm P x_N, \\
+                         & -1_m \varepsilon_{u_i} \leq \pm R u_i
+\end{align*}
+% TODO: I think we know deez nuts
+% The standard \textbf{MPC constraints} are
+% \begin{align*}
+%      & x_i\in X,                              \\
+%      & u_i \in U,                             \\
+%      & x_N \in X_f,                           \\
+%      & x_0 = x(k), \quad i = 0, \dots, N - 1.
+% \end{align*}
+The problem results in the following \textbf{standard LP}:
+% TODO: What is c? :O Does it mean that we weigh the different norm bounds differently? Why would one?
+\begin{gather*}
+    \min_z \              c^\top z                                                                                                                                                              \\
+    \text{subj.\ to } \   \bar{G} z \leq \bar{w} + \bar{S} x(k),                                                                                                                                \\
+    \bar{G}               = \begin{bmatrix} G_\varepsilon & G_u \\ 0 & G\end{bmatrix}, \bar{S} = \begin{bmatrix} S_\varepsilon \\ S \end{bmatrix}, \bar{w}= \begin{bmatrix} w_\varepsilon \\ w \end{bmatrix}
+\end{gather*}
+Using this formulation, given $x(k)$, the optimal control sequence $U^*$ can be obtained via an LP solver.
+
+\paragraph[l1 Minimization]{$l_{1}$ Minimization}
+
+The constrained \(\ell_1\) minimization problem is defined as:
+\begin{gather*}
+    \min_{x \in \mathbb{R}^n} \|x\|_1 \\
+    \text{subj.\ to } Fx \leq g
+\end{gather*}
+again using the maximum of linear functions method yields
+\begin{equation*}
+    \min_{x \in \mathbb{R}^n} \left[ \sum_{i=1}^{m} \max \{x_i, -x_i\} \right]
+\end{equation*}
+
+\newpar{}
+\ptitle{Auxiliary Variable Formulation}
+
+The equivalent formulation introduces a \textit{vector} of auxiliary variables $t \in \mathbb{R}^n$, yielding
+\begin{gather*}
+    \min_{x \in \mathbb{R}^n, t \in \mathbb{R}^n} \mathbf{1}^\top t, \\
+    \text{subj.\ to } -t \leq x \leq t, \\
+    Fx \leq g
+\end{gather*}
+The constraint $-t \leq x \leq t$ bounds the absolute value of each component of $x$ with each \textit{component} of the vector variable $t$.
+
+\newpar{}
+\ptitle{Application to CFTOC}
+
+Apply the auxiliary variable formulation similar to~\ref{l_inf_CFTOC}. However,
+\begin{itemize}
+    \item Introduce a vector $\varepsilon_i^x \in \mathbb{R}^n$ of auxiliary variables for each state in the trajectory
+    \item Sum all $\mathbf{1}^\top \varepsilon_i^x$ in the cost function
+    \item Remember that the equality constraints are now elementwise for each $x_i$ and corresponding entry in $\varepsilon_i^x$
+\end{itemize}
+
+\paragraph[l1, linf State Feedback Solution]{$l_{1}, l_{\infty}$ State Feedback Solution}
+
+The CFTOC problem
+% TODO: Why are there no equality constraints??
+\begin{align*}
+    \min_{z\in\mathbb{R}^n}c^T z                            \\
+    \text{subj.\ to } \bar{G}z & \leq \bar{w} + \bar{S}x(k)
+\end{align*}
+is again a mp-LP with the following solution properties:
+\begin{itemize}
+    \item $u_0^*$ has the form:
+          \begin{align*}
+              u_0^* = \kappa(x(0)), \quad \forall x(0) \in \mathcal{X}_0,
+          \end{align*}
+          where $\kappa : \mathbb{R}^n \to \mathbb{R}^m$ is cont.\, piecewise affine on polyhedra:
+          \begin{align*}
+              \kappa(x) = F^j x + g^j, \quad \text{if } x \in CR^j, \quad j = 1, \dots, N^r
+          \end{align*}
+    \item The polyhedral sets
+          \begin{equation*}
+              CR^j = \{x \in \mathbb{R}^n \mid H^j x \leq K^j\}, \quad j = 1, \dots, N^r
+          \end{equation*}
+          are a partition of the feasible polyhedron $\mathcal{X}_0$.
+    \item In case of multiple optimizers, a \textbf{piecewise affine} control law exists.
+    \item The value function $J^*(x(0))$ is \textbf{convex} and \textbf{piecewise affine} (not convex as for QP) on polyhedra.
+\end{itemize}
+
+\newpar{}
+\ptitle{Location of Optimizer in State Space}
+
+The type of cost function influences the location of the optimizer in state space. See
+\begin{itemize}
+    \item\ \ref{optimizer_location_LP} for LP
+    \item\ \ref{optimizer_location_QP} for QP
+\end{itemize}

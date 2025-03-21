@@ -232,7 +232,7 @@ is equivalent to
                     & s_i \geq 0,      &  & i = 1,\ldots,m
 \end{align*}
 
-\subsubsection{Linear Program (LP)}
+\subsubsection{Linear Program (LP)}\label{optimizer_location_LP}
 \begin{align*}
     \min_{x\in\mathbb{R}^n}\; & c^\top x  \\
     \mathrm{s.t.}\;           & Gx \leq h \\
@@ -244,14 +244,14 @@ where the feasible set $\mathcal{P}$ is a polyhedron (convex).
 For the set of optimizers $\mathcal{X}_{opt}$, generally, three cases can occur:
 \begin{enumerate}
     \item \textbf{Unbounded} $\mathcal{P}$ is unbounded below
-    \item \textbf{Bounded with unique optimizer}: $\mathcal{X}_{opt}$ is a \textbf{singleton}
-    \item \textbf{Bounded with multiple optimizers}: $\mathcal{X}_{opt}$ is a (bounded or unbounded) subset of $\mathbb{R}^s$. In this case, the solution is sensitive to noise.       % TODO: Why "s"?
+    \item \textbf{Bounded with unique optimizer}: $\mathcal{X}_{opt}$ is a \textbf{singleton}.\ \textit{At least} $n$ constraints are active.
+    \item \textbf{Bounded with multiple optimizers}: $\mathcal{X}_{opt}$ is a (bounded or unbounded) subset of $\mathbb{R}^s$. \textit{At least} one constraint is active. In this case, the solution is sensitive to noise. % TODO: Why "s"?.
 \end{enumerate}
 \begin{center}
     \includegraphics[width=\linewidth]{images/03_LP_cases.png}
 \end{center}
 
-\subsubsection{Quadratic Program (QP)}
+\subsubsection{Quadratic Program (QP)}\label{optimizer_location_QP}
 The general QP
 \begin{align*}
     \min_{x\in\mathbb{R}^n}\; & \frac{1}{2}x^\top H x + q^\top x + r \\
@@ -266,8 +266,8 @@ Problems with concave objective $H<0$ are quadratic programs, but hard.
 \newpar{}
 If feasible, in general two cases can occur:
 \begin{enumerate}
-    \item \textbf{Case 1}: optimizer lies strictly inside the feasible polyhedron
-    \item \textbf{Case 2}: optimizer lies on the boundary of the feasible polyhedron
+    \item \textbf{Case 1}: optimizer lies strictly inside the feasible polyhedron. No constraints active.
+    \item \textbf{Case 2}: optimizer lies on the boundary of the feasible polyhedron. At least one constraint active.
 \end{enumerate}
 \begin{center}
     \includegraphics[width=\linewidth]{images/03_QP_cases.png}
