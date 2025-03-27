@@ -1,0 +1,35 @@
+\section{Feasibility and Stability}
+\subsection{Zero Terminal Constraint}
+Given the terminal constraint $x_N = 0$.
+\subsubsection{Feasibility}
+Assume feasibility for $x(k)$ with optimal solution
+\begin{equation*}
+    \{u_0^*, u_1^*, \ldots, u_{N-1}^*\}, \quad \{x(k),x_1^*, x_2^*, \ldots, x_N^*\}
+\end{equation*}
+
+Applying the first control input $u_0^*$ to the system, the state will evolve as
+\begin{equation*}
+    x(k+1) = Ax(k) + Bu(k) = Ax(k) + B u_0^* = x_1^*
+\end{equation*}
+it follows directly that the sequence
+\begin{equation*}
+    \widetilde{U}=\{u_1^*, \ldots, u_{N-1}^*, 0\}\; \to \; \widetilde{X}=\{x_1^*, \ldots, x_N^*, \underbrace{Ax_N^* + Bu_N}_{0}\}
+\end{equation*}
+is feasible too. And therefore, recursive feasibility is guaranteed and the feasible set is \textbf{control invariant}.
+
+\subsubsection{Stability}
+Using the same (suboptimal) sequence $\widetilde{x}$ as above, the cost is given by
+\begin{align*}
+    J^*(x(k+1)) & \leq \widetilde{J}(x(k+1))                                                                                                         \\
+                & = \sum_{i=1}^{N-1} I(x_i^*, u_i^*) + I(x_N^*, 0)                                                                                   \\
+                & =\underbrace{\sum_{i=0}^{N-1} I(x_i^*, u_i^*)}_{J^*(x(k))} - \underbrace{I(x_0^*, u_0^*)}_{\geq 0}  + \underbrace{I(x_N^*, 0)}_{0} \\
+                & \leq J^*(x(k))
+\end{align*}
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{images/06_fin_hor_stab.png}
+\end{center}
+
+\subsection{Terminal Constraint}
+\subsubsection{Feasibility}
+
+\subsubsection{Stability}
