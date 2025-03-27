@@ -500,3 +500,37 @@ The type of cost function influences the location of the optimizer in state spac
     \item\ \ref{optimizer_location_LP} for LP
     \item\ \ref{optimizer_location_QP} for QP
 \end{itemize}
+
+\subsection{Common Constraints}
+\subsubsection{Polytopic Constraints}
+\ptitle{Input Constraints}
+\begin{equation*}
+    u_{\min} \leq u \leq u_{\max} \quad \Leftrightarrow \quad \begin{bmatrix}
+        -\mathbb{I} \\
+        \mathbb{I}
+    \end{bmatrix} u \leq \begin{bmatrix}
+        -u_{\min} \\
+        u_{\max}
+    \end{bmatrix}
+\end{equation*}
+
+\newpar{}
+\ptitle{Rate Constraints}
+\begin{equation*}
+    \|x_K - x_{k+1}\|_\infty \leq \alpha \quad \Leftrightarrow \quad \begin{bmatrix}
+        \mathbb{I}  & -\mathbb{I} \\
+        -\mathbb{I} & \mathbb{I}
+    \end{bmatrix}\begin{bmatrix}
+        x_k \\
+        x_{k+1}
+    \end{bmatrix} \leq \bm{1} \alpha
+\end{equation*}
+
+\newpar{}
+\ptitle{Magnitude Constraints}
+
+\begin{equation*}
+    \|C x_k\|_\infty \leq \alpha \quad \Leftrightarrow \quad \begin{bmatrix}
+        C \\ -C
+    \end{bmatrix} x_k \leq \bm{1} \alpha
+\end{equation*}

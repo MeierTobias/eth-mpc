@@ -102,6 +102,27 @@ The Euclidean ball $B(x_c,r)$ is a special case of the ellipsoid, for which $A=r
 
 \subsubsection{Set Operations}
 The intersection of convex sets is convex, whereas the union of convex sets is not necessarily convex.
+
+\subsubsection{Convex Hull}\label{ssec:convex_hull}
+For any subset $S$ of $\mathbb{R}^d$, the \textit{convex hull} $\mathrm{co}(S)$ is the intersection of all convex sets containing $S$, i.e.\ the smallest convex set containing $S$.
+
+\newpar{}
+\ptitle{Vertex Representation}
+
+Given a set of points $S=\{v_1, v_2, \ldots, v_k\} \in \mathbb{R}^d$, their convex hull is
+\begin{equation*}
+    \mathrm{co}(S) = \left\{ x\Bigg| x = \sum_i \lambda_i v_i, \; \lambda_i \geq 0,\; \sum_i \lambda_i = 1,\; \forall i=1,\ldots k \right\}
+\end{equation*}
+
+\newpar{}
+\ptitle{Minkowski-Weyl Theorem}
+
+For a set $P\subseteq \mathbb{R}^d$, the following are equivalent:
+\begin{itemize}
+    \item $P$ is a polytope
+    \item $P$ is finitely generated, i.e., these exist a finite set of vectors $\{v_i\}$ such that $P=\mathrm{co}(\{v_i\})$
+\end{itemize}
+
 \subsection{Convex Functions}
 A function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is convex \textbf{iff} $\text{dom}(f)$ is convex and $\forall x,y \in \text{dom}(f)$
 \begin{equation*}

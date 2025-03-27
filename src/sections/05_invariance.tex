@@ -62,7 +62,7 @@ In the constraint case $S := \{x \mid F x \leq f \}$, this yields
     \text{pre}(S) = \{x \mid F A x \leq f \}
 \end{equation*}
 
-\subsubsection{Computing Invariant Sets}
+\subsubsection{Computing Invariant Sets}\label{ssec:computing_invariant_sets}
 A conceptual algorithm to calculate invariant sets is
 \begin{algorithmic}
     \State{} \textbf{Input:} $g$, $X$
@@ -102,10 +102,11 @@ The concept of a pre-set extends to systems with exogenous inputs:
 A set $\mathcal{C}$ is a control invariant set if and only if $\mathcal{C} \subseteq \text{pre}(\mathcal{C})$.
 
 \newpar{}
+The same algorithm as for positively invariant sets can be used but the calculation of the pre-set is much more complicated.
+
+
 \ptitle{Preset Computation for Constrained LTI System}
 
-The same algorithm as for positively invariant sets can be used but the calculation of the pre-set is much more complicated.
-\newpar{}
 Consider the system $x(k + 1) = A x(k) + B u(k)$ under the constraints
 \begin{align*}
     u(k) \in \mathcal{U} & := \{u \mid G u \leq g \} \\
@@ -132,17 +133,68 @@ which is a \textbf{projection operation}.
 
 Let $\mathcal{C}$ be a control invariant set for the system $x(k + 1) = g(x(k), u(k))$.
 \newpar{}
-A control law $\kappa(x(k))$ guarantees that the system $x(k + 1) = g(x(k), \kappa(x(k)))$ will satisfy the constraints for all time if it respects the control invariant set, i.e.:
+A control law $\kappa(x(k))$ guarantees that the system $x(k + 1) = g(x(k), \kappa(x(k)))$ will satisfy the state constraints for all time if it respects the control invariant set, i.e.:
 \begin{equation*}
     g(x, \kappa(x)) \in \mathcal{C} \quad \forall x \in \mathcal{C}
 \end{equation*}
 Therefore, we can synthesize a control law from a control invariant set by solving the following \textbf{optimization problem}:
 \begin{equation*}
-    \kappa(x) := \arg\min \{ f(x, u) \mid g(x, u) \in \mathcal{C} \},
+    \kappa(x) := \arg\min \{ f(x, u) \mid g(x, u) \in \mathcal{C},\; u \in \mathcal{U} \},
 \end{equation*}
 where $f$ is any function (including $f(x, u) = 0$).
 \newpar{}
 \textbf{Note}: This ensures that the system will satisfy the constraints, but it does not guarantee convergence.
 
+\subsection{Computation of Simple Invariant Sets}
+This subsection specifies how to compute the intersection of two sets and the equality test needed in~\ref{ssec:computing_invariant_sets}.
+\subsubsection{Polytopes}
+\paragraph{Intersection}
+\begin{equation*}
+    S \cap T = \left\{x \Bigg|\begin{bmatrix}
+        C \\D
+    \end{bmatrix}x \leq \begin{bmatrix}
+        c \\d
+    \end{bmatrix}\right\}
+\end{equation*}
 
+\paragraph{Equality Test (Subset Test)}
+$P=\{x\mid Cx\leq c\}$ is a subset of $Q=\{x\mid Dx\leq d\}$ if for each row, the \textbf{support} is a subset of $D$:
+\begin{equation*}
+    h_P(D_i) \leq d_i
+\end{equation*}
+where the support (extremum of $P$ in direction $D_i$) is defined as
+\begin{align*}
+    h_p(D_i) :=     & \max_x D_i x \\
+    \mathrm{s.t.}\; & Cx\leq c
+\end{align*}
 
+\subsubsection{Ellipsoids}
+Invariant ellipsoidal sets with its center in the origin, can directly be computed from Lyapunov functions.
+
+\newpar{}
+If $V:\mathbb{R}^d\to\mathbb{R}$ is a Lyapunov function for the system $x(k+1)=g(x(k))$, then the sublevel set
+\begin{equation*}
+    Y = \{x\mid V(x)\leq \alpha\}
+\end{equation*}
+is an invariant set for all $\alpha \geq 0$.
+
+\paragraph{Linear Systems}
+For linear systems $x(k+1)=Ax(k)$, the Lyapunov function $V(x)=x^\top Px$ with $P\succ 0$  and
+\begin{equation*}
+    A^\top PA-P \prec 0
+\end{equation*}
+yields the ellipsoidal invariant set
+
+\begin{equation*}
+    Y_\alpha = \left\{x\mid x^\top Px\leq \alpha\right\} \subset \mathcal{X}= \left\{x\mid Fx\leq f\right\}
+\end{equation*}
+
+\newpar{}
+\ptitle{Maxmium Invariant Set}
+
+The largest ellipse $Y_\alpha$ in a polytope $\mathcal{X}$ can be computed with
+\begin{equation*}
+    \alpha^* = \min_{i\in \{1,\ldots, n\}} \frac{f_i^2}{F_i P^{-1} F_i^\top}
+\end{equation*}
+
+\textbf{Note} that this only computes the largest ellispoid with the center in the origin and a fixed shape $P$.
