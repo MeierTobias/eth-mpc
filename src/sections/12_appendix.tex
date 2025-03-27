@@ -1,0 +1,63 @@
+\section{Appendix}
+\subsection{Receding Horizon Control Notation}
+Consider the DT LTI model
+\begin{equation*}
+    x(k + 1) = A x(k) + B u(k), \quad y(k) = C x(k),
+\end{equation*}
+where $x(k) \in \mathcal{X}$, $u(k) \in \mathcal{U}$, $\forall k \geq 0$.
+
+\subsubsection{Absolute Time Notation}
+
+The CFTOC problem in absolute time notation
+\begin{equation*}
+    J^*_{{k \to k+N | k}}(x(k)) = \min_{U_{k \to k+N | k}} l_f (x_{k+N | k}) + \sum_{i=0}^{N-1} l(x_{k+i | k}, u_{k+i | k})
+\end{equation*}
+subj.\ to   % otherways hbox issues
+\begin{align*}
+    x_{k+i+1 | k} & = A x_{k+i | k} + B u_{k+i | k}, \quad i = 0, \dots, N - 1,          \\
+    x_{k+i | k}   & \in \mathcal{X}, \quad u_{k+i | k} \in U, \quad i = 0, \dots, N - 1, \\
+    x_{k+N | k}   & \in \mathcal{X}_f,                                                   \\
+    x_{k | k}     & = x(k),
+\end{align*}
+is solved at time $k$ for the optimal input sequence
+\begin{equation*}
+    U_{k \to k+N | k} = \{u_{k | k}, \dots, u_{k+N-1 | k}\}
+\end{equation*}
+
+\newpar{}
+\ptitle{State Indices}
+
+The state $x_{k+i | k}$ is the predicted state at time $k + i$, computed by starting from the current state $x_{k | k} = x(k)$ and applying the input sequence $u_{k | k}, \dots, u_{k+i-1 | k}$ to the system model
+\begin{equation*}
+    x_{k+1 | k} = A x_{k | k} + B u_{k | k}.
+\end{equation*}
+For example, the states $x_{3| 1}$ and $x_{3| 2}$ live both at time $3$, but are computed at different points in time.
+
+\newpar{}
+\ptitle{Receding Horizon Control Law}
+
+The receding horizon control law is given by the first element of $U^*_{k \to k+N | k}$:
+\begin{equation*}
+    \kappa_k(x(k)) = u(k) = u^*_{k | k}(x(k))
+\end{equation*}
+
+\subsubsection{Relative Time Notation}
+
+System, constraints, and cost function are time-invariant. Hence, the solution $\kappa_k(x(k))$ is a time-invariant function of the IC $x(k)$, allowing for the simplified notation
+\begin{equation*}
+    J^*(x(k)) = \min_U l_f(x_N) + \sum_{i=0}^{N-1} l(x_i, u_i)
+\end{equation*}
+\text{subj.\ to }
+\begin{align*}
+    x_{i+1} & = A x_i + B u_i, \quad i = 0, \dots, N - 1,                  \\
+    x_i     & \in \mathcal{X}, \quad u_i \in U, \quad i = 0, \dots, N - 1, \\
+    x_N     & \in \mathcal{X}_f,                                           \\
+    x_0     & = x(k),
+\end{align*}
+where $U = \{u_0, \dots, u_{N-1}\}$.
+
+\newpar{}
+\ptitle{Receding Horizon Control Law}
+
+The control law and closed-loop system are time-invariant as well, and we write $\kappa(x(k))$ for $\kappa_k(x(k))$.
+
