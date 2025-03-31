@@ -30,7 +30,7 @@ In practice, the optimization variables include also the state $x_0, x_1, \dots,
 The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$. A constrained problem could theoretically still yield a solution through matrix inversion, which however might be unfeasible.
 
 \newpar{}
-\ptitle{Problem Setup}% Is this just the initial condition response + forced response? yes: this is just the state evolution under the control input u
+\ptitle{Problem Setup}
 
 Defining
 \begin{align*}
@@ -43,10 +43,10 @@ Defining
         x_N
     \end{bmatrix} & =
     \begin{bmatrix}
-        1      \\
-        A      \\
-        \vdots \\
-        \vdots \\
+        \mathbb{1} \\
+        A          \\
+        \vdots     \\
+        \vdots     \\
         A^N
     \end{bmatrix}x(0)+
     \begin{bmatrix}
@@ -228,8 +228,8 @@ Depending on the specific situation
 
 Solving the local subproblem yields the optimal control input
 \begin{align*}
-    u^\star(k) & = F_\infty x(k)                                       \\
-    F_\infty   & := -{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty Ax(k)
+    u^\star(k) & = F_\infty x(k)                                   \\
+    F_\infty   & := -{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
 \end{align*}
 The optimal cost-to-go is
 \begin{equation*}
