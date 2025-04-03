@@ -73,7 +73,9 @@ A \textbf{halfspace} is everything on one side of a hyperplane $\left\{x \in \ma
 Hyperplanes are affine and convex, halfspaces are convex.
 
 \subsubsection{Polyhedra and Polytopes}
-A \textbf{polyhedron} is the intersection of a finite number of closed halfspaces:
+Polyhedra and polytopes are always convex.
+\paragraph{Polyhedra}
+A polyhedron is the intersection of a finite number of closed halfspaces:
 \begin{equation*}
     P := \left\{ x \mid a_i^\top x \leq b_i, i = 1, \ldots, m \right\} = \left\{ x \mid Ax \leq b \right\}
 \end{equation*}
@@ -81,10 +83,21 @@ where
 \begin{equation*}
     A := \begin{bmatrix} a_1 & a_2 & \ldots & a_m \end{bmatrix}^\top \quad \text{and} \quad b := \begin{bmatrix} b_1 & b_2 & \ldots & b_m \end{bmatrix}^\top
 \end{equation*}
+\paragraph{Polytopes}
+A polytope is a bounded polyhedron.
 \newpar{}
-A \textbf{polytope} is a bounded polyhedron.
-\newpar{}
-Polyhedra and polytopes are always convex.
+\ptitle{Minkowski-Weyl Theorem}
+
+For a set $P\subseteq \mathbb{R}^d$, the following are equivalent:
+\begin{itemize}
+    \item $P$ is a polytope $\left\{ x \mid Ax \leq b \right\}$ (bounded)
+    \item $P$ is finitely generated, i.e., these exist a finite set of vectors $\{v_i\}$ such that $P=\mathrm{co}(\{v_1, \dots, v_s\})$
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width = 0.75\linewidth]{03_MinWeyl.png}
+\end{center}
+
 \subsubsection{Ellipsoids}
 An ellipsoid is a set defined as
 \begin{equation*}
@@ -113,15 +126,6 @@ Given a set of points $S=\{v_1, v_2, \ldots, v_k\} \in \mathbb{R}^d$, their conv
 \begin{equation*}
     \mathrm{co}(S) = \left\{ x\Bigg| x = \sum_i \lambda_i v_i, \; \lambda_i \geq 0,\; \sum_i \lambda_i = 1,\; \forall i=1,\ldots k \right\}
 \end{equation*}
-
-\newpar{}
-\ptitle{Minkowski-Weyl Theorem}
-
-For a set $P\subseteq \mathbb{R}^d$, the following are equivalent:
-\begin{itemize}
-    \item $P$ is a polytope
-    \item $P$ is finitely generated, i.e., these exist a finite set of vectors $\{v_i\}$ such that $P=\mathrm{co}(\{v_i\})$
-\end{itemize}
 
 \subsection{Convex Functions}
 A function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is convex \textbf{iff} $\text{dom}(f)$ is convex and $\forall x,y \in \text{dom}(f)$

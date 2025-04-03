@@ -126,7 +126,20 @@ which is a \textbf{projection operation}.
 \begin{itemize}
     \item An entire set of states can map into each point
     \item The pre-set is a lot larger (positive), but much more difficult to compute
-    \item The maximum control invariant set is the best any controller can do
+    \item The maximum control invariant set is the best any controller can do.
+\end{itemize}
+
+\paragraph{Usefulness}
+
+If one can compute a control invariant set, it provides a direct method for synthesizing a control law that will satisfy constraints. However, calculating the maximal control invariant set is often too complex in the case of linear systems and even more difficult for nonlinear ones. MPC implicitly describes a (suboptimal) control invariant set such that it's easy to represent and compute.
+
+\newpar{}
+\ptitle{Linear System / Polyhedral Constraints}
+
+In this special case one can e.g.\ choose
+\begin{itemize}
+    \item Polyhedral invariant set (can represent maximum control invariant set, resulting QP can be very complex due to many inequalities)
+    \item Ellipsoidal invariant set (smaller than polyhedral, but easier to compute, resulting quadratically constrained QP has fixed complexity)
 \end{itemize}
 
 \paragraph{Control Laws from Control Invariant Sets}
