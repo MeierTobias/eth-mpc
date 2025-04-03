@@ -162,6 +162,7 @@ where $f$ is any function (including $f(x, u) = 0$).
 This subsection specifies how to compute the intersection of two sets and the equality test needed in~\ref{ssec:computing_invariant_sets}.
 \subsubsection{Polytopes}
 \paragraph{Intersection}
+Computing polytope intersections in vertex form is difficult. In inequality form however, one directly gets
 \begin{equation*}
     S \cap T = \left\{x \Bigg|\begin{bmatrix}
         C \\D
@@ -171,7 +172,7 @@ This subsection specifies how to compute the intersection of two sets and the eq
 \end{equation*}
 
 \paragraph{Equality Test (Subset Test)}
-$P=\{x\mid Cx\leq c\}$ is a subset of $Q=\{x\mid Dx\leq d\}$ if for each row, the \textbf{support} is a subset of $D$:
+$P=\{x\mid Cx\leq c\}$ is a subset of $Q=\{x\mid Dx\leq d\}$ if for each row, the \textbf{support function} is a subset of $D$:
 \begin{equation*}
     h_P(D_i) \leq d_i
 \end{equation*}
@@ -180,7 +181,9 @@ where the support (extremum of $P$ in direction $D_i$) is defined as
     h_p(D_i) :=     & \max_x D_i x \\
     \mathrm{s.t.}\; & Cx\leq c
 \end{align*}
-
+\begin{center}
+    \includegraphics[width = 0.6\linewidth]{05_support_fnc.png}
+\end{center}
 \subsubsection{Ellipsoids}
 Invariant ellipsoidal sets with its center in the origin, can directly be computed from Lyapunov functions.
 
@@ -192,12 +195,7 @@ If $V:\mathbb{R}^d\to\mathbb{R}$ is a Lyapunov function for the system $x(k+1)=g
 is an invariant set for all $\alpha \geq 0$.
 
 \paragraph{Linear Systems}
-For linear systems $x(k+1)=Ax(k)$, the Lyapunov function $V(x)=x^\top Px$ with $P\succ 0$  and
-\begin{equation*}
-    A^\top PA-P \prec 0
-\end{equation*}
-yields the ellipsoidal invariant set
-
+For linear systems $x(k+1)=Ax(k)$, the Lyapunov function $V(x)=x^\top Px$ (with $P\succ 0$  and $A^\top PA-P \prec 0$) yields the ellipsoidal invariant set
 \begin{equation*}
     Y_\alpha = \left\{x\mid x^\top Px\leq \alpha\right\} \subset \mathcal{X}= \left\{x\mid Fx\leq f\right\}
 \end{equation*}
@@ -205,9 +203,23 @@ yields the ellipsoidal invariant set
 \newpar{}
 \ptitle{Maxmium Invariant Set}
 
-The largest ellipse $Y_\alpha$ in a polytope $\mathcal{X}$ can be computed with
+If we want to find the largest such $Y_\alpha$, we must solve
+\begin{gather*}
+    \max_{\alpha}\alpha \\
+    \text{subj. to }h_{Y_{\alpha}}(F_{i})\leq f_{i} \\
+    \forall i\in\{1,...,n\}
+\end{gather*}
+with the support of an ellipse
+\begin{equation*}
+    h_{Y_\alpha}(F_i)=\|P^{-1/2}F_i^T\|\sqrt{\alpha}
+\end{equation*}
+The largest ellipse $Y_\alpha$ in a polytope $\mathcal{X}$ can now be computed with a 1D optimization problem
 \begin{equation*}
     \alpha^* = \min_{i\in \{1,\ldots, n\}} \frac{f_i^2}{F_i P^{-1} F_i^\top}
 \end{equation*}
 
-\textbf{Note} that this only computes the largest ellispoid with the center in the origin and a fixed shape $P$.
+\textbf{Note} that this only computes the largest ellipsoid with the center in the origin and a fixed shape $P$ (left image).
+\begin{center}
+    \includegraphics[width = \linewidth]{05_max_Lyapunov_elipsoid.png}
+\end{center}
+
