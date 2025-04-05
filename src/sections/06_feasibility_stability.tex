@@ -1,0 +1,50 @@
+\section{Feasibility and Stability}
+Using LQR in constrained systems can e.g.\ lead to input saturation and instability. However, even MPC does not guarantee feasibility and stability per se. In particular, in finite horizon MPC
+\begin{itemize}
+    \item Decrease in the prediction horizon can cause loss of stability properties.
+    \item Depending on the initial condition, the CL trajectory may lead to states for which the optimization problem is infeasible after some steps, even without disturbance or model mismatch.
+\end{itemize}
+If we (could) solve the $\infty$-horizon control problem:
+\begin{itemize}
+    \item problem is feasible $\rightarrow$ closed loop trajectories will be always feasible.
+    \item the cost is finite $\rightarrow$ states and inputs will converge asymptotically to the origin.
+\end{itemize}
+i.e.\ OL and CL would be identical.
+\newpar{}
+The goal of this section is hence to approximate the infinite horizon MPC to get feasibility and stability guarantees.
+\subsection{Zero Terminal Constraint}
+Given the terminal constraint $x_N = 0$.
+\subsubsection{Feasibility}
+Assume feasibility for $x(k)$ with optimal solution
+\begin{equation*}
+    \{u_0^*, u_1^*, \ldots, u_{N-1}^*\}, \quad \{x(k),x_1^*, x_2^*, \ldots, x_N^*\}
+\end{equation*}
+
+Applying the first control input $u_0^*$ to the system, the state will evolve as
+\begin{equation*}
+    x(k+1) = Ax(k) + Bu(k) = Ax(k) + B u_0^* = x_1^*
+\end{equation*}
+it follows directly that the sequence
+\begin{equation*}
+    \widetilde{U}=\{u_1^*, \ldots, u_{N-1}^*, 0\}\; \to \; \widetilde{X}=\{x_1^*, \ldots, x_N^*, \underbrace{Ax_N^* + Bu_N}_{0}\}
+\end{equation*}
+is feasible too. And therefore, recursive feasibility is guaranteed and the feasible set is \textbf{control invariant}.
+
+\subsubsection{Stability}
+Using the same (suboptimal) sequence $\widetilde{x}$ as above, the cost is given by
+\begin{align*}
+    J^*(x(k+1)) & \leq \widetilde{J}(x(k+1))                                                                                                         \\
+                & = \sum_{i=1}^{N-1} I(x_i^*, u_i^*) + I(x_N^*, 0)                                                                                   \\
+                & =\underbrace{\sum_{i=0}^{N-1} I(x_i^*, u_i^*)}_{J^*(x(k))} - \underbrace{I(x_0^*, u_0^*)}_{\geq 0}  + \underbrace{I(x_N^*, 0)}_{0} \\
+                & \leq J^*(x(k))
+\end{align*}
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{images/06_fin_hor_stab.png}
+\end{center}
+
+\subsection{Terminal Subset Constraint}
+Problem: The terminal constraint $x_N = 0$ reduces the size of the feasible set. Goal: Use convex set $\mathcal{X}_f$ to increase the region of attraction.
+% TODO once recording online: Add proof that tail cost (from j to inf) <= terminal cost (didn't find it in slides but was in lecture).
+\subsubsection{Feasibility}
+
+\subsubsection{Stability}
