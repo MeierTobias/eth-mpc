@@ -69,6 +69,60 @@ If no solution exists, then the reachable set point that is closest to $r$ can b
                  & x_s \in \mathcal{X}, \quad u_s \in \mathcal{U}.
 \end{align*}
 
+\subsubsection{Delta-Formulation for Tracking}
+
+By introducing the delta formulation the tracking problem is transformed to the origin and therefor can be treated like a normal MPC problem.
+
+\newpar{}
+
+The deviation variables are given by
+\begin{gather*}
+    \Delta x = x - x_s \\
+    \Delta u = u - u_s
+\end{gather*}
+which results for a linear system in a system model
+\begin{align*}
+    \Delta x_{k+1} & = x_{k+1}-x_s                \\
+                   & = Ax_k + Bu_k -(Ax_s + Bu_s) \\
+                   & = A\Delta x_k + B\Delta u_k
+\end{align*}
+and the constraints become
+\begin{align*}
+    G_x x \leq h_x \Rightarrow & \quad G_x\Delta x \leq h_x - G_x x_s  \\
+    G_u u \leq h_u \Rightarrow & \quad G_u\Delta u \leq h_u - G_u u_s.
+\end{align*}
+
+\begin{center}
+    \includegraphics[width=\linewidth]{07_constraints_transform.png}
+\end{center}
+
+The complete problem in Delta-Formulation then looks like
+\begin{align*}
+    \min \quad        & \sum_{i=0}^{N-1} \Delta x_i^\top Q \Delta x_i + \Delta u_i^\top R \Delta u_i + V_f(\Delta x_N) \\
+    \text{s.t.} \quad & \Delta x_0 = \Delta x(k)                                                                       \\
+                      & \Delta x_{i+1} = A \Delta x_i + B \Delta u_i                                                   \\
+                      & G_x \Delta x_i \leq h_x - G_x x_s                                                              \\
+                      & G_u \Delta u_i \leq h_u - G_u u_s                                                              \\
+                      & \Delta x_N \in \mathcal{X}_f
+\end{align*}
+
+\begin{center}
+    \includegraphics[width=0.7\linewidth]{07_delta-formulation.png}
+\end{center}
+
+where the final input to the system is
+\begin{equation*}
+    u_0^* = \Delta u_0^* + u_s.
+\end{equation*}
+
+Note:
+
+If the target steady-state is uniquely defined by the reference, we can also include the target condition as a constraint in the MPC problem.
+
+\subsubsection{Convergence}
+
+\subsubsection{Terminal Set}
+
 \subsubsection{Offse-Free Control}
 
 \subsection{Enlarging the Feasible Set}
