@@ -1,0 +1,74 @@
+\section{Practical MPC}
+
+\subsection{Reference Tracking}
+
+A common task is to track a non-zero output set-point.
+
+For a linear system with constraints, one can define the tracking task of the reference $r$ as
+\begin{equation*}
+    z(k) = Hx(k) \to r\in \mathbb{R}^{n_r} \text{ as } k \to \infty.
+\end{equation*}
+where $z(k)$ are the outputs that have to follow $r$.
+
+\subsubsection{Steady-State Target Problem}
+
+The reference is achieved by the target state $x_s$ if
+\begin{equation*}
+    z_s = Hx_s = r.
+\end{equation*}
+The target state should be a steady state, such that there exists an input that keeps the system at the target, i.e.
+\begin{equation*}
+    x_s = Ax_s +Bu_s
+\end{equation*}
+hence the target conditions become
+\begin{equation*}
+    \begin{array}{rcl}
+        x_s  & = & Ax_s +Bu_s \\
+        Hx_s & = & r
+    \end{array}
+    \Leftrightarrow
+    \underbrace{\begin{bmatrix}
+            I-A & -B \\
+            H   & 0
+        \end{bmatrix}}_{(n_x + n_r)\times(n_x + n_u)}
+    \begin{bmatrix}
+        x_s \\
+        u_s
+    \end{bmatrix}
+    = \begin{bmatrix}
+        0 \\
+        r
+    \end{bmatrix}
+\end{equation*}
+which can be easily solved for $(x_s, u_s)$.
+
+\newpar{}
+
+It is possible that there exist multiple feasible $(x_s, u_s)$ for a given reference $r$. Then the cheapest steady state can be used
+\begin{align*}
+    \min\quad    & u_s^\top R_s u_s                                \\
+    \text{s.t. } & \begin{bmatrix}
+                       I-A & -B \\
+                       H   & 0
+                   \end{bmatrix}
+    \begin{bmatrix}
+        x_s \\
+        u_s
+    \end{bmatrix}
+    = \begin{bmatrix}
+          0 \\
+          r
+      \end{bmatrix}                                               \\
+                 & x_s \in \mathcal{X}, \quad u_s \in \mathcal{U}.
+\end{align*}
+
+If no solution exists, then the reachable set point that is closest to $r$ can be computed
+\begin{align*}
+    \min\quad    & {\left(Hx_s -r\right)}^\top Q_s \left(Hx_s -r\right) \\
+    \text{s.t. } & x_s = Ax_s + Bu_s                                    \\
+                 & x_s \in \mathcal{X}, \quad u_s \in \mathcal{U}.
+\end{align*}
+
+\subsubsection{Offse-Free Control}
+
+\subsection{Enlarging the Feasible Set}
