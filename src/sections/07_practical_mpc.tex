@@ -121,7 +121,53 @@ If the target steady-state is uniquely defined by the reference, we can also inc
 
 \subsubsection{Convergence}
 
+Assume target is feasible with $x_s \in \mathcal{X}, u_s \in \mathcal{U}$ and choose terminal weight $V_f(x)$ and constraint $\mathcal{X}_f$ as in the regulation case satisfying:
+\begin{gather*}
+    \mathcal{X}_f \subseteq \mathcal{X}, \: Kx \in \mathcal{U} \: \forall x \in \mathcal{X}_f \\
+    V_f(x(k+1)) - V_f(x(k)) \leq -I(x(k),Kx(k)) \: \forall x \in \mathcal{X}_f
+\end{gather*}
+If in addition the target reference $x_s, u_s$ is such that
+\begin{equation*}
+    x_s \oplus \mathcal{X}_f \subseteq \mathcal{X}, \: K\Delta x + u_s \in \mathcal{U} \: \forall \Delta x \in \mathcal{X}_f
+\end{equation*}
+then the closed-loop system converges to the target reference, i.e.
+\begin{equation*}
+    x(k) \to x_s \text{ and therefore } z(k) = Hx(k) \to r \text{ for } k \to \infty.
+\end{equation*}
+
 \subsubsection{Terminal Set}
+
+Due to the transformation the set of feasible targets may be significantly reduced.
+
+\newpar{}
+
+In the following example the blue line represents the state constraints and the green line the terminal set.
+
+\newpar{}
+
+\begin{tabularx}{\linewidth}{YY}
+    Regulation case:                                          & Tracking using a shifted terminal set: \\
+
+    \includegraphics[width=\linewidth]{07_terminal_set_1.png} &
+
+    \includegraphics[width=\linewidth]{07_terminal_set_2.png}
+\end{tabularx}
+\begin{center}
+    Set of feasible targets:
+
+    \includegraphics[width=0.5\linewidth]{07_terminal_set_3.png}
+\end{center}
+
+To enlarge the set of feasible targets one can scale the terminal set.
+\begin{equation*}
+    \mathcal{X}_f^{\text{scaled}} = \alpha \mathcal{X}_f
+\end{equation*}
+\begin{center}
+    \includegraphics[width=0.5\linewidth]{07_terminal_set_4.png}
+\end{center}
+
+The scaling factor $\alpha$ has to be chosen such that the state and input constraints are still satisfied.
+Targets at the boundary of the constraints hence $x_N = x_s$, correspond to a zero terminal set in the regulation case.
 
 \subsubsection{Offse-Free Control}
 
