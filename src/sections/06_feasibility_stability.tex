@@ -44,10 +44,8 @@ Using the same (suboptimal) sequence $\widetilde{x}$ as above, the cost is given
 
 \subsection{Terminal Subset Constraint}
 The terminal constraint $x_N = 0$ reduces the size of the feasible set. By using a convex set $\mathcal{X}_f$ as terminal constraints for which a local control law is known (can be constructed), that has a finite cost to stay in this set, one can increase the region of attraction and hence the feasible set.
-
-\newpar{}
-
-To guarantee stability and feasibility the following three properties have to hold:
+\subsubsection{Stability and Recursive Feasibility: Main Result}\label{stab_rec_feasibility}
+To guarantee stability and recursive feasibility the following three properties have to hold:
 \begin{enumerate}
     \item Stage cost is positive definite, i.e.\ it is strictly positive and only zero at the origin.
     \item The terminal set $\mathcal{X}_f$ is \textbf{invariant} under the local control law $\kappa_f(x_i)$:
@@ -63,29 +61,29 @@ To guarantee stability and feasibility the following three properties have to ho
               I_f(x_{i+1})-I_f(x_i) \leq -I(x_i,\kappa_f(x_i)), \quad \forall\: x_i \in \mathcal{X}_f
           \end{equation*}
 \end{enumerate}
-
+where 1.\ \& 2.\ ensure recursive feasibility, 3.\ ensures stability.
 \newpar{}
 Under those three assumptions:
 
-The closed-loop system under the MPC control law $u_0^*(x)$ is asymptotically stable and the set $\mathcal{X}_N$ is positive invariant for the system
+The closed-loop system under the MPC control law $u_0^*(x)$ is asymptotically stable and the set $\mathcal{X}_N$ (region of attraction) is positive invariant (and equal to the feasible set) for the system
 \begin{equation*}
     x(k+1) = Ax(k) + Bu_0^*(x(k)).
 \end{equation*}
 
-This also generalizes to nonlinear system dynamics
+This also generalizes to \textbf{nonlinear} system dynamics
 \begin{equation*}
     x(k+1) = g(x(k),u_0^*(x(k)))
 \end{equation*}
 but there the computation of the terminal set $\mathcal{X}_f$ and the function $I_f$ can be very difficult.
 
 % \subsubsection{Proof} we could add the outline of the proof here but I think this is not very beneficial in this summary since the reasoning is identical to the section before.
-
+% Think the same, and we can grind it out on paper ;).
 \subsubsection{Choice of Terminal Sets and Cost}
 
 \begin{enumerate}
     \item Design a local control law $\kappa_f$ around $x=0$.
     \item Determine the terminal cost to stay in that set under the local control law.
-    \item Compute the maximum invariant set for the closed loop system under the local control law hance $\mathcal{X}_f$.
+    \item Compute the maximum invariant set for the closed loop system under the local control law hence $\mathcal{X}_f$.
 \end{enumerate}
 
 \paragraph{Linear System, Quadratic Cost}
@@ -111,7 +109,7 @@ where all state and input constraints are satisfied in $\mathcal{X}_f$:
 \begin{equation*}
     \mathcal{X}_f \subseteq \mathcal{X}, F_\infty x_k \in \mathcal{U}, \quad \forall \: x_k \in \mathcal{X}_f
 \end{equation*}
-hence
+This means, compute $\mathcal{X}_f$ for the CL system $(A+BF_{\infty})$, with constraints
 \begin{equation*}
     \mathcal{X}_{cl} := \left\{x \left|
     \begin{bmatrix}
@@ -121,5 +119,26 @@ hence
     \begin{bmatrix}
         b_x \\
         b_u
-    \end{bmatrix}\right.\right\}.
+    \end{bmatrix}\right.\right\}
 \end{equation*}
+This is the invariant terminal set used in the MPC.
+\newpar{}
+\textbf{Note} that this setup fulfills the conditions from the stability and Recursive Feasibility Theorem~\ref{stab_rec_feasibility}.
+
+\paragraph{Horizon Length Versus Feasible Set}
+
+For an MPC \textbf{without} terminal constraint, increasing $N$ shrinks the feasible set, as more constraints are added. One has
+\begin{equation*}
+    \mathcal{X}_{N+j} \subseteq \mathcal{X}_N
+\end{equation*}
+\newpar{}
+For an MPC \textbf{without} terminal constraint, with larger $N$, the feasible set and region of attraction \textbf{grow}. The region of attraction ultimately approaches the maximum control invariant set. One has
+\begin{equation*}
+    \mathcal{X}_{N} \subseteq \mathcal{X}_{N+j}
+\end{equation*}
+Intuition: Given a trajectory with horizon length $N$, we can extend the trajectory arbitrarily using the control law $\kappa_i(x)$, while still obtaining feasible solutions.
+
+\newpar{}
+\ptitle{Practical Note}
+
+In practice, one can enlarge $N$ and check stability by sampling.   % TODO: What does she mean by that?
