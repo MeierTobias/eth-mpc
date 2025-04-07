@@ -43,10 +43,10 @@ Defining
         x_N
     \end{bmatrix} & =
     \begin{bmatrix}
-        \mathbb{1} \\
-        A          \\
-        \vdots     \\
-        \vdots     \\
+        \mathbbm{1} \\
+        A           \\
+        \vdots      \\
+        \vdots      \\
         A^N
     \end{bmatrix}x(0)+
     \begin{bmatrix}
@@ -186,7 +186,7 @@ There are three common choices for the terminal weight $P$ in finite horizon LQR
 % Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
 
 \begin{center}
-    \includegraphics[width = 0.8\linewidth]{receding_LQR.png}
+    \includegraphics[width = 0.8\linewidth]{02_receding_LQR.png}
 \end{center}
 
 \newpar{}
@@ -195,15 +195,7 @@ There are three common choices for the terminal weight $P$ in finite horizon LQR
 Stability depends on the choice of the weight matrices $Q, R, P$ and the horizon length $N$.
 
 \begin{center}
-    \includegraphics[width = 0.6\linewidth]{horizon_stability.png}
-\end{center}
-
-\subsection{Receding Horizon LQR}
-
-Receding horizon control calculates OL control sequences, yet introducing FB through repeated calculation, which takes the actual state evolution into account.
-
-\begin{center}
-    \includegraphics[width = 0.8\linewidth]{receding_LQR.png}
+    \includegraphics[width = 0.6\linewidth]{02_horizon_stability.png}
 \end{center}
 
 \subsubsection{Stability of Receding Horizon LQR}
