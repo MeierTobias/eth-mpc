@@ -213,7 +213,7 @@ At each sampling time:
     \item Solve MPC problem:
 \end{enumerate}
 \begin{align*}
-    \min_U       & \sum_{i=0}^{N-1} (x_i - x_s)^T Q (x_i - x_s)                                      \\
+    \min_U       & \sum_{i=0}^{N-1} {(x_i - x_s)}^T Q (x_i - x_s)                                    \\
                  & + {(u_i - u_s)}^T R (u_i - u_s) + V_f(x_N - x_s)                                  \\
     \text{s.t. } & x_0 = \hat{x}(k), \quad d_0 = \hat{d}(k)                                          \\
                  & x_{i+1} = Ax_i + Bu_i + B_d d_i, \quad i = 0, \dots, N                            \\
@@ -411,3 +411,177 @@ Assume
 \end{itemize}
 Then $z(k) = Hy(k) \to r$ as $k \to \infty$, i.e.\ we track the reference in presence of the disturbance.
 
+\subsection{Enlarging the Feasible Set}
+\subsubsection{MPC Without Terminal Set}
+% TODO: I find this subsubsection terrifyingly gfühlschmi-gspürsch mi, but I don't know how to formulate it more technically. I think in practice it is empirical anyways.
+Using a terminal set constraint is attractive due to stability and recursive feasibility guarantees. However,
+\begin{itemize}
+    \item it reduces the feasible set
+    \item potentially adds large number of extra constraints
+    \item adds state constraints to problems with only input constraints
+\end{itemize}
+Hence, it would be beneficial to formulate an MPC without terminal constraint but yet with guaranteed stability.
+\newpar{}
+\ptitle{Conditions}
+
+We can remove the terminal constraint while maintaining stability if
+\begin{itemize}
+    \item initial state lies in sufficiently small subset of feasible set
+    \item $N$ is sufficiently large
+\end{itemize}
+such that the terminal state satisfies terminal constraint without enforcing it in the optimization.
+\newpar{}
+In that case, the solution of the finite horizon MPC problem corresponds to the infinite horizon solution.
+
+\newpar{}
+\ptitle{Properties}
+
+\begin{itemize}
+    \item [+] Controller defined in a larger feasible set
+    \item [-] Characterization of ROA or specification of required $N$ extremely difficult
+\end{itemize}
+
+\newpar{}
+\ptitle{Method}
+
+Enlarge horizon and check stability by \textbf{sampling}.
+\newpar{}
+With larger horizon length N, region of attraction approaches maximum control invariant set.
+
+\subsubsection{Soft Constrained MPC}
+In practice, input constraints are often ``hard'' whereas state constraints can usually be relaxed.
+\newpar{}
+If we decide to tolerate state constraint violations, we can either minimize their
+\begin{itemize}
+    \item duration
+    \item or size
+\end{itemize}
+These goals can be conflicting and their relative importance depends on the application. The optimum lies on a Bambachian pareto curve. Operating exactly on this curve is usually difficult and only approximated. % TODO: sorry
+
+\newpar{}
+\ptitle{Properties}
+
+\begin{itemize}
+    \item [-] Standard methods do \textbf{not provide a stability guarantee} for OL unstable systems
+\end{itemize}
+
+\paragraph{Problem Setup}
+In soft constrained MPC we
+\begin{itemize}
+    \item relax state constraints using slack variables $\epsilon_i \in \mathbb{R}^p$
+    \item penalize constraint violation in cost using $l_\epsilon(\epsilon_i)$
+\end{itemize}
+The MPC can then be formulated as
+\begin{align*}
+    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i + l_\epsilon(\epsilon_i) + x_N^\top P x_N + l_\epsilon(\epsilon_N) \\
+    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                                                                             \\
+                      & H_x x_i \leq k_x + \epsilon_i                                                                                       \\
+                      & H_u u_i \leq k_u                                                                                                    \\
+                      & \epsilon_i \geq 0
+\end{align*}
+
+\paragraph{Penalty Function Choices}
+\ptitle{Exact Penalty}
+
+The penalty function $l_\epsilon(\epsilon_i)$ should be as follows: If the original problem has a feasible solution $z^\star$, then the softened problem should have the same solution and $\epsilon = 0$.
+\newpar{}
+\ptitle{Main Result}
+\begin{equation*}
+    l_\epsilon(\epsilon) = v \cdot \epsilon
+\end{equation*}
+satisfies the requirement for any $v > \lambda^\star \geq 0$, where $\lambda^\star$ is the optimal Lagrange multiplier for the original problem.
+\newpar{}
+\ptitle{Practical Penalty}
+
+Combine linear and quadratic terms for tuning:
+\begin{equation*}
+    l_\epsilon(\epsilon) = v \cdot \epsilon + s \cdot \epsilon^2
+\end{equation*}
+with $v > \lambda^\star$ and $s > 0$.
+
+\newpar{}
+\ptitle{Extension to Multiple Constraints}
+
+Assume multiple constraints $g_j(z) \leq 0$, $j = 1, \dots, r$. The penalty then reads
+\begin{equation*}
+    l_\epsilon(\epsilon) = v \cdot \lVert \epsilon \rVert_{1/\infty} + \epsilon^\top S \epsilon
+\end{equation*}
+where
+\begin{itemize}
+    \item $\epsilon = {[\epsilon_1, \dots, \epsilon_r]}^\top$,
+    \item $v > \lVert \lambda^\star \rVert_D$,
+    \item and $S \succ 0$ can be used to weight violations differently.
+\end{itemize}
+\newpar{}
+Note that $\lVert \cdot \rVert_D$ denotes the dual norm.
+
+\newpar{}
+\ptitle{Comparison of Penalty Functions}
+
+The following properties hold for quadratic and linear penalties respectively
+\begin{itemize}
+    \item Quadratic:
+          \begin{itemize}
+              \item [+] Well-posed QP (positive definite Hessian)
+              \item Increase in $S$ hardens soft constraints
+              \item [-] \textbf{Not} exact for any choice of $s>0$
+          \end{itemize}
+    \item Linear:
+          \begin{itemize}
+              \item [+] Allows for exact penalties if $v$ large enough
+              \item [+] If $v$ is large enough, constraints satisfied if possible
+              \item [-] Large $v$ makes tuning hard and causes numerical issues
+          \end{itemize}
+\end{itemize}
+
+\begin{examplesection}[Comparison of Penalty Functions]
+    \begin{center}
+        \includegraphics[width = \linewidth]{7_penalties.png}
+    \end{center}
+
+    $g(z) \triangleq z - z^\star \leq 0$ induces feasible region (grey). Hence, the minimizer of the original problem is $z^\star$
+
+    \begin{itemize}
+        \item Quadratic penalty:
+              \begin{gather*}
+                  l_\epsilon(\epsilon) = s \cdot \epsilon^2 \text{ for } \epsilon \geq 0,\\
+                  l_\epsilon(\epsilon) = 0, \text{ otherwise}
+              \end{gather*}
+              $\rightarrow$ minimizer of $f(z) + l_\epsilon(\epsilon)$ is $(z^\star + \epsilon^\star, \epsilon^\star)$ instead of $(z^\star, 0)$
+        \item Linear penalty:
+              \begin{gather*}
+                  l_\epsilon(\epsilon) = v \cdot \epsilon \text{ for }\epsilon \geq 0,\\
+                  l_\epsilon(\epsilon) = 0, \text{ otherwise},
+              \end{gather*}
+              with $v$ such that $v + \lim_{z \to z^\star} f'(z) > 0$
+              \newpar{}
+              $\rightarrow$ minimizer of $f(z) + l_\epsilon(\epsilon)$ is $(z^\star, 0)$
+    \end{itemize}
+\end{examplesection}
+
+\paragraph{Simplification: Separation of Objectives}
+\ptitle{Step 1: Minimize Violation}
+\begin{align*}
+    \min_{u, \epsilon} \quad & \sum_{i=0}^{N-1} \epsilon_i^\top S \epsilon_i + v^\top \epsilon_i \\
+    \text{s.t.} \quad        & x_{i+1} = A x_i + B u_i                                           \\
+                             & H_x x_i \leq k_x + \epsilon_i                                     \\
+                             & H_u u_i \leq k_u                                                  \\
+                             & \epsilon_i \geq 0
+\end{align*}
+\newpar{}
+\ptitle{Step 2: Optimize Performance}
+
+\begin{align*}
+    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i + x_N^\top P x_N \\
+    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                           \\
+                      & H_x x_i \leq k_x + \epsilon_i^{\min}                              \\
+                      & H_u u_i \leq k_u
+\end{align*}
+
+\newpar{}
+\ptitle{Properties}
+
+\begin{itemize}
+    \item [+] Simplifies tuning, constraints satisfied if possible
+    \item [-] Requires solving two optimization problems
+\end{itemize}
