@@ -117,9 +117,9 @@ Each state is now mapped into an entire possible set of next states:
 
 Let $g(x(k), w(k)) = Ax(k) + w(k)$ and $\Omega := \{x \mid Fx \leq f\}$. Then, fulfilling the state constraints can be seen as parallel displacement of the constraint boundaries
 \begin{align*}
-    \text{pre}_{\mathcal{W}}(\Omega) & = \{x \mid Ax + w \in \Omega, \; \forall w \in \mathcal{W} \}                           \\
-                                     & = \{x \mid F_j Ax \leq f -F_j w, \; \forall w \in \mathcal{W} \}                        \\
-                                     & = \{x \mid F_j Ax \leq f -\max_{w\in \mathcal{W}} F_j , \; \forall w \in \mathcal{W} \} \\
+    \text{pre}_{\mathcal{W}}(\Omega) & = \{x \mid Ax + w \in \Omega, \; \forall w \in \mathcal{W} \}                             \\
+                                     & = \{x \mid F_j Ax \leq f_j -F_j w, \; \forall w \in \mathcal{W} \}                        \\
+                                     & = \{x \mid F_j Ax \leq f_j -\max_{w\in \mathcal{W}} F_j , \; \forall w \in \mathcal{W} \} \\
                                      & = \{x \mid FAx \leq f - h_\mathcal{W}(F) \}
 \end{align*}
 where $h_\mathcal{W}$ is the support function.
