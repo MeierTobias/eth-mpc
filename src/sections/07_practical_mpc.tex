@@ -201,6 +201,387 @@ The scaling factor $\alpha$ has to be chosen such that the state and input const
 Targets at the boundary of the constraints hence $x_N = x_s$, correspond to a zero terminal set in the regulation case.
 \newpar{}
 \textbf{Note} that scaling preserves invariance.
-\subsubsection{Offse-Free Control}
+\subsubsection{Offset-Free Reference Tracking}
+Goal: Track constant reference $r$, i.e.\ $z(k) = Hy(k) \to r$ for $k \to \infty$. If system is stabilized in the presence of the disturbance then it converges to set point with zero offset.
+\newpar{}
+\ptitle{Algorithm}
+
+At each sampling time:
+\begin{enumerate}
+    \item Estimate state and disturbance $\hat{x}$, $\hat{d}$
+    \item Solve steady-state target problem using $\hat{d}$
+    \item Solve MPC problem:
+\end{enumerate}
+\begin{align*}
+    \min_U       & \sum_{i=0}^{N-1} {(x_i - x_s)}^T Q (x_i - x_s)                                    \\
+                 & + {(u_i - u_s)}^T R (u_i - u_s) + V_f(x_N - x_s)                                  \\
+    \text{s.t. } & x_0 = \hat{x}(k), \quad d_0 = \hat{d}(k)                                          \\
+                 & x_{i+1} = Ax_i + Bu_i + B_d d_i, \quad i = 0, \dots, N                            \\
+                 & d_{i+1} = d_i, \quad i = 0, \dots, N                                              \\
+                 & x_i \in \mathcal{X}, \quad u_i \in \mathcal{U}, \quad x_N - x_s \in \mathcal{X}_f
+\end{align*}
+\newpar{}
+\ptitle{Constant Disturbances}\label{const_dist}
+
+Constant disturbances cause the system trajectory to deviate from nominal dynamics. They act as follows on the true plant:
+\begin{align*}
+    x(k+1) & = Ax(k) + Bu(k) + B_d d \\
+    y(k)   & = Cx(k) + C_d d
+\end{align*}
+
+\paragraph{Augmented Model}
+
+The constant disturbance can be included in to the dynamic system model as follows:
+\begin{align*}
+    x_{k+1} & = Ax_k + Bu_k + B_d d_k \\
+    d_{k+1} & = d_k                   \\
+    y_k     & = Cx_k + C_d d_k
+\end{align*}
+with $d \in \mathbb{R}^{n_d}$.
+
+The only restriction on the choice of $B_d, C_d$: observability of the augmented model.
+\newpar{}
+\ptitle{Observability of Augmented System}
+
+The augmented system is observable if and only if $(A, C)$ is observable and
+\begin{equation*}
+    \begin{bmatrix}
+        A - I & B_d \\
+        C     & C_d
+    \end{bmatrix}
+\end{equation*}
+has full column rank, i.e.\ rank $= n_x + n_d$.
+\newpar{}
+Note that
+\begin{itemize}
+    \item The number of measured outputs must be large enough: $n_d \leq n_y$.
+    \item This is known as Hautus observability condition.
+\end{itemize}
+\newpar{}
+Intuitively, the condition can be explained as follows: At steady-state
+\begin{equation*}
+    \begin{bmatrix}
+        A - I & B_d \\
+        C     & C_d
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_s \\
+        d_s
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        0 \\
+        y_s
+    \end{bmatrix}
+\end{equation*}
+and given $y_s$, $d_s$ must be uniquely defined.
+
+\paragraph{Linear State Estimation}
+To improve the estimate of the disturbance and to account for non-measurable states, an observer can be used. For the augmented model we get
+    {\small
+        \begin{gather*}
+            \begin{bmatrix}
+                \hat{x}(k + 1) \\
+                \hat{d}(k + 1)
+            \end{bmatrix}=
+            \begin{bmatrix}
+                A & B_d \\
+                0 & I
+            \end{bmatrix}
+            \begin{bmatrix}
+                \hat{x}(k) \\
+                \hat{d}(k)
+            \end{bmatrix}
+            +\begin{bmatrix}
+                B \\
+                0
+            \end{bmatrix}
+            u(k)
+            \\
+            +\begin{bmatrix}
+                L_x \\
+                L_d
+            \end{bmatrix}
+            (-y(k) + C\hat{x}(k) + C_d \hat{d}(k))
+        \end{gather*}
+    }
+where the last summand corrects the state \textbf{and} disturbance estimate. On convergence, this term vanishes, revealing the steady-state equations.
+\newpar{}
+The \textbf{error dynamics} are:
+{\small
+\begin{align*}
+    \begin{bmatrix}
+        \eta(k + 1) \\
+        \eta_d (k+1)
+    \end{bmatrix}
+     & = \begin{bmatrix}
+             x(k + 1) - \hat{x}(k + 1) \\
+             d(k + 1) - \hat{d}(k + 1)
+         \end{bmatrix}
+    \\
+     & =
+    \left(
+    \begin{bmatrix}
+        A & B_d \\
+        0 & I
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        L_x \\
+        L_d
+    \end{bmatrix}
+    \begin{bmatrix}
+        C & C_d
+    \end{bmatrix}
+    \right)
+    \begin{bmatrix}
+        x(k) - \hat{x}(k) \\
+        d(k) - \hat{d}(k)
+    \end{bmatrix}
+\end{align*}
+}
+\newpar{}
+To obtain zero estimation error, the estimator gain $L = \begin{bmatrix} L_x \\ L_d \end{bmatrix}$ must be chosen such that the error dynamics are asymptotically stable.
+
+\newpar{}
+\ptitle{Lemma: Offset-Free Steady-State Estimation}
+
+Suppose the observer is asymptotically stable and $n_y = n_d$. The observer steady state satisfies:
+\begin{equation*}
+    \begin{bmatrix}
+        A - I & B \\
+        C     & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        \hat{x}_\infty \\
+        u_\infty
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        - B_d \hat{d}_\infty \\
+        y_\infty - C_d \hat{d}_\infty
+    \end{bmatrix}
+\end{equation*}
+
+In words: The observer output $C \hat{x}_\infty + C_d \hat{d}_\infty$ tracks $y_\infty$ without offset!
+
+\paragraph{Steady-State Selection}
+The knowledge of the disturbance estimate allows us to reformulate the steady-state selection problem as
+\begin{align*}
+    x_s & = Ax_s + Bu_s + B_d \hat{d}_\infty \\
+    z_s & = H(Cx_s + C_d \hat{d}_\infty) = r
+\end{align*}
+which shows that both, the steady-state and the target are modified to account for the disturbance.
+\newpar{}
+As we don't have access to $\hat{d}_\infty$, we use the best possible estimate for $\hat{d}_\infty$, namely $\hat{d}$ for the target selection problem, yielding
+\begin{equation*}
+    \begin{bmatrix}
+        A - I & B \\
+        HC    & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_s \\
+        u_s
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        - B_d \hat{d} \\
+        r - HC_d \hat{d}
+    \end{bmatrix}
+\end{equation*}
+
+For regulation, we can simply set $r=0$.
+
+\paragraph{Offset-free Tracking: Main Result}
+
+Let $\kappa(\hat{x}(k), \hat{d}(k), r) = u_0^\star$ be the estimation-based control law.
+
+Assume
+\begin{itemize}
+    \item $n_d = n_y$
+    \item the RHC is recursively feasible and unconstrained for $k \geq j$
+    \item and the closed-loop system
+          \begin{align*}
+              x(k+1)        = & Ax(k) + B \kappa(\hat{x}(k), \hat{d}(k), r) + B_d d    \\
+              \hat{x}(k+1)  = & (A + L_x C) \hat{x}(k) + (B_d + L_x C_d) \hat{d}(k)    \\
+                              & + B \kappa(\hat{x}(k), \hat{d}(k), r) - L_x y(k)       \\
+              \hat{d}(k+1)  = & L_d C \hat{x}(k) + (I + L_d C_d) \hat{d}(k) - L_d y(k)
+          \end{align*}
+          converges ($\hat{x}(k)\rightarrow \hat{x}_{\infty}$, $\hat{d}(k)\rightarrow \hat{d}_{\infty}$, $y(k)\rightarrow y_{\infty}$ for $k\rightarrow \infty$).
+\end{itemize}
+Then $z(k) = Hy(k) \to r$ as $k \to \infty$, i.e.\ we track the reference in presence of the disturbance.
 
 \subsection{Enlarging the Feasible Set}
+\subsubsection{MPC Without Terminal Set}
+% TODO: I find this subsubsection terrifyingly gfühlschmi-gspürsch mi, but I don't know how to formulate it more technically. I think in practice it is empirical anyways.
+Using a terminal set constraint is attractive due to stability and recursive feasibility guarantees. However,
+\begin{itemize}
+    \item it reduces the feasible set
+    \item potentially adds large number of extra constraints
+    \item adds state constraints to problems with only input constraints
+\end{itemize}
+Hence, it would be beneficial to formulate an MPC without terminal constraint but yet with guaranteed stability.
+\newpar{}
+\ptitle{Conditions}
+
+We can remove the terminal constraint while maintaining stability if
+\begin{itemize}
+    \item initial state lies in sufficiently small subset of feasible set
+    \item $N$ is sufficiently large
+\end{itemize}
+such that the terminal state satisfies terminal constraint without enforcing it in the optimization.
+\newpar{}
+In that case, the solution of the finite horizon MPC problem corresponds to the infinite horizon solution.
+
+\newpar{}
+\ptitle{Properties}
+
+\begin{itemize}
+    \item [+] Controller defined in a larger feasible set
+    \item [-] Characterization of ROA or specification of required $N$ extremely difficult
+\end{itemize}
+
+\newpar{}
+\ptitle{Method}
+
+Enlarge horizon and check stability by \textbf{sampling}.
+\newpar{}
+With larger horizon length N, region of attraction approaches maximum control invariant set.
+
+\subsubsection{Soft Constrained MPC}
+In practice, input constraints are often ``hard'' whereas state constraints can usually be relaxed.
+\newpar{}
+If we decide to tolerate state constraint violations, we can either minimize their
+\begin{itemize}
+    \item duration
+    \item or size
+\end{itemize}
+These goals can be conflicting and their relative importance depends on the application. The optimum lies on a Bambachian pareto curve. Operating exactly on this curve is usually difficult and only approximated. % TODO: sorry
+
+\newpar{}
+\ptitle{Properties}
+
+\begin{itemize}
+    \item [-] Standard methods do \textbf{not provide a stability guarantee} for OL unstable systems
+\end{itemize}
+
+\paragraph{Problem Setup}
+In soft constrained MPC we
+\begin{itemize}
+    \item relax state constraints using slack variables $\epsilon_i \in \mathbb{R}^p$
+    \item penalize constraint violation in cost using $l_\epsilon(\epsilon_i)$
+\end{itemize}
+The MPC can then be formulated as
+\begin{align*}
+    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i + l_\epsilon(\epsilon_i) + x_N^\top P x_N + l_\epsilon(\epsilon_N) \\
+    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                                                                             \\
+                      & H_x x_i \leq k_x + \epsilon_i                                                                                       \\
+                      & H_u u_i \leq k_u                                                                                                    \\
+                      & \epsilon_i \geq 0
+\end{align*}
+
+\paragraph{Penalty Function Choices}
+\ptitle{Exact Penalty}
+
+The penalty function $l_\epsilon(\epsilon_i)$ should be as follows: If the original problem has a feasible solution $z^\star$, then the softened problem should have the same solution and $\epsilon = 0$.
+\newpar{}
+\ptitle{Main Result}
+\begin{equation*}
+    l_\epsilon(\epsilon) = v \cdot \epsilon
+\end{equation*}
+satisfies the requirement for any $v > \lambda^\star \geq 0$, where $\lambda^\star$ is the optimal Lagrange multiplier for the original problem.
+\newpar{}
+\ptitle{Practical Penalty}
+
+Combine linear and quadratic terms for tuning:
+\begin{equation*}
+    l_\epsilon(\epsilon) = v \cdot \epsilon + s \cdot \epsilon^2
+\end{equation*}
+with $v > \lambda^\star$ and $s > 0$.
+
+\newpar{}
+\ptitle{Extension to Multiple Constraints}
+
+Assume multiple constraints $g_j(z) \leq 0$, $j = 1, \dots, r$. The penalty then reads
+\begin{equation*}
+    l_\epsilon(\epsilon) = v \cdot \lVert \epsilon \rVert_{1/\infty} + \epsilon^\top S \epsilon
+\end{equation*}
+where
+\begin{itemize}
+    \item $\epsilon = {[\epsilon_1, \dots, \epsilon_r]}^\top$,
+    \item $v > \lVert \lambda^\star \rVert_D$,
+    \item and $S \succ 0$ can be used to weight violations differently.
+\end{itemize}
+\newpar{}
+Note that $\lVert \cdot \rVert_D$ denotes the dual norm.
+
+\newpar{}
+\ptitle{Comparison of Penalty Functions}
+
+The following properties hold for quadratic and linear penalties respectively
+\begin{itemize}
+    \item Quadratic:
+          \begin{itemize}
+              \item [+] Well-posed QP (positive definite Hessian)
+              \item Increase in $S$ hardens soft constraints
+              \item [-] \textbf{Not} exact for any choice of $s>0$
+          \end{itemize}
+    \item Linear:
+          \begin{itemize}
+              \item [+] Allows for exact penalties if $v$ large enough
+              \item [+] If $v$ is large enough, constraints satisfied if possible
+              \item [-] Large $v$ makes tuning hard and causes numerical issues
+          \end{itemize}
+\end{itemize}
+
+\begin{examplesection}[Comparison of Penalty Functions]
+    \begin{center}
+        \includegraphics[width = \linewidth]{7_penalties.png}
+    \end{center}
+
+    $g(z) \triangleq z - z^\star \leq 0$ induces feasible region (grey). Hence, the minimizer of the original problem is $z^\star$
+
+    \begin{itemize}
+        \item Quadratic penalty:
+              \begin{gather*}
+                  l_\epsilon(\epsilon) = s \cdot \epsilon^2 \text{ for } \epsilon \geq 0,\\
+                  l_\epsilon(\epsilon) = 0, \text{ otherwise}
+              \end{gather*}
+              $\rightarrow$ minimizer of $f(z) + l_\epsilon(\epsilon)$ is $(z^\star + \epsilon^\star, \epsilon^\star)$ instead of $(z^\star, 0)$
+        \item Linear penalty:
+              \begin{gather*}
+                  l_\epsilon(\epsilon) = v \cdot \epsilon \text{ for }\epsilon \geq 0,\\
+                  l_\epsilon(\epsilon) = 0, \text{ otherwise},
+              \end{gather*}
+              with $v$ such that $v + \lim_{z \to z^\star} f'(z) > 0$
+              \newpar{}
+              $\rightarrow$ minimizer of $f(z) + l_\epsilon(\epsilon)$ is $(z^\star, 0)$
+    \end{itemize}
+\end{examplesection}
+
+\paragraph{Simplification: Separation of Objectives}
+\ptitle{Step 1: Minimize Violation}
+\begin{align*}
+    \min_{u, \epsilon} \quad & \sum_{i=0}^{N-1} \epsilon_i^\top S \epsilon_i + v^\top \epsilon_i \\
+    \text{s.t.} \quad        & x_{i+1} = A x_i + B u_i                                           \\
+                             & H_x x_i \leq k_x + \epsilon_i                                     \\
+                             & H_u u_i \leq k_u                                                  \\
+                             & \epsilon_i \geq 0
+\end{align*}
+\newpar{}
+\ptitle{Step 2: Optimize Performance}
+
+\begin{align*}
+    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i + x_N^\top P x_N \\
+    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                           \\
+                      & H_x x_i \leq k_x + \epsilon_i^{\min}                              \\
+                      & H_u u_i \leq k_u
+\end{align*}
+
+\newpar{}
+\ptitle{Properties}
+
+\begin{itemize}
+    \item [+] Simplifies tuning, constraints satisfied if possible
+    \item [-] Requires solving two optimization problems
+\end{itemize}
