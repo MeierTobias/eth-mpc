@@ -1,7 +1,7 @@
 \section{Robust MPC}
 We assume an uncertain constrained system of the form:
 \begin{gather*}
-    x(k + 1) = g(x(k), u(k), w(k); \theta),\\
+    x(k + 1) = g\bigl(x(k), u(k), w(k); \theta\bigr),\\
     x, u \in \mathcal{X}, \mathcal{U}, \quad w \in \mathcal{W}, \quad \theta \in \Theta
 \end{gather*}
 where
@@ -34,18 +34,19 @@ $\theta$ unknown, but constant. Note that we called $\theta = d$ in~\ref{const_d
 
 {\small
     \begin{equation*}
-        g(x(k), u(k), \theta(k)) =
+        g\bigl(x(k), u(k), \theta(k)\bigr) =
         \left( \sum_{j=0}^{n_\theta} \theta_j(k) A_j \right)x(k) +
         \left( \sum_{j=0}^{n_\theta} \theta_j(k) B_j \right)u(k)
     \end{equation*}
 }
+
 time-varying parameters $\theta(k)$ describe a convex combination of $A_j , B_j$ with $\mathbf{1}^\top \theta(k) = 1$, $\theta(k) \geq 0$.
 
 \newpar{}
 \ptitle{Additive Stochastic Noise}
 
 \begin{equation*}
-    g(x(k), u(k), w(k); \theta) = Ax(k) + Bu(k) + w(k)
+    g\bigl(x(k), u(k), w(k); \theta\bigr) = Ax(k) + Bu(k) + w(k)
 \end{equation*}
 where $w$ comes from a known distribution. Used in stochastic MPC.
 
@@ -54,7 +55,7 @@ where $w$ comes from a known distribution. Used in stochastic MPC.
 
 In this course, the following noise models are considered:
 \begin{equation*}
-    g(x(k), u(k), w(k); \theta) = Ax(k) + Bu(k) + w(k), \quad w \in \mathcal{W}
+    g\bigl(x(k), u(k), w(k); \theta\bigr) = Ax(k) + Bu(k) + w(k), \quad w \in \mathcal{W}
 \end{equation*}
 where $A,B$ are known, $w$ is unknown but \textbf{bounded} and changing at each sampling instance. However, in contrast to the stochastic noise case, $w$ now comes from a certain discrete set and not from a distribution.
 \newpar{}
@@ -67,7 +68,7 @@ Note that
 \subsubsection{Robust Invariant Sets}
 \ptitle{Robust Positive Invariant Set}
 
-A set $\mathcal{O}_\mathcal{W}$ is said to be a robust positive invariant set for the autonomous system $x(k + 1) = g(x(k), w(k))$ if
+A set $\mathcal{O}_\mathcal{W}$ is said to be a robust positive invariant set for the autonomous system $x(k + 1) = g\bigl(x(k), w(k)\bigr)$ if
 \begin{equation*}
     x \in \mathcal{O}_\mathcal{W} \Rightarrow g(x, w) \in \mathcal{O}_\mathcal{W}, \quad \forall w \in \mathcal{W}
 \end{equation*}
