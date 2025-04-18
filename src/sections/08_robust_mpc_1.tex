@@ -143,3 +143,71 @@ The Pontryagin Difference is:
     \includegraphics[width = \linewidth]{8_Pontryagin.png}
 \end{center}
 
+\subsection{Impact of Bounded Additive Noise}
+\subsubsection{Uncertain State Evolution}
+In a system with bounded additive noise, the state evolution is given by:
+\begin{align*}
+    \phi_{1} & =Ax_{0}+Bu_{0}+w_{0}                                                       \\
+    \phi_{2} & =A^{2}x_{0}+ABu_{0}+Bu_{1}+Aw_{0}+w_{1}                                    \\
+    \phi_{i} & =A^{i}x_{0}+\sum_{j=0}^{i-1}A^{j}Bu_{i-1-j}+\sum_{j=0}^{i-1}A^{j}w_{i-1-j} \\
+    \phi_{i} & =x_{i}+\sum_{j=0}^{i-1}A^{j}w_{i-1-j}
+\end{align*}
+
+\subsubsection{Cost}
+Generally, the cost function would contain a term for the unknown disturbance sequence $W\in \mathcal{W}^{N}$. There exist multiple approaches to get rid of this dependence:
+\begin{itemize}
+    \item Minimize the expected value
+          \begin{equation*}
+              J_N(x_0, U) = \mathbb{E}_w \Bigl[J(x_0, U, W)\Bigr]
+          \end{equation*}
+    \item Consider the worst-case
+          \begin{equation*}
+              J_N(x_0, U) = \max_{W\in \mathcal{W}^{N-1}} J(x_0, U, W)
+          \end{equation*}
+    \item Consider the nominal case
+          \begin{equation*}
+              J_N(x_0, U) = J(x_0, U, 0)
+          \end{equation*}
+    \item Use an estimate of the disturbance (certainty equivalence)
+          \begin{equation*}
+              J_N(x_0, U) = J(x_0, U, \widehat{W})
+          \end{equation*}
+\end{itemize}
+
+\subsubsection{Robust Constraint Satisfaction}
+The robust constraints are given by:
+\begin{align*}
+    \phi_{i+1} & = A\phi_{i} + Bu_{i} + w_{i}                  &  & i = 0,\ldots, N-1       \\
+    u_i        & \in \mathcal{U}                               &  & i = 0,\ldots, N-1       \\
+    \phi_{i}   & \in \mathcal{X},\; \forall W\in \mathcal{W}^N &  & i = 0,\ldots, N-1       \\[0.5em]
+    \phi_{N}   & \in \mathcal{X}_f \subseteq \mathcal{X}       &  & \text{robust invariant} \\
+    \phi_{i+1} & = A\phi_{i} + w_{i}                           &  & i = N, \ldots
+\end{align*}
+
+The state constraints can be written as
+\begin{align*}
+    \phi_i(x_0,U,W) & =\left\{\left.x_i+\sum_{j=0}^{i-1}A^i w_{i-1-j}\right|W\in W^i\right\}\subseteq\mathcal{X}                   \\
+                    & = x_i in \mathcal{X} \ominus \left(\mathcal{W} \oplus A \mathcal{W} \oplus \cdots A^{i-1} \mathcal{W}\right) \\
+                    & = x_i \in \mathcal{X} \ominus \left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)
+\end{align*}
+where $\mathcal{F}_i = \oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}$ is called the \textit{disturbance reachable set}, that shares the dynamics of the system:
+\begin{equation*}
+    \mathcal{F}_{i+1} = A\mathcal{F}_i \oplus \mathcal{W}
+\end{equation*}
+
+\subsection{Robust Open-Loop MPC}
+Putting all the pieces together, we can write the robust open-loop MPC problem as the nominal problem with \textbf{tighter constraints}:
+\begin{align*}
+    \min_{U}\;          \sum_{i=0}^{N-1} & I(x_i,u_i)+I_f(x_N)                                                          \\
+    \text{subject to}\; x_{t+1}          & =Ax_{i}+Bu_{i}                                                               \\
+    x_0                                  & =x(k)                                                                        \\
+    x_i                                  & \in\mathcal{X}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)     \\
+    u_{i}                                & \in\mathcal{U}                                                               \\
+    x_N                                  & \in\mathcal{X}_{f}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)
+\end{align*}
+where $\mathcal{X}_f \subseteq \mathcal{X}$ is a robust invariant set for the dynamics $x(k+1) = Ax(k) + w(k) , \forall w$.
+
+\subsection{Robust Closed-Loop MPC}
+\subsubsection{Error Dynamics}
+\subsubsection{Constraint-Tightening MPC}
+\subsubsection{Tube MPC}
