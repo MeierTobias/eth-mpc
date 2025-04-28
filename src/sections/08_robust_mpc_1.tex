@@ -1,7 +1,7 @@
 \section{Robust MPC}
 We assume an uncertain constrained system of the form:
 \begin{gather*}
-    x(k + 1) = g(x(k), u(k), w(k); \theta),\\
+    x(k + 1) = g\bigl(x(k), u(k), w(k); \theta\bigr),\\
     x, u \in \mathcal{X}, \mathcal{U}, \quad w \in \mathcal{W}, \quad \theta \in \Theta
 \end{gather*}
 where
@@ -34,18 +34,19 @@ $\theta$ unknown, but constant. Note that we called $\theta = d$ in~\ref{const_d
 
 {\small
     \begin{equation*}
-        g(x(k), u(k), \theta(k)) =
+        g\bigl(x(k), u(k), \theta(k)\bigr) =
         \left( \sum_{j=0}^{n_\theta} \theta_j(k) A_j \right)x(k) +
         \left( \sum_{j=0}^{n_\theta} \theta_j(k) B_j \right)u(k)
     \end{equation*}
 }
+
 time-varying parameters $\theta(k)$ describe a convex combination of $A_j , B_j$ with $\mathbf{1}^\top \theta(k) = 1$, $\theta(k) \geq 0$.
 
 \newpar{}
 \ptitle{Additive Stochastic Noise}
 
 \begin{equation*}
-    g(x(k), u(k), w(k); \theta) = Ax(k) + Bu(k) + w(k)
+    g\bigl(x(k), u(k), w(k); \theta\bigr) = Ax(k) + Bu(k) + w(k)
 \end{equation*}
 where $w$ comes from a known distribution. Used in stochastic MPC.
 
@@ -54,7 +55,7 @@ where $w$ comes from a known distribution. Used in stochastic MPC.
 
 In this course, the following noise models are considered:
 \begin{equation*}
-    g(x(k), u(k), w(k); \theta) = Ax(k) + Bu(k) + w(k), \quad w \in \mathcal{W}
+    g\bigl(x(k), u(k), w(k); \theta\bigr) = Ax(k) + Bu(k) + w(k), \quad w \in \mathcal{W}
 \end{equation*}
 where $A,B$ are known, $w$ is unknown but \textbf{bounded} and changing at each sampling instance. However, in contrast to the stochastic noise case, $w$ now comes from a certain discrete set and not from a distribution.
 \newpar{}
@@ -67,7 +68,7 @@ Note that
 \subsubsection{Robust Invariant Sets}
 \ptitle{Robust Positive Invariant Set}
 
-A set $\mathcal{O}_\mathcal{W}$ is said to be a robust positive invariant set for the autonomous system $x(k + 1) = g(x(k), w(k))$ if
+A set $\mathcal{O}_\mathcal{W}$ is said to be a robust positive invariant set for the autonomous system $x(k + 1) = g\bigl(x(k), w(k)\bigr)$ if
 \begin{equation*}
     x \in \mathcal{O}_\mathcal{W} \Rightarrow g(x, w) \in \mathcal{O}_\mathcal{W}, \quad \forall w \in \mathcal{W}
 \end{equation*}
@@ -142,3 +143,287 @@ The Pontryagin Difference is:
     \includegraphics[width = \linewidth]{8_Pontryagin.png}
 \end{center}
 
+\subsection{Impact of Bounded Additive Noise}
+\subsubsection{Uncertain State Evolution}
+In a system with bounded additive noise, the state evolution is given by:
+\begin{align*}
+    \phi_{1} & =Ax_{0}+Bu_{0}+w_{0}                                                       \\
+    \phi_{2} & =A^{2}x_{0}+ABu_{0}+Bu_{1}+Aw_{0}+w_{1}                                    \\
+    \phi_{i} & =A^{i}x_{0}+\sum_{j=0}^{i-1}A^{j}Bu_{i-1-j}+\sum_{j=0}^{i-1}A^{j}w_{i-1-j} \\
+    \phi_{i} & =x_{i}+\sum_{j=0}^{i-1}A^{j}w_{i-1-j}
+\end{align*}
+
+\subsubsection{Cost}
+Generally, the cost function would contain a term for the unknown disturbance sequence $W\in \mathcal{W}^{N}$. There exist multiple approaches to get rid of this dependence:
+\begin{itemize}
+    \item Minimize the expected value
+          \begin{equation*}
+              J_N(x_0, U) = \mathbb{E}_w \Bigl[J(x_0, U, W)\Bigr]
+          \end{equation*}
+    \item Consider the worst-case
+          \begin{equation*}
+              J_N(x_0, U) = \max_{W\in \mathcal{W}^{N-1}} J(x_0, U, W)
+          \end{equation*}
+    \item Consider the nominal case
+          \begin{equation*}
+              J_N(x_0, U) = J(x_0, U, 0)
+          \end{equation*}
+    \item Use an estimate of the disturbance (certainty equivalence)
+          \begin{equation*}
+              J_N(x_0, U) = J(x_0, U, \widehat{W})
+          \end{equation*}
+\end{itemize}
+
+\subsubsection{Robust Constraint Satisfaction}\label{ssec:robust_constraint_satisfaction}
+The robust constraints are given by:
+\begin{align*}
+    \phi_{i+1} & = A\phi_{i} + Bu_{i} + w_{i}                  &  & i = 0,\ldots, N-1       \\
+    u_i        & \in \mathcal{U}                               &  & i = 0,\ldots, N-1       \\
+    \phi_{i}   & \in \mathcal{X},\; \forall W\in \mathcal{W}^N &  & i = 0,\ldots, N-1       \\[0.5em]
+    \phi_{N}   & \in \mathcal{X}_f \subseteq \mathcal{X}       &  & \text{robust invariant} \\
+    \phi_{i+1} & = A\phi_{i} + w_{i}                           &  & i = N, \ldots
+\end{align*}
+
+The state constraints can be written as
+\begin{align*}
+    \phi_i(x_0,U,W) & =\left\{\left.x_i+\sum_{j=0}^{i-1}A^i w_{i-1-j}\right|W\in W^i\right\}\subseteq\mathcal{X}                   \\
+                    & = x_i in \mathcal{X} \ominus \left(\mathcal{W} \oplus A \mathcal{W} \oplus \cdots A^{i-1} \mathcal{W}\right) \\
+                    & = x_i \in \mathcal{X} \ominus \left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)
+\end{align*}
+where $\mathcal{F}_i = \oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}$ is called the \textit{disturbance reachable set}, that shares the dynamics of the system:
+\begin{equation*}
+    \mathcal{F}_{i+1} = A\mathcal{F}_i \oplus \mathcal{W}
+\end{equation*}
+
+\subsection{Robust Open-Loop MPC}
+Putting all the pieces together, we can write the robust open-loop MPC problem as the nominal problem with \textbf{tighter constraints}:
+\begin{align*}
+    \min_{U}\;          \sum_{i=0}^{N-1} & I(x_i,u_i)+I_f(x_N)                                                          \\
+    \text{subject to}\; x_{t+1}          & =Ax_{i}+Bu_{i}                                                               \\
+    x_0                                  & =x(k)                                                                        \\
+    x_i                                  & \in\mathcal{X}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)     \\
+    u_{i}                                & \in\mathcal{U}                                                               \\
+    x_N                                  & \in\mathcal{X}_{f}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)
+\end{align*}
+where $\mathcal{X}_f \subseteq \mathcal{X}$ is a robust invariant set for the dynamics $x(k+1) = Ax(k) + w(k) , \forall w$.
+
+\subsection{Robust Closed-Loop MPC}
+The performance of the robust open-loop MPC can be improved by using closed-loop policy $\mu_i(x_i) : \mathbb{R}^n\to \mathbb{R}^m$ i.e.\ optimize over the sequence
+\begin{equation*}
+    \Bigl\{ u_0, \mu_1(x_1), \ldots, \mu_{N-1}(x_{N-1})\Bigr\}
+\end{equation*}
+
+\newpar{}
+Multiple possible approaches:
+
+\ptitle{Pre-stabilization}
+\begin{equation*}
+    \mu_i(x_i) = Kx_i + v_i
+\end{equation*}
+\begin{itemize}
+    \item Fixed $K$ that stabilizes the CL (i.e.\ $A + BK$ is stable)
+    \item simple but conservative
+\end{itemize}
+
+\newpar{}
+\ptitle{Linear Feedback}
+\begin{equation*}
+    \mu_i(x_i) = K_i x_i + v_i
+\end{equation*}
+\begin{itemize}
+    \item Optimize over time-varying $K-i$  and $v_i$
+    \item Non-convex and difficult to solve
+\end{itemize}
+
+\newpar{}
+\ptitle{Disturbance Feedback}
+\begin{equation*}
+    \mu_i(x_i) = \sum_{j=0}^{j-1} M_{ij} + v_i
+\end{equation*}
+\begin{itemize}
+    \item Optimize over time-varying $M_{ij}$ and $v_i$
+    \item Convex version of \textit{Linear feedback}
+    \item Very effective but computationally expensive
+\end{itemize}
+
+\newpar{}
+\ptitle{Tube MPC}
+\begin{equation*}
+    \mu_i(x_i) = K(x_i - \bar{x}_i) + v_i
+\end{equation*}
+\begin{itemize}
+    \item Fixed $k$ that stabilizes the CL (i.e.\ $A + BK$ is stable)
+    \item Optimize over $\bar{x}_i$ and $v_i$
+    \item Simple and effective
+\end{itemize}
+
+\subsubsection{Separation of Nominal and Disturbance Control}
+Generally, the idea is to split the control into two parts:
+\begin{enumerate}
+    \item \textbf{Nominal Control} of the disturbance free system
+          \begin{equation*}
+              z(k+1) = Az(k) + Bv(k)
+          \end{equation*}
+    \item \textbf{Disturbance Control} that stabilizes under the disturbance
+          \begin{equation*}
+              u_i = K(x_i - z_i) + v_i
+          \end{equation*}
+          where the controller $K$ is computed offline.
+\end{enumerate}
+
+
+\subsubsection{Error Dynamics}
+The linearity of the system allows to write the error dynamics as:
+\noindent\begin{align*}
+    e_{i+1} & = x_{i+1} - z_{i+1}                        \\
+            & = Ax_i + Bu_i + w_i - Az_i - Bv_i          \\
+            & = (A+BK)(x_i - z_i) + w_i                  \\
+            & = (A+BK)e_i + w_i                          \\
+            & = A_K e_i + w_i                            \\
+            & = \sum_{j=0}^{i-1} A_k^j w_{i-j-1} & e_0=0
+\end{align*}
+Assuming that $A+BK$ is stable, and the set $\mathcal{W}$ is bounded, we can find the disturbance reachable set (DRS) $\mathcal{F}_i$ that contains all possible states of the error:
+\begin{equation*}
+    \mathcal{F}_{i}=\mathcal{W}\oplus A_{K}\mathcal{W}...\oplus A_{K}^{i-1}\mathcal{W}=\bigoplus_{j=0}^{i-1}A_{K}^{j}\mathcal{W},\quad\mathcal{F}_{0}:=\{0\}
+\end{equation*}
+
+\newpar{}
+\ptitle{Minimum Robust Invariant Set}
+
+The sequence $\mathcal{F}_i$ converges to a set $\mathcal{F}_\infty$ that is the minimum robust invariant (mRPI) set for the error dynamics:
+\begin{equation*}
+    \mathcal{F}_\infty = \bigoplus_{j=0}^{\infty}A_{K}^{j}\mathcal{W}
+\end{equation*}
+which can be found by
+\noindent\fncode{
+    \begin{algorithmic}
+        \setstretch{1.5}
+        \State{$\Omega_0 \gets \{0\}$}
+        \While{}
+        \State{$\Omega_{i+1}\gets \Omega_i \oplus A^i \mathcal{W}$}
+        \If{$\Omega_{i+1} = \Omega_i$}
+        \State{return $\mathcal{F}_\infty = \Omega_i$}
+        \EndIf{}
+        \EndWhile{}
+    \end{algorithmic}
+}
+
+\textbf{Note} that the set $\mathcal{F}_i$ increases in size with $i$ and converges to $\mathcal{F}_\infty$.
+
+\begin{minipage}[t]{0.5\linewidth}
+    \centering
+    DRS
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+    \centering
+    mRPI
+\end{minipage}
+\begin{center}
+    \includegraphics[width = \linewidth]{08_error_dynamics.png}
+\end{center}
+
+\subsubsection{Constraint-Tightening MPC}
+
+In order to satisfy the state constraints for all possible disturbances $W$ the constraints on the state $x$ must be tightened:
+\begin{equation*}
+    x_i \in z_i \oplus \mathcal{F}_i \subseteq \mathcal{X} \quad \Leftrightarrow \quad z_i \in \mathcal{X}\ominus \mathcal{F}_i
+\end{equation*}
+where the DRS $\mathcal{F}_i$ can be computed offline.
+
+\begin{center}
+    \includegraphics[width = 0.8\linewidth]{08_ct.png}
+\end{center}
+
+\newpar{}
+Similarly for the input constraints ($u_i = K(x_i - z_i) + K e_i + v_i$): % TODO: double check the controller formulation
+\begin{equation*}
+    u_i \in v_i \oplus K \mathcal{F}_i \subseteq \mathcal{U}\quad \Leftrightarrow \quad v_i \in \mathcal{U} \ominus K\mathcal{F}_i
+\end{equation*}
+
+\paragraph{MPC Problem}
+The robust constraint-tightening MPC Problem over the nominal state $z$ (tube center) and nominal input $v$ is given by:
+\begin{align*}
+    \min_{Z,V}\;         \sum_{i=0}^{N-1}                                                               & I(z_{i},v_{i})+I_{f}(z_{N})                                        \\
+    \mathrm{subj.~to}\;                                                                         z_{i+1} & =Az_{i}+Bv_{i}                       & \forall i=0, 1, \ldots, N-1 \\
+    z_{i}                                                                                               & \in\mathcal{X}\ominus\mathcal{F}_{i} & \forall i=0, 1, \ldots, N-1 \\
+    v_i                                                                                                 & \in\mathcal{U}\ominus K\mathcal{F}_i & \forall i=0, 1, \ldots, N-1 \\
+    z_{N}                                                                                               & \in\mathcal{X}_{f}                                                 \\
+    x_0                                                                                                 & \in z_0 \oplus \mathcal{E}                                         \\
+    x_0                                                                                                 & =x(k)
+\end{align*}
+
+
+
+\textbf{Note} that
+\begin{itemize}
+    \item The (feedback) control law is given by
+          \begin{equation*}
+              u(k) = v_0^* + K(x(k) - z_0^*) = v_0^*
+          \end{equation*}
+    \item The terminal set $\mathcal{X}_f^{\mathrm{ct}}$ is a robust invariant set.
+\end{itemize}
+
+\newpar{}
+\ptitle{Robust Invariance}
+
+Suppose the terminal ingredients ($I_f, \mathcal{C}_f^{ct}$) are chosen such that
+\begin{itemize}
+    \item $\mathcal{X}_f^{\mathrm{ct}}\subseteq \mathcal{X}$
+    \item for all $z\in \mathcal{X}_f^{ct}$:
+          \begin{itemize}
+              \item $Kz \in \mathcal{U}$
+              \item $(A+BK) z + w \in \mathcal{X}_f^{ct}, \; \forall w \in \mathcal{W}$
+              \item $I_f\bigl((A+BK)z\bigr) - I_f(z) \leq -I(z, \pi_f(z))$
+          \end{itemize}
+\end{itemize}
+Then \begin{equation*}
+    Ax(k) + Bv_0^*(x(k)) + w \in \mathcal{X}_N, \; \forall w \in \mathcal{W}
+\end{equation*}
+i.e.\ the problem is recursively feasible ($\mathcal{X}_N$ is the feasible set).
+
+\subsubsection{Tube MPC}
+In contrast to constraint-tightening MPC, the tube MPC bounds the maximum error with a fixed size set $\mathcal{E}$, ideally the minimum RPI set $\mathcal{F}_\infty$.
+
+\newpar{}
+Therefore, the goal is to plan a nominal trajectory $z_i$ i.e.\ the tube center, such that all possible state trajectories $z_i\oplus \mathcal{E}$ are within constraints.
+
+\begin{center}
+    \includegraphics[width = 0.8\linewidth]{08_tube.png}
+\end{center}
+
+\paragraph{Constraint-Tightening}
+Similar to before, the constraints on the state $x$ must be tightened as
+\begin{equation*}
+    z_i \oplus \mathcal{E} \subseteq \mathcal{X} \quad \Leftrightarrow \quad z_i \in \mathcal{X}\ominus \mathcal{E}
+\end{equation*}
+where the DRS $\mathcal{E}$ again can be computed offline.
+
+\newpar{}
+Similarly for the input constraints:
+\begin{equation*}
+    u_i \in v_i \oplus K \mathcal{E} \subset \mathcal{U}\quad \Leftrightarrow \quad v_i \in \mathcal{U} \ominus K\mathcal{E}
+\end{equation*}
+
+\paragraph{Tube MPC Problem}
+The robust tube MPC Problem over the nominal state $z$ and nominal input $v$ with tightened constraints is given by:
+\begin{align*}
+    \min_{Z,V}\;         \sum_{i=0}^{N-1}                                                               & I(z_{i},v_{i})+I_{f}(z_{N})                                                      \\
+    \mathrm{subj.~to}\;                                                                         z_{i+1} & =Az_{i}+Bv_{i}                                     & \forall i=0, 1, \ldots, N-1 \\
+    z_{i}                                                                                               & \in\mathcal{X}\ominus\mathcal{E}                   & \forall i=0, 1, \ldots, N-1 \\
+    v_i                                                                                                 & \in\mathcal{U}\ominus K\mathcal{E}                 & \forall i=0, 1, \ldots, N-1 \\
+    z_{N}                                                                                               & \in\mathcal{X}_{f}^{\mathrm{ct}}\ominus\mathcal{E}                               \\
+    z_0                                                                                                 & =x(k)
+\end{align*}
+with the applied control law
+\begin{equation*}
+    \mu_{\mathsf{tube}}(x) = K(x - z_0^*) + v_0^*(x)
+\end{equation*}
+
+\textbf{Note} that
+\begin{itemize}
+    \item the cost is calculated with respect to the tube centers (nominal system)
+    \item the terminal set $\mathcal{X}_f$ is just an invariant set (not robust invariant)
+    \item the terminal set is w.r.t.\ the tightened constraints
+    \item The first tube center $z_0$ is also an optimization variable i.e. $z_0$ has to be within $\mathcal{E}$ of $x_0$
+    \item The nominal dynamics can be different from the disturbance dynamics
+\end{itemize}
