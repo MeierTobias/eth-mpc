@@ -118,9 +118,9 @@ Each state is now mapped into an entire possible set of next states:
 
 Let $g(x(k), w(k)) = Ax(k) + w(k)$ and $\Omega := \{x \mid Fx \leq f\}$. Then, fulfilling the state constraints can be seen as parallel displacement of the constraint boundaries
 \begin{align*}
-    \text{pre}_{\mathcal{W}}(\Omega) & = \{x \mid Ax + w \in \Omega, \; \forall w \in \mathcal{W} \}                             \\
-                                     & = \{x \mid F_j Ax \leq f_j -F_j w, \; \forall w \in \mathcal{W} \}                        \\
-                                     & = \{x \mid F_j Ax \leq f_j -\max_{w\in \mathcal{W}} F_j , \; \forall w \in \mathcal{W} \} \\
+    \text{pre}_{\mathcal{W}}(\Omega) & = \{x \mid Ax + w \in \Omega, \; \forall w \in \mathcal{W} \}      \\
+                                     & = \{x \mid F_j Ax \leq f_j -F_j w, \; \forall w \in \mathcal{W} \} \\
+                                     & = \{x \mid F_j Ax \leq f_j -\max_{w\in \mathcal{W}} F_j\}          \\
                                      & = \{x \mid FAx \leq f - h_\mathcal{W}(F) \}
 \end{align*}
 where $h_\mathcal{W}$ is the support function.
@@ -144,17 +144,26 @@ The Pontryagin Difference is:
 \end{center}
 
 \subsection{Impact of Bounded Additive Noise}
+Define $\phi_i(x_0, U, W)$ as the state that the system will be in at time $i$ if the state at time zero is $x_0$, we apply the input $U := \{u_0, \ldots, u_{N-1}\}$ and we observe the disturbance $W := \{w_0, \ldots, w_{N-1}\}$. Assume $0\in \mathcal{W}$ (nominal trajectory).
 \subsubsection{Uncertain State Evolution}
+\begin{center}
+    \includegraphics[width = \linewidth]{08_uncertain_traj.png}
+\end{center}
 In a system with bounded additive noise, the state evolution is given by:
 \begin{align*}
     \phi_{1} & =Ax_{0}+Bu_{0}+w_{0}                                                       \\
     \phi_{2} & =A^{2}x_{0}+ABu_{0}+Bu_{1}+Aw_{0}+w_{1}                                    \\
     \phi_{i} & =A^{i}x_{0}+\sum_{j=0}^{i-1}A^{j}Bu_{i-1-j}+\sum_{j=0}^{i-1}A^{j}w_{i-1-j} \\
-    \phi_{i} & =x_{i}+\sum_{j=0}^{i-1}A^{j}w_{i-1-j}
+             & =x_{i}+\sum_{j=0}^{i-1}A^{j}w_{i-1-j}
 \end{align*}
 
 \subsubsection{Cost}
-Generally, the cost function would contain a term for the unknown disturbance sequence $W\in \mathcal{W}^{N}$. There exist multiple approaches to get rid of this dependence:
+Generally, the cost function would contain a term for the unknown disturbance sequence $W\in \mathcal{W}^{N}$:
+\begin{equation*}
+    J(x_0, U, W) := \sum_{i=0}^{N-1} l(\phi_i(x_0, U, W), u_i) + l_f(\phi_N(x_0, U, W))
+\end{equation*}
+\newpar{}
+There are multiple methods to achieve \textbf{independence} of $W$:
 \begin{itemize}
     \item Minimize the expected value
           \begin{equation*}
@@ -175,46 +184,86 @@ Generally, the cost function would contain a term for the unknown disturbance se
 \end{itemize}
 
 \subsubsection{Robust Constraint Satisfaction}\label{ssec:robust_constraint_satisfaction}
-The robust constraints are given by:
+The dynamics and robust constraints along trajectories are:
 \begin{align*}
-    \phi_{i+1} & = A\phi_{i} + Bu_{i} + w_{i}                  &  & i = 0,\ldots, N-1       \\
-    u_i        & \in \mathcal{U}                               &  & i = 0,\ldots, N-1       \\
-    \phi_{i}   & \in \mathcal{X},\; \forall W\in \mathcal{W}^N &  & i = 0,\ldots, N-1       \\[0.5em]
-    \phi_{N}   & \in \mathcal{X}_f \subseteq \mathcal{X}       &  & \text{robust invariant} \\
-    \phi_{i+1} & = A\phi_{i} + w_{i}                           &  & i = N, \ldots
+    \phi_{i+1} & = A\phi_{i} + Bu_{i} + w_{i}                  &  & i = 0,\ldots, N-1 \\
+    u_i        & \in \mathcal{U}                               &  & i = 0,\ldots, N-1 \\
+    \phi_{i}   & \in \mathcal{X},\; \forall W\in \mathcal{W}^N &  & i = 0,\ldots, N-1
 \end{align*}
-
+For the terminal set we have:
+\begin{align*}
+    \phi_{N}   & \in \mathcal{X}_f \subseteq \mathcal{X} &  & \mathcal{X}_f \text{ robust invariant} \\
+    \phi_{i+1} & = A\phi_{i} + w_{i}                     &  & i = N, \ldots
+\end{align*}
+and assume for now zero control input for simplicity.
+\paragraph{State Constraints}
 The state constraints can be written as
 \begin{align*}
-    \phi_i(x_0,U,W) & =\left\{\left.x_i+\sum_{j=0}^{i-1}A^i w_{i-1-j}\right|W\in W^i\right\}\subseteq\mathcal{X}                   \\
-                    & = x_i in \mathcal{X} \ominus \left(\mathcal{W} \oplus A \mathcal{W} \oplus \cdots A^{i-1} \mathcal{W}\right) \\
-                    & = x_i \in \mathcal{X} \ominus \left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)
+    \phi_i(x_0,U,W) & =\left\{\left.x_i+\sum_{j=0}^{i-1}A^i w_{i-1-j}\right|W\in W^i\right\}\subseteq\mathcal{X} \\
+                    & = x_i \in \mathcal{X} \ominus \mathcal{F}_i                                                \\
+                    & = x_i \in \left\{x | x+\bar{w}\in \mathcal{X}, \bar{w}\in \mathcal{F}_i\right\}
 \end{align*}
-where $\mathcal{F}_i = \oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}$ is called the \textit{disturbance reachable set}, that shares the dynamics of the system:
+where the \textit{disturbance reachable set}
+\begin{align*}
+    \mathcal{F}_i & = \mathcal{W} \oplus A \mathcal{W} \oplus \cdots A^{i-1} \mathcal{W} \\
+                  & = \oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}
+\end{align*}
+shares the dynamics of the system:
 \begin{equation*}
     \mathcal{F}_{i+1} = A\mathcal{F}_i \oplus \mathcal{W}
+\end{equation*}
+\newpar{}
+\ptitle{Polytopic Constraints}
+
+For the polytopic case $\mathcal{X} = \{x \mid Fx \leq f\}$ we get
+\begin{equation*}
+    Fx_i + F \sum_{j=0}^{i-1} A^j w_{i-1-j} \leq f, \quad \forall W \in \mathcal{W}^i
+\end{equation*}
+which is identical to
+\begin{align*}
+    Fx_i & \leq f - \max_{W \in \mathcal{W}^i} F \sum_{j=0}^{i-1} A^j w_{i-1-j} \\
+         & = f - h_{\mathcal{W}^i} \left(F \sum_{j=0}^{i-1} A^j\right)
+\end{align*}
+where the support function can be pre-computed offline.
+% TODO: Are the elements of the disturbance reachable set $\mathcal{F}$ identical to the support functions in the polytopic case?
+\paragraph{Terminal Constraint}
+The terminal constraint
+\begin{equation*}
+    \phi_N(x_0, U, W)\in \mathcal{X}_f
+\end{equation*}
+is handled identically, i.e.\
+\begin{equation*}
+    x_N \in \mathcal{X}_f \ominus \mathcal{F}_N
 \end{equation*}
 
 \subsection{Robust Open-Loop MPC}
 Putting all the pieces together, we can write the robust open-loop MPC problem as the nominal problem with \textbf{tighter constraints}:
 \begin{align*}
-    \min_{U}\;          \sum_{i=0}^{N-1} & I(x_i,u_i)+I_f(x_N)                                                          \\
-    \text{subject to}\; x_{t+1}          & =Ax_{i}+Bu_{i}                                                               \\
-    x_0                                  & =x(k)                                                                        \\
-    x_i                                  & \in\mathcal{X}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)     \\
-    u_{i}                                & \in\mathcal{U}                                                               \\
-    x_N                                  & \in\mathcal{X}_{f}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)
+    \min_{U}\;          \sum_{i=0}^{N-1} & I(x_i,u_i)+I_f(x_N)                      \\
+    \text{subject to}\; x_{i+1}          & =Ax_{i}+Bu_{i}                           \\
+    x_0                                  & =x(k)                                    \\
+    %x_i                                  & \in\mathcal{X}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)     \\
+    x_i                                  & \in\mathcal{X} \ominus \mathcal{F}_i     \\
+    u_{i}                                & \in\mathcal{U}                           \\
+    % x_N                                  & \in\mathcal{X}_{f}\ominus\left(\oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}\right)
+    x_N                                  & \in\mathcal{X}_{f} \ominus \mathcal{F}_N
 \end{align*}
 where $\mathcal{X}_f \subseteq \mathcal{X}$ is a robust invariant set for the dynamics $x(k+1) = Ax(k) + w(k) , \forall w$.
+\newpar{}
+\ptitle{Stability and ROA}
 
-\subsection{Robust Closed-Loop MPC}
-The performance of the robust open-loop MPC can be improved by using closed-loop policy $\mu_i(x_i) : \mathbb{R}^n\to \mathbb{R}^m$ i.e.\ optimize over the sequence
+Stability analysis needs more general stability theory (advanced MPC).
+\newpar{}
+Robust open-loop MPC potentially has a very small region of attraction, in particular for unstable systems. Use \textbf{feedback} to tackle it:~\ref{robust_CL_MPC}.
+
+\subsection{Robust Closed-Loop MPC}\label{robust_CL_MPC}
+Previously, we assumed that the controller will do the same thing in the future no matter what disturbance we observe. The performance of the robust open-loop MPC can be improved by using a control policy $\mu_i(x_i) : \mathbb{R}^n\to \mathbb{R}^m$ i.e.\ optimize over the sequence
 \begin{equation*}
     \Bigl\{ u_0, \mu_1(x_1), \ldots, \mu_{N-1}(x_{N-1})\Bigr\}
 \end{equation*}
 
 \newpar{}
-Multiple possible approaches:
+As we cannot optimize over arbitrary functions, common structural assumptions are:
 
 \ptitle{Pre-stabilization}
 \begin{equation*}
@@ -231,7 +280,7 @@ Multiple possible approaches:
     \mu_i(x_i) = K_i x_i + v_i
 \end{equation*}
 \begin{itemize}
-    \item Optimize over time-varying $K-i$  and $v_i$
+    \item Optimize over time-varying $K_i$  and $v_i$
     \item Non-convex and difficult to solve
 \end{itemize}
 
@@ -243,16 +292,16 @@ Multiple possible approaches:
 \begin{itemize}
     \item Optimize over time-varying $M_{ij}$ and $v_i$
     \item Convex version of \textit{Linear feedback}
-    \item Very effective but computationally expensive
+    \item Very effective but computationally expensive (matrix optimization variables)
 \end{itemize}
 
 \newpar{}
-\ptitle{Tube MPC}
+\ptitle{Constraint Tightening MPC \& Tube MPC}
 \begin{equation*}
     \mu_i(x_i) = K(x_i - \bar{x}_i) + v_i
 \end{equation*}
 \begin{itemize}
-    \item Fixed $k$ that stabilizes the CL (i.e.\ $A + BK$ is stable)
+    \item Fixed $K$ that stabilizes the CL (i.e.\ $A + BK$ is stable)
     \item Optimize over $\bar{x}_i$ and $v_i$
     \item Simple and effective
 \end{itemize}
@@ -264,25 +313,25 @@ Generally, the idea is to split the control into two parts:
           \begin{equation*}
               z(k+1) = Az(k) + Bv(k)
           \end{equation*}
-    \item \textbf{Disturbance Control} that stabilizes under the disturbance
+    \item \textbf{Disturbance Control} that compensates for deviations from the nominal trajectory
           \begin{equation*}
               u_i = K(x_i - z_i) + v_i
           \end{equation*}
-          where the controller $K$ is computed offline.
+          The controller $K$ is computed offline. We then optimize over $z_i and v_i$.
 \end{enumerate}
 
 
 \subsubsection{Error Dynamics}
 The linearity of the system allows to write the error dynamics as:
 \noindent\begin{align*}
-    e_{i+1} & = x_{i+1} - z_{i+1}                        \\
-            & = Ax_i + Bu_i + w_i - Az_i - Bv_i          \\
-            & = (A+BK)(x_i - z_i) + w_i                  \\
-            & = (A+BK)e_i + w_i                          \\
-            & = A_K e_i + w_i                            \\
-            & = \sum_{j=0}^{i-1} A_k^j w_{i-j-1} & e_0=0
+    e_{i+1} & = x_{i+1} - z_{i+1}                              \\
+            & = Ax_i + Bu_i + w_i - Az_i - Bv_i                \\
+            & = (A+BK)(x_i - z_i) + w_i                        \\
+            & = \underbrace{(A+BK)}_{A_K}e_i + w_i             \\
+            & = A_K e_i + w_i                                  \\
+            & = \sum_{j=0}^{i-1} A_K^j w_{i-j-1}, \qquad e_0=0
 \end{align*}
-Assuming that $A+BK$ is stable, and the set $\mathcal{W}$ is bounded, we can find the disturbance reachable set (DRS) $\mathcal{F}_i$ that contains all possible states of the error:
+Assuming that $A+BK$ is stable, and the set $\mathcal{W}$ is bounded, the error remains bounded. We can find the disturbance reachable set (DRS) $\mathcal{F}_i$ that contains all possible states of the error:
 \begin{equation*}
     \mathcal{F}_{i}=\mathcal{W}\oplus A_{K}\mathcal{W}...\oplus A_{K}^{i-1}\mathcal{W}=\bigoplus_{j=0}^{i-1}A_{K}^{j}\mathcal{W},\quad\mathcal{F}_{0}:=\{0\}
 \end{equation*}
@@ -308,7 +357,7 @@ which can be found by
     \end{algorithmic}
 }
 
-\textbf{Note} that the set $\mathcal{F}_i$ increases in size with $i$ and converges to $\mathcal{F}_\infty$.
+\textbf{Note} that the set $\mathcal{F}_i$ increases in size with $i$ and converges to $\mathcal{F}_\infty$. If convergence does not happen in finite time, there are methods to slightly enlarge $\mathcal{F}_i$ so that $\mathcal{F}_i>F_\infty$.
 
 \begin{minipage}[t]{0.5\linewidth}
     \centering
@@ -341,15 +390,14 @@ Similarly for the input constraints ($u_i = K(x_i - z_i) + K e_i + v_i$): % TODO
 \end{equation*}
 
 \paragraph{MPC Problem}
-The robust constraint-tightening MPC Problem over the nominal state $z$ (tube center) and nominal input $v$ is given by:
+The robust constraint-tightening MPC Problem over the nominal state $z$ and nominal input $v$ is given by:
 \begin{align*}
-    \min_{Z,V}\;         \sum_{i=0}^{N-1}                                                               & I(z_{i},v_{i})+I_{f}(z_{N})                                        \\
-    \mathrm{subj.~to}\;                                                                         z_{i+1} & =Az_{i}+Bv_{i}                       & \forall i=0, 1, \ldots, N-1 \\
-    z_{i}                                                                                               & \in\mathcal{X}\ominus\mathcal{F}_{i} & \forall i=0, 1, \ldots, N-1 \\
-    v_i                                                                                                 & \in\mathcal{U}\ominus K\mathcal{F}_i & \forall i=0, 1, \ldots, N-1 \\
-    z_{N}                                                                                               & \in\mathcal{X}_{f}                                                 \\
-    x_0                                                                                                 & \in z_0 \oplus \mathcal{E}                                         \\
-    x_0                                                                                                 & =x(k)
+    \min_{Z,V}\;         \sum_{i=0}^{N-1}                                                               & I(z_{i},v_{i})+I_{f}(z_{N})                                                \\
+    \mathrm{subj.~to}\;                                                                         z_{i+1} & =Az_{i}+Bv_{i}                               & \forall i=0, 1, \ldots, N-1 \\
+    z_{i}                                                                                               & \in\mathcal{X}\ominus\mathcal{F}_{i}         & \forall i=0, 1, \ldots, N-1 \\
+    v_i                                                                                                 & \in\mathcal{U}\ominus K\mathcal{F}_i         & \forall i=0, 1, \ldots, N-1 \\
+    z_{N}                                                                                               & \in\mathcal{X}_{f}^{ct}\ominus \mathcal{F}_N                               \\
+    z_0                                                                                                 & =x(k)
 \end{align*}
 
 
@@ -360,13 +408,15 @@ The robust constraint-tightening MPC Problem over the nominal state $z$ (tube ce
           \begin{equation*}
               u(k) = v_0^* + K(x(k) - z_0^*) = v_0^*
           \end{equation*}
+          Hence, no actual FB is applied. The method simple tightens the constraints.
+    \item The DRS $\mathcal{F}_i:= \mathcal{W}\oplus A_K \mathcal{W}\dots A_K^{i-1}\mathcal{W}, \mathcal{F}_0:={0}$ are now also bounded for OL unstable systems. This is a main difference compared to robust OL MPC.
     \item The terminal set $\mathcal{X}_f^{\mathrm{ct}}$ is a robust invariant set.
 \end{itemize}
 
 \newpar{}
 \ptitle{Robust Invariance}
 
-Suppose the terminal ingredients ($I_f, \mathcal{C}_f^{ct}$) are chosen such that
+Let the terminal ingredients ($I_f, \mathcal{C}_f^{ct}$) be chosen such that
 \begin{itemize}
     \item $\mathcal{X}_f^{\mathrm{ct}}\subseteq \mathcal{X}$
     \item for all $z\in \mathcal{X}_f^{ct}$:
@@ -376,13 +426,20 @@ Suppose the terminal ingredients ($I_f, \mathcal{C}_f^{ct}$) are chosen such tha
               \item $I_f\bigl((A+BK)z\bigr) - I_f(z) \leq -I(z, \pi_f(z))$
           \end{itemize}
 \end{itemize}
+\newpar{}
+Let $\mathcal{X}_N$ be the feasible set and $V^*(x(k))$ be the optimizer of the robust constraint-tightening MPC problem for $x(k)\in\mathcal{X}_N$.
+\newpar{}
 Then \begin{equation*}
     Ax(k) + Bv_0^*(x(k)) + w \in \mathcal{X}_N, \; \forall w \in \mathcal{W}
 \end{equation*}
-i.e.\ the problem is recursively feasible ($\mathcal{X}_N$ is the feasible set).
+i.e.\ the problem is recursively feasible.
 
 \subsubsection{Tube MPC}
-In contrast to constraint-tightening MPC, the tube MPC bounds the maximum error with a fixed size set $\mathcal{E}$, ideally the minimum RPI set $\mathcal{F}_\infty$.
+In contrast to constraint-tightening MPC, the tube MPC bounds the maximum error with a fixed size set
+\begin{equation*}
+    \mathcal{E}:e_i \in \mathcal{E} \Rightarrow e_{i+1}\in \mathcal{E},
+\end{equation*}
+ideally the minimum RPI set $\mathcal{F}_\infty$.
 
 \newpar{}
 Therefore, the goal is to plan a nominal trajectory $z_i$ i.e.\ the tube center, such that all possible state trajectories $z_i\oplus \mathcal{E}$ are within constraints.
@@ -427,3 +484,6 @@ with the applied control law
     \item The first tube center $z_0$ is also an optimization variable i.e. $z_0$ has to be within $\mathcal{E}$ of $x_0$
     \item The nominal dynamics can be different from the disturbance dynamics
 \end{itemize}
+
+
+
