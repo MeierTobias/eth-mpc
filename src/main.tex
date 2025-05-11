@@ -19,6 +19,8 @@
     \input{\templatePath/summary_title.tex} % ChkTex 27
 
     \input{diagrams/bsb_header.tex}
+
+    \setcounter{section}{-1} % Section stating from 0 to align with the file and chapter numbering
     \input{sections/00_notation.tex}
 
     \input{sections/01_system_theory.tex}
@@ -29,10 +31,9 @@
     \input{sections/06_feasibility_stability.tex}
     \input{sections/07_practical_mpc.tex}
     \input{sections/08_robust_mpc.tex}
-    \input{sections/11_implementation.tex}
 
     \newpage{}
-    \input{sections/12_appendix.tex}
+    \input{sections/99_appendix.tex}
 
 
 \end{multicols*}
