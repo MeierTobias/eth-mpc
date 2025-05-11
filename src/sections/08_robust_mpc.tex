@@ -196,6 +196,12 @@ For the terminal set we have:
     \phi_{i+1} & = A\phi_{i} + w_{i}                     &  & i = N, \ldots
 \end{align*}
 and assume for now zero control input for simplicity.
+
+\begin{center}
+    \includegraphics[width=0.9\linewidth]{08_rob_const.png}
+    \includegraphics[width=0.9\linewidth]{08_rob_const_tight.png}
+\end{center}
+
 \paragraph{State Constraints}
 The state constraints can be written as
 \begin{align*}
@@ -269,11 +275,11 @@ As we cannot optimize over arbitrary functions, often structural assumptions on 
 \begin{equation*}
     \mu_i(x_i) = Kx_i + v_i
 \end{equation*}
+Fixed $K$ that stabilizes the CL (i.e.\ $A + BK$ is stable)
 \begin{itemize}
-    \item Fixed $K$ that stabilizes the CL (i.e.\ $A + BK$ is stable)
-    \item [+] simple
-    \item [-] conservative
-    \item [-] $K x_i$ usually large $\rightarrow$ remaining optimization in $v_i$ shrinks
+    \item [$+$] simple
+    \item [$-$] conservative
+    \item [$-$] $K x_i$ usually large $\rightarrow$ remaining optimization in $v_i$ shrinks
 \end{itemize}
 
 \newpar{}
@@ -281,9 +287,9 @@ As we cannot optimize over arbitrary functions, often structural assumptions on 
 \begin{equation*}
     \mu_i(x_i) = K_i x_i + v_i
 \end{equation*}
+Optimize over time-varying $K_i$  and $v_i$
 \begin{itemize}
-    \item Optimize over time-varying $K_i$  and $v_i$
-    \item [-] Non-convex and difficult to solve
+    \item [$-$] Non-convex and difficult to solve
 \end{itemize}
 
 \newpar{}
@@ -291,16 +297,12 @@ As we cannot optimize over arbitrary functions, often structural assumptions on 
 \begin{equation*}
     \mu_i(x_i) = \sum_{j=0}^{j-1} M_{ij} + v_i
 \end{equation*}
+Optimize over time-varying $M_{ij}$ and $v_i$, hence over \textit{all} previous disturbances
 \begin{itemize}
-    \item Optimize over
-          \begin{itemize}
-              \item time-varying $M_{ij}$ and $v_i$
-              \item hence, over \textit{all} previous disturbances
-          \end{itemize}
-    \item Convex version of \textit{Linear feedback}
-    \item Least restrictive viable method
-    \item [+] Very effective
-    \item [-] Computationally expensive (matrix optimization variables)
+    \item [$+$]Convex version of \textit{Linear feedback}
+    \item [$+$]Least restrictive viable method
+    \item [$+$] Very effective
+    \item [$-$] Computationally expensive (matrix optimization variables)
 \end{itemize}
 
 \newpar{}
@@ -308,11 +310,10 @@ As we cannot optimize over arbitrary functions, often structural assumptions on 
 \begin{equation*}
     \mu_i(x_i) = K(x_i - \bar{x}_i) + v_i
 \end{equation*}
+Fixed $K$ that stabilizes the CL (i.e.\ $A + BK$ is stable) and optimize over $\bar{x}_i$ and $v_i$
 \begin{itemize}
-    \item Fixed $K$ that stabilizes the CL (i.e.\ $A + BK$ is stable)
-    \item Optimize over $\bar{x}_i$ and $v_i$
-    \item [+] Simple, often effective
-    \item [+] FB on \textit{deviation from} $x_i$ $\rightarrow$ remaining opt.\ in $v_i$ grows
+    \item [$+$] Simple, often effective
+    \item [$+$] FB on \textit{deviation from} $x_i$ $\rightarrow$ remaining opt.\ in $v_i$ grows
 \end{itemize}
 
 \subsubsection{Separation of Nominal and Disturbance Control}
@@ -371,11 +372,17 @@ which can be found by
 
 \textbf{Note} that the set $\mathcal{F}_i$ increases in size with $i$ and converges to $\mathcal{F}_\infty$. If convergence does not happen in finite time, there are methods to slightly enlarge $\mathcal{F}_i$ so that $\mathcal{F}_i>F_\infty$.
 
-\begin{minipage}[t]{0.5\linewidth}
+\begin{center}
+    \includegraphics[width=\linewidth]{08_mRPI.png}
+\end{center}
+
+Comparison of the two variants:
+
+\begin{minipage}[t]{0.49\linewidth}
     \centering
     DRS
 \end{minipage}
-\begin{minipage}[t]{0.5\linewidth}
+\begin{minipage}[t]{0.49\linewidth}
     \centering
     mRPI
 \end{minipage}
@@ -405,7 +412,7 @@ and the system moves toward the origin until there is a balance between the size
 
 In order to satisfy the state constraints for all possible disturbances $W$ the constraints on the state $x$ must be tightened:
 \begin{equation*}
-    x_i \in z_i \oplus \mathcal{F}_i \subseteq \mathcal{X} \quad \Leftrightarrow \quad z_i \in \mathcal{X}\ominus \mathcal{F}_i
+    z_i \oplus \mathcal{F}_i \subseteq \mathcal{X} \quad \Leftrightarrow \quad z_i \in \mathcal{X}\ominus \mathcal{F}_i
 \end{equation*}
 where the DRS $\mathcal{F}_i$ can be computed offline.
 
@@ -501,7 +508,7 @@ where the DRS $\mathcal{E}$ again can be computed offline.
 \newpar{}
 Similarly for the input constraints:
 \begin{equation*}
-    u_i \in v_i \oplus K \mathcal{E} \subseteq \mathcal{U}\quad \Leftrightarrow \quad v_i \in \mathcal{U} \ominus K\mathcal{E}
+    u_i \in K \mathcal{E} \oplus v_i \subset \mathcal{U}\quad \Leftrightarrow \quad v_i \in \mathcal{U} \ominus K\mathcal{E}
 \end{equation*}
 
 \subsubsection{Tube MPC Problem}
@@ -536,6 +543,27 @@ with the applied control law
     \item [+] Region of convergence can be specified        % TODO: Formula
     \item [-] Feasible set smaller  % TODO: Is this wrt. CT MPC or wrt. vanilla MPC? Hope for the 1st
 \end{itemize}
+
+\newpar{}
+\ptitle{Implementation:}
+
+\textbf{Offline}
+\begin{enumerate}
+    \item Choose a stabilizing controller $K$ so that $A + BK$ is stable.
+    \item Compute the minimal robust invariant set $\mathcal{E} = \mathcal{F}_\infty$ for the system $x(k+1) = (A + BK )x(k) + w(k), w \in \mathcal{W}^1$
+    \item Compute the tightened constraints \begin{gather*}
+              \tilde{\mathcal{X}}:=\mathcal{X} \ominus \mathcal{E} \\
+              \tilde{\mathcal{U}}:=\mathcal{U} \ominus K\mathcal{E}
+          \end{gather*}
+    \item Choose terminal weight function $I_f$ and constraint $\mathcal{X}_f$ satisfying assumptions stated in Section~\ref{08_tube_assumptions}.
+\end{enumerate}
+
+\textbf{Online}
+\begin{enumerate}
+    \item Measure / estimate state $x$
+    \item Solve the Tube MPC optimization problem
+    \item Set the input to $u = K(x-Z_0^*(x))+v_0^*(x)$
+\end{enumerate}
 
 \begin{examplesection}[Example: Offline Constraint Tightening]
     Assume $\mathcal{X} = \{x \mid \|x\|_\infty \leq 3\}$, i.e.
@@ -579,22 +607,22 @@ with the applied control law
     \end{equation*}
 \end{examplesection}
 
-\paragraph{Tube MPC Assumptions}
+\paragraph{Tube MPC Assumptions}\label{08_tube_assumptions}
 Similar to standard MPC, three main conditions are needed to ensure stability and recursive feasibility of the nominal trajectory:
 \newpar{}
 \begin{enumerate}
-    \item The stage cost is a positive definite function: strictly positive except at the origin.
+    \item The stage cost is a positive definite function: strictly positive and only zero at the origin.
     \item The terminal set is invariant for the \textbf{nominal system} under the local controller $\kappa_f(z)$:
           \begin{equation*}
               A z + B \kappa_f(z) \in \mathcal{X}_f, \quad \forall z \in \mathcal{X}_f
           \end{equation*}
           and satisfies the \textbf{tightened} constraints:
           \begin{equation*}
-              \mathcal{X}_f \subseteq \mathcal{X} \ominus \mathcal{E}, \quad \kappa_f(z) \in \mathcal{U} \ominus K \mathcal{E}
+              \mathcal{X}_f \subseteq \mathcal{X} \ominus \mathcal{E}, \quad \kappa_f(z) \in \mathcal{U} \ominus K \mathcal{E} \quad \forall z \in \mathcal{X}_f
           \end{equation*}
     \item Terminal cost is a Lyapunov function in $\mathcal{X}_f$:
           \begin{equation*}
-              \ell_f(Az + B\kappa_f(z)) - \ell_f(z) \leq -\ell(z, \kappa_f(z)), \quad \forall z \in \mathcal{X}_f
+              I_f(Az + B\kappa_f(z)) - I_f(z) \leq -I(z, \kappa_f(z)), \quad \forall z \in \mathcal{X}_f
           \end{equation*}
 \end{enumerate}
 Note that $w$ can be ignored in 2.\ as nominal and disturbance dynamics are decoupled.
