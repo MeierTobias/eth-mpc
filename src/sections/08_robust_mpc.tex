@@ -664,10 +664,33 @@ The cost for the nominal trajectory vanishes:
     \end{equation*}
     By construction, $x(k + 1) \in z_1^* \oplus \mathcal{E}$. The shifted trajectory
     \begin{equation*}
-        \left( v_1^*, \dots, v_{N-1}^*, \kappa_f(z_N^*) \right), \quad \left( z_1^*, \dots, z_N^*, A z_N^* + B \kappa_f(z_N^*) \right)
+        \left\{ v_1^*, \dots, v_{N-1}^*, \kappa_f(z_N^*) \right\}, \quad \left\{ z_1^*, \dots, z_N^*, A z_N^* + B \kappa_f(z_N^*) \right\}
     \end{equation*}
     is feasible for all $x(k+1)$.
 
+    \newpar{}
+    Details:
+    \begin{itemize}
+        \item Feasibility of $\left\{ v_1^*, \dots, v_{N-1}^*, \kappa_f(z_N^*) \right\}$
+              \begin{itemize}
+                  \item $v_i^* \in \mathcal{U} \ominus K\mathcal{E}$ for $i=1,\ldots,N-1$ given from feas.\ at $k$.
+                  \item $\kappa_f(z_N^*) \in \mathcal{U} \ominus K\mathcal{E}$ for $z_N^*\in\mathcal{X}_f$ by Assumption 2. (Section~\ref{08_tube_assumptions})
+              \end{itemize}
+        \item Feasibility of $\left\{ z_1^*, \dots, z_N^*, A z_N^* + B \kappa_f(z_N^*) \right\}$
+              \begin{itemize}
+                  \item $z_i^* \in \mathcal{X}\ominus\mathcal{E}$ for $i=1,\ldots,N-1$ given from feas.\ at $k$.
+                  \item $z_N^* \in \mathcal{X}_f\subseteq\mathcal{X}\ominus\mathcal{E}$ given from feasibility at $k$.
+                  \item $Az_N^* + B\kappa_f(z_N^*) \in \mathcal{X}_f$ from invariance of $\mathcal{X}_f$ by Assumption 2. (Section~\ref{08_tube_assumptions})
+                  \item $x(k+1) \in z_1^* \oplus \mathcal{E}$ follows from:
+                        \begin{align*}
+                            \underbrace{x(k+1) -z_1^*}_{e_{k+1}} & = Ax(k) +BK(x(k)-z_0^*)+Bv_0^* + w                      \\
+                                                                 & \qquad\qquad\qquad\qquad\qquad -Az_0^* + Bv_0^*         \\
+                                                                 & = (A+BK)\underbrace{(x(k)-z_0^*)}_{e_k} + w(k)          \\
+                                                                 & \in \mathcal{E} \text{ if } (x(k)-z_0^*)\in \mathcal{E} \\
+                                                                 & \Rightarrow x(k+1) \in z_1^* \oplus \mathcal{E}
+                        \end{align*}
+              \end{itemize}
+    \end{itemize}
     \newpar{}
     \ptitle{Stability}
 
