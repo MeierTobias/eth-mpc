@@ -1,3 +1,93 @@
 \section{Numerical Methods and Implementation}
 
+\subsection{Explicit MPC}
+Online computation time of the optimal control law can be drastically reduced by pre-computing the control law as a function of the state $x$.
+In other words, for \textbf{small systems} (3-6 states),
+\begin{enumerate}
+    \item The optimization problem is \textbf{solved offline and parametrically} for a set of states.
+    \item During runtime, the control input is \textbf{queried from the pre-computed solution} (piecewise affine for linear system/ constraints).
+\end{enumerate}
 
+\subsubsection{Active Set and Critical Region}
+\ptitle{Active Set}
+
+The active set $A(x)$ is the set of active constraints at a given state $x$:
+\begin{equation*}
+    A(x) = \left\{ j \in \{1,\ldots,m\} \Big| G_j U - E_j x(k) = w_j \right\}
+\end{equation*}
+Its complement is the set of non-active constraints:
+\begin{equation*}
+    NA(x) = \left\{ j \in \{1,\ldots,m\} \Big| G_j U - E_j x(k) < w_j \right\}
+\end{equation*}
+
+\newpar{}
+\ptitle{Critical Region}
+
+The critical region $CR$ is the set of states $x$ for which the same active set $A(x)$ is active at the optimum:
+\begin{equation*}
+    CR = \left\{x\in \mathcal{X} : A(x)=A(x^*)\right\}
+\end{equation*}
+
+\subsubsection{Quadratic Cost}
+The CFTOC problem
+\begin{align*}
+    J^*(x(k)) = \min_U \; & \begin{bmatrix}
+                                U^\top & {x(k)}^\top
+                            \end{bmatrix}\begin{bmatrix}
+                                             H & F^\top \\
+                                             F & Y
+                                         \end{bmatrix}\begin{bmatrix}
+                                                          U^\top \\ x(k)^\top
+                                                      \end{bmatrix} \\
+    \mathrm{subj.\ to}\;  & GU\leq w+E\, x(k)
+\end{align*}
+is a \textbf{multiparametric quadratic program} (MPQP) with the following properties:
+\begin{itemize}
+    \item The optimal solution is continuous and piecewise affine on polyhedra $CR^j$
+          \begin{equation*}
+              u_0^* = \kappa(x(k)) = F^j x + g^j \quad \text{if } x\in CR^j\; j=1,\ldots, N^r
+          \end{equation*}
+    \item The polyhedra $CR^j = \left\{ x\in \mathbb{R}^n \Big| H^j x \leq K^j \right\}$ are a partition of the feasible polyhedron $\mathcal{X}_0$.
+    \item The value function $J^*(x(k))$ is convex and piecewise quadratic on polyhedra.
+\end{itemize}
+
+% Should we add the example?
+
+\subsubsection[1/inf-Norm Cost]{1/$\infty$-Norm Cost}
+The CFTOC problem
+\begin{align*}
+    \min_U \quad            & c^\top U                              \\
+    \mathrm{subj.\ to}\quad & \bar{G} U \leq \bar{w} + \bar{E} x(k) \\
+\end{align*}
+
+Is a multiparametric linear program (MPLP) with the following properties:
+\begin{itemize}
+    \item The optimal solution is continuous and piecewise affine on polyhedra $CR^j$
+          \begin{equation*}
+              u_0^* = \kappa(x(k)) = F^j x + g^j \quad \text{if } x\in CR^j\; j=1,\ldots, N^r
+          \end{equation*}
+    \item The polyhedra $CR^j = \left\{ x\in \mathbb{R}^n \big| H^j x \leq K^j \right\}$ are a partition of the feasible polyhedron $\mathcal{X}_0$.
+    \item In case of multiple optimizers a piecewise affine control law exists.
+    \item The value function $J^*(x(k))$ is convex and piecewise quadratic on polyhedra.
+\end{itemize}
+\subsubsection{Point Location}
+
+Two possible methods to find the critical region $CR^j$ for a given state $x(k)$.
+
+\newpar{}
+\ptitle{Sequential Search $\mathcal{O}(m)$}
+Simply check each polyhedron until the one containing $x(k)$ is found.
+
+\newpar{}
+\ptitle{Logarithmic/Tree Search $(\mathcal{O}(\log(m)))$}
+
+By constructing a search tree offline, the critical region can potentially be found in logarithmic time.
+
+\subsection{Iterative MPC}
+\subsubsection{Unconstrained Minimization}
+\paragraph{Gradient Descent}
+\paragraph{Newton's Method}
+
+\subsubsection{Constrained Minimization}
+\paragraph{Projected Gradient Method}
+\paragraph{Interior Point Method}
