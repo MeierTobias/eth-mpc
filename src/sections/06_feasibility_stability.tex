@@ -46,9 +46,9 @@ Using the same (suboptimal) sequence $\widetilde{x}$ as above, the cost is given
 The terminal constraint $x_N = 0$ reduces the size of the feasible set. By using a convex set $\mathcal{X}_f$ as terminal constraints for which a local control law is known (can be constructed), that has a finite cost to stay in this set, one can increase the region of attraction and hence the feasible set.
 \subsubsection{Stability and Recursive Feasibility: Main Result}\label{stab_rec_feasibility}
 To guarantee stability and recursive feasibility the following three properties have to hold:
-\begin{enumerate}
-    \item Stage cost is positive definite, i.e.\ it is strictly positive and only zero at the origin.
-    \item The terminal set $\mathcal{X}_f$ is \textbf{invariant} under the local control law $\kappa_f(x_i)$:
+\begin{enumerate}[leftmargin=24pt]
+    \item[S1.1] Stage cost is positive definite, i.e.\ it is strictly positive and only zero at the origin.
+    \item[S1.2] The terminal set $\mathcal{X}_f$ is \textbf{invariant} under the local control law $\kappa_f(x_i)$:
           \begin{equation*}
               x_{i+1} = Ax_i +B\kappa_f(x_i) \in \mathcal{X}_f, \quad \forall\: x_i \in \mathcal{X}_f
           \end{equation*}
@@ -56,7 +56,7 @@ To guarantee stability and recursive feasibility the following three properties 
           \begin{equation*}
               \mathcal{X}_f \subseteq \mathcal{X}, \: \kappa_f(x_i) \in \mathcal{U}, \quad \forall\: x_i \in \mathcal{X}_f
           \end{equation*}
-    \item The terminal cost is a continuous \textbf{Lyapunov function} in the terminal set $\mathcal{X}_f$ and satisfies:
+    \item[S1.3] The terminal cost is a continuous \textbf{Lyapunov function} in the terminal set $\mathcal{X}_f$ and satisfies:
           \begin{equation*}
               I_f(x_{i+1})-I_f(x_i) \leq -I(x_i,\kappa_f(x_i)), \quad \forall\: x_i \in \mathcal{X}_f
           \end{equation*}
