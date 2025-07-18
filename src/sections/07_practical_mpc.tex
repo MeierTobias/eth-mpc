@@ -81,7 +81,8 @@ A commonly-used formulation for tracking MPC cost is
 \begin{equation*}
     \min_{U}\|z_{N}-Hx_{s}\|_{P_{z}}^{2}+\sum_{i=0}^{N-1}\|z_{i}-Hx_{s}\|_{Q_{z}}^{2}+\|u_{i}-u_{s}\|_{R}^{2}
 \end{equation*}
-% TODO: Why does one (not) use it compared to delta?
+% Q: Why does one (not) use it compared to delta?
+% A: One thing: Delta formulation is DDP and this one is not (because of A*xs etc.)
 
 \subsubsection{Delta-Formulation for Tracking}
 By introducing the delta formulation the tracking problem is transformed to the origin and therefore can be treated like a normal MPC problem.
@@ -137,10 +138,10 @@ where the final input to the system is
 \subsubsection{Convergence}
 
 Assume target is feasible with $x_s \in \mathcal{X}, u_s \in \mathcal{U}$ and choose terminal weight $V_f(x)$ and constraint $\mathcal{X}_f$ as in the regulation case satisfying (i.e.\ we found $V_f(x), \mathcal{X}_f$ only for the regulation case):
-\begin{gather*}
-    \mathcal{X}_f \subseteq \mathcal{X}, \: Kx \in \mathcal{U} \: \forall x \in \mathcal{X}_f \\
-    V_f(x(k+1)) - V_f(x(k)) \leq -I(x(k),Kx(k)) \: \forall x \in \mathcal{X}_f
-\end{gather*}
+\begin{align*}
+    \mathcal{X}_f \subseteq \mathcal{X},        & \quad Kx \in \mathcal{U}      &  & \forall x \in \mathcal{X}_f \\
+    V_f\bigl(x(k+1)\bigr) - V_f\bigl(x(k)\bigr) & \leq -I\bigl(x(k),Kx(k)\bigr) &  & \forall x \in \mathcal{X}_f
+\end{align*}
 \newpar{}
 As the dynamics are identical in the Delta-formulation and the original system, the same Lyapunov function $V_f$ can be used.
 \newpar{}
@@ -154,7 +155,7 @@ which imposes
 \end{equation*}
 on the true system. Therefore the following condition is required: If in addition the target reference $x_s, u_s$ is such that
 \begin{equation*}
-    x_s \oplus \mathcal{X}_f \subseteq \mathcal{X}, \: K\Delta x + u_s \in \mathcal{U}, \: \forall \Delta x \in \mathcal{X}_f
+    x_s \oplus \mathcal{X}_f \subseteq \mathcal{X}, \: K\Delta x + u_s \in \mathcal{U}, \quad \forall \Delta x \in \mathcal{X}_f
 \end{equation*}
 then the closed-loop system converges to the target reference, i.e.
 \begin{equation*}
@@ -405,18 +406,19 @@ Assume
     \item the RHC is recursively feasible and unconstrained for $k \geq j$
     \item and the closed-loop system
           \begin{align*}
-              x(k+1)        =     & Ax(k) + B \kappa(\widehat{x}(k), \widehat{d}(k), r) + B_d d    \\
-              \widehat{x}(k+1)  = & (A + L_x C) \widehat{x}(k) + (B_d + L_x C_d) \widehat{d}(k)    \\
-                                  & + B \kappa(\widehat{x}(k), \widehat{d}(k), r) - L_x y(k)       \\
-              \widehat{d}(k+1)  = & L_d C \widehat{x}(k) + (I + L_d C_d) \widehat{d}(k) - L_d y(k)
+              x(k+1)        =     & Ax(k) + B \kappa\bigl(\widehat{x}(k), \widehat{d}(k), r\bigr) + B_d d           \\
+              \widehat{x}(k+1)  = & \bigl(A + L_x C\bigr) \widehat{x}(k) + \bigl(B_d + L_x C_d\bigr) \widehat{d}(k) \\
+                                  & + B \kappa\bigl(\widehat{x}(k), \widehat{d}(k), r\bigr) - L_x y(k)              \\
+              \widehat{d}(k+1)  = & L_d C \widehat{x}(k) + \bigl(I + L_d C_d\bigr) \widehat{d}(k) - L_d y(k)
           \end{align*}
-          converges ($\widehat{x}(k)\rightarrow \widehat{x}_{\infty}$, $\widehat{d}(k)\rightarrow \widehat{d}_{\infty}$, $y(k)\rightarrow y_{\infty}$ for $k\rightarrow \infty$).
+          converges $\bigl(\widehat{x}(k)\rightarrow \widehat{x}_{\infty}$, $\widehat{d}(k)\rightarrow \widehat{d}_{\infty}$, $y(k)\rightarrow y_{\infty}$ for $k\rightarrow \infty\bigr)$.
 \end{itemize}
 Then $z(k) = Hy(k) \to r$ as $k \to \infty$, i.e.\ we track the reference in presence of the disturbance.
 
 \subsection{Enlarging the Feasible Set}
 \subsubsection{MPC Without Terminal Set}
 % TODO: I find this subsubsection terrifyingly gfühlschmi-gspürsch mi, but I don't know how to formulate it more technically. I think in practice it is empirical anyways.
+% Sounds like a Frazzolian "try everyting and see whats best" approach.
 Using a terminal set constraint is attractive due to stability and recursive feasibility guarantees. However,
 \begin{itemize}
     \item it reduces the feasible set
@@ -476,11 +478,11 @@ In soft constrained MPC we
 \end{itemize}
 The MPC can then be formulated as
 \begin{align*}
-    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i + l_\epsilon(\epsilon_i) + x_N^\top P x_N + l_\epsilon(\epsilon_N) \\
-    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                                                                             \\
-                      & H_x x_i \leq k_x + \epsilon_i                                                                                       \\
-                      & H_u u_i \leq k_u                                                                                                    \\
-                      & \epsilon_i \geq 0
+    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i + l_\epsilon(\epsilon_i) + x_N^\top P x_N + {\color{red}l_\epsilon(\epsilon_N)} \\
+    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                                                                                          \\
+                      & H_x x_i \leq k_x + {\color{red}\epsilon_i}                                                                                       \\
+                      & H_u u_i \leq k_u                                                                                                                 \\
+                      & {\color{red}\epsilon_i \geq 0}
 \end{align*}
 
 \paragraph{Penalty Function Choices}
@@ -509,6 +511,7 @@ Assume multiple constraints $g_j(z) \leq 0$, $j = 1, \dots, r$. The penalty then
 \begin{equation*}
     l_\epsilon(\epsilon) = v \cdot \lVert \epsilon \rVert_{1/\infty} + \epsilon^\top S \epsilon
 \end{equation*}
+% TODO: does 1/infinity mean one of them?
 where
 \begin{itemize}
     \item $\epsilon = {[\epsilon_1, \dots, \epsilon_r]}^\top$,
