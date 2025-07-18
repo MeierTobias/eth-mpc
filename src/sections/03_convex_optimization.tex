@@ -55,7 +55,7 @@ $x\in \mathcal{X}$ is \textbf{globally optimal} if
 \subsection{Convex Sets}
 A set $\mathcal{X}$ is convex \textbf{iff} for any pair of points $x$ and $y$ in $\mathcal{X}$:
 \begin{equation*}
-    \lambda x+(1-\lambda)y\in\mathcal{X},\forall\lambda\in[0,1],\forall x,y\in\mathcal{X}
+    \lambda x+(1-\lambda)y\in\mathcal{X}, \quad\forall\lambda\in[0,1],\;\forall x,y\in\mathcal{X}
 \end{equation*}
 \newpar{}
 \ptitle{Convex Combination}
@@ -188,7 +188,7 @@ But, sublevel sets of $f$ are convex $\forall \alpha \nRightarrow f$ is convex.
     \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $\alpha \leq 0, \alpha \geq1$
     \item Vector norms on $\mathbb{R}^n$:
           \begin{align*}
-              ||x||_p      & ={(\sum_{i=1}^n|x|^p)}^{1/p},\mathrm{~for~}p\geq1 \\
+              ||x||_p      & ={\left(\sum_{i=1}^n|x|^p\right)}^{1/p},\mathrm{~for~}p\geq1 \\
               ||x||_\infty & =\max_i|x_i|
           \end{align*}
 \end{itemize}
@@ -383,8 +383,8 @@ The primal problem of a QP is
 the \textbf{dual function} is therefore
 
 \begin{align*}
-    d(\lambda) & = \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + c^\top x \lambda^\top(Cx-e)\right]               \\
-               & =  \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x {(c+C^\top\lambda)}^\top x - e^\top\lambda\right]
+    d(\lambda) & = \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + c^\top x +  \lambda^\top(Cx-e)\right]              \\
+               & =  \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + {(c+C^\top\lambda)}^\top x - e^\top\lambda\right]
 \end{align*}
 for which the unconstrained minimization over $x$ is convex for every $\lambda$. To get the optimal $x$ the dual function is differentiated and set equal to zero (requires $Q>0$)
 \begin{gather*}

@@ -77,7 +77,7 @@ This approach keeps the state equations as equality constraints. The CFTOC probl
     \underbrace{\begin{bmatrix}
                         \bar{H} & 0 \\
                         0       & Q
-                    \end{bmatrix}}_{\tilde{H}}
+                    \end{bmatrix}}_{\widetilde{H}}
     \begin{bmatrix}
         z^\top & {x(k)}^\top
     \end{bmatrix}^\top                                       \\
@@ -90,7 +90,7 @@ where
         x_1^\top & \cdots & x_N^\top & u_0^\top & \cdots & u_{N-1}^\top
     \end{bmatrix}^\top \in \mathbb{R}^{n_z = N(n_x + n_u)}
 \end{equation*}
-and $\tilde{H}\in \mathbb{R}^{(n_z+n_x) \times (n_z+n_x)} \geq 0$ as $J(x(k),U) \geq 0$ by assumption. % TODO: I added H>=0 also here (we had it only in the substitution paragraph but I think it's >=0 in both cases).
+and $\widetilde{H}\in \mathbb{R}^{(n_z+n_x) \times (n_z+n_x)} \geq 0$ as $J(x(k),U) \geq 0$ by assumption. % TODO: I added H>=0 also here (we had it only in the substitution paragraph but I think it's >=0 in both cases).
 
 \newpar{}
 \ptitle{Cost}
@@ -247,13 +247,13 @@ By substituting the $X$ vector in the cost function of~\ref{cftoc_QP_without_sub
     \underbrace{\begin{bmatrix}
                         H & F^\top \\
                         F & Y
-                    \end{bmatrix}}_{\tilde{H}}
+                    \end{bmatrix}}_{\widetilde{H}}
     {\begin{bmatrix}
          U^\top & {x(k)}^\top
      \end{bmatrix}}^\top                                 \\
     \text{subject to}\quad & GU \leq w + Ex(k)
 \end{align*}
-where $\tilde{H}\in \mathbb{R}^{(N\cdot n_u + n_x)\times (N\cdot n_u + n_x)}\geq 0$ since $J(x(k),U) \geq 0$ by assumption.
+where $\widetilde{H}\in \mathbb{R}^{(N\cdot n_u + n_x)\times (N\cdot n_u + n_x)}\geq 0$ since $J(x(k),U) \geq 0$ by assumption.
 
 \newpar{}
 \ptitle{Inequality Constraints}
@@ -332,7 +332,7 @@ Note that substitution transforms input constraints into state constraints, maki
 As $n_x>=1$, the CFTOC problem is a \textbf{multiparametric quadratic program (mp-QP)} in general with the following solution properties:
 
 \begin{itemize}
-    \item $u_0^*$ is of the form
+    \item $u_0^*$ is of the form (nonlinear feedback policy)
           \begin{equation*}
               u_0^*=\kappa(x(k)),\quad\forall x(k)\in\mathcal{X}_0
           \end{equation*}

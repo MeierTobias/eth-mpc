@@ -95,7 +95,7 @@ For a linear system with quadratic cost
                  & \textcolor{red}{x_N \in \mathcal{X}_f}                                                          \\
                  & x_0 = x(k)
 \end{align*}
-one can design an unconstrained LQR controller as the local control law $\kappa_f$
+one can design an unconstrained LQR controller as the local control law $\kappa_f(x_k)= F_\infty x_k$
 \begin{equation*}
     F_\infty = -{\left(B^\top P_\infty B + R\right)}^{-1} B^\top P_\infty A
 \end{equation*}
@@ -132,7 +132,7 @@ For an MPC \textbf{without} terminal constraint, increasing $N$ shrinks the feas
     \mathcal{X}_{N+j} \subseteq \mathcal{X}_N
 \end{equation*}
 \newpar{}
-For an MPC \textbf{without} terminal constraint, with larger $N$, the feasible set and region of attraction \textbf{grow}. The region of attraction ultimately approaches the maximum control invariant set. One has
+For an MPC \textbf{with} terminal constraint, with larger $N$, the feasible set and region of attraction \textbf{grow}. The region of attraction ultimately approaches the maximum control invariant set. One has
 \begin{equation*}
     \mathcal{X}_{N} \subseteq \mathcal{X}_{N+j}
 \end{equation*}
@@ -141,4 +141,4 @@ Intuition: Given a trajectory with horizon length $N$, we can extend the traject
 \newpar{}
 \ptitle{Practical Note}
 
-In practice, one can enlarge $N$ and check stability by sampling.   % TODO: What does she mean by that?
+In practice, one can enlarge $N$ and check stability by sampling.   % TODO: What does she mean by that? A: I think she means to sample some points and take their convex hull as a feasible set. So start with small N and increase until a sufficient feasible set results

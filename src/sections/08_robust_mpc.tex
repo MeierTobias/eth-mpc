@@ -13,19 +13,19 @@ where
 \ptitle{Goals of Robust Constrained Control}
 
 Design control law $u(k) = \kappa(x(k))$ such that the system:
-\begin{itemize}
+\begin{enumerate}
     \item Satisfies constraints: $\{x(k)\} \subset \mathcal{X}, \{u(k)\} \subset \mathcal{U}$ for all disturbance realizations
     \item Is stable: converges to a neighborhood of the origin
     \item Optimizes (expected/worst-case) ``performance''
     \item Maximizes the set $\{x(0) \mid \text{ Conditions 1-3 are met }\}$
-\end{itemize}
+\end{enumerate}
 
 \subsection{Modeling Uncertainty}
 \subsubsection{Common Uncertainty Models}
 \ptitle{Measurement / Input Bias}
 
 \begin{equation*}
-    g(x(k), u(k), w(k); \theta) = \tilde{g}(x(k), u(k)) + \theta
+    g(x(k), u(k), w(k); \theta) = \widetilde{g}(x(k), u(k)) + \theta
 \end{equation*}
 $\theta$ unknown, but constant. Note that we called $\theta = d$ in~\ref{const_dist}.
 
@@ -552,8 +552,8 @@ with the applied control law
     \item Choose a stabilizing controller $K$ so that $A + BK$ is stable.
     \item Compute the minimal robust invariant set $\mathcal{E} = \mathcal{F}_\infty$ for the system $x(k+1) = (A + BK )x(k) + w(k), w \in \mathcal{W}^1$
     \item Compute the tightened constraints \begin{gather*}
-              \tilde{\mathcal{X}}:=\mathcal{X} \ominus \mathcal{E} \\
-              \tilde{\mathcal{U}}:=\mathcal{U} \ominus K\mathcal{E}
+              \widetilde{\mathcal{X}}:=\mathcal{X} \ominus \mathcal{E} \\
+              \widetilde{\mathcal{U}}:=\mathcal{U} \ominus K\mathcal{E}
           \end{gather*}
     \item Choose terminal weight function $I_f$ and constraint $\mathcal{X}_f$ satisfying assumptions stated in Section~\ref{08_tube_assumptions}.
 \end{enumerate}
