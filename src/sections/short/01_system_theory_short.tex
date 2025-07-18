@@ -36,9 +36,9 @@ if $A^c$ is invertible.
 \subsubsection{Similarity Transform}
 \noindent
 \begin{align*}
-    \widetilde{x}(k)   & = Tx(k); \qquad \det(T) \neq 0                                                                \\
-    \widetilde{x}(k+1) & = \overbrace{TAT^{-1}}^{\widetilde{A}} \widetilde{x}(k) + \overbrace{TB}^{\widetilde{B}} u(k) \\
-    y(k)               & = \underbrace{CT^{-1}}_{\widetilde{C}} \widetilde{x}(k) + \underbrace{D}_{\widetilde{D}}u(k)
+    \widetilde{x}(k)   & = Tx(k);                              &  & \det(T) \neq 0                                        \\
+    \widetilde{x}(k+1) & = TAT^{-1} \widetilde{x}(k) + TB u(k) &  & = \widetilde{A} \widetilde{x}(k) + \widetilde{B} u(k) \\
+    y(k)               & = CT^{-1} \widetilde{x}(k) + D u(k)   &  & = \widetilde{C} \widetilde{x}(k) + \widetilde{D} u(k)
 \end{align*}
 
 \subsubsection{Controllability and Observability}

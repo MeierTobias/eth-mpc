@@ -1,1 +1,185 @@
 \section{Unconstrained Linear Quadratic Optimal Control}
+\subsection{Finite Horizon LQR}
+\noindent
+\begin{align*}
+    J^*(x(0))                & = \min_U x_N^\top P x_N + \sum_{i=0}^{N-1} (x_i^\top Q x_i + u_i^\top R u_i) \\
+    \text{subj.\ to }x_{i+1} & = A x_i + B u_i, \quad i = 0, \dots, N-1                                     \\
+    x_0                      & = x(0)
+\end{align*}
+\subsubsection{Comparison: Batch vs.\ Recursive Approach}
+
+\ptitle{Batch Approach}
+\begin{itemize}
+    \item open-loop control sequence
+    \item [+] Allows for constraints
+    \item [-] large matrix inversions
+\end{itemize}
+
+\newpar{}
+\ptitle{Recursive Approach}
+\begin{itemize}
+    \item [+] feedback policy $\to$ disturbance robustness
+\end{itemize}
+
+
+\subsubsection{Batch Approach}
+\ptitle{Problem Setup}
+\begin{align*}
+    X:              & =S^x x(0)+S^u U \\
+    \begin{bmatrix}
+        x_0    \\
+        x_1    \\
+        \vdots \\
+        \vdots \\
+        x_N
+    \end{bmatrix} & =
+    \begin{bmatrix}
+        \mathbbm{1} \\
+        A           \\
+        \vdots      \\
+        \vdots      \\
+        A^N
+    \end{bmatrix}x(0)+
+    \begin{bmatrix}
+        0        & \cdots & \cdots & 0 \\
+        B        & 0      & \cdots & 0 \\
+        AB       & B      & \cdots & 0 \\
+        \vdots   & \ddots & \ddots & 0 \\
+        A^{N-1}B & \cdots & AB     & B
+    \end{bmatrix}
+    \begin{bmatrix}
+        u_0    \\
+        u_1    \\
+        \vdots \\
+        \vdots \\
+        u_{N-1}
+    \end{bmatrix}
+\end{align*}
+\begin{equation*}
+    \overline{Q}:=\mathrm{blockdiag}(Q,\dots,Q,P),\; \overline{R}:=\mathrm{blockdiag}(R,\dots,R)
+\end{equation*}
+\begin{gather*}
+    J(x(0), U) =U^{\top}HU+2{x(0)}^{\top}FU+{x(0)}^{\top}S^{x^{\top}}\overline{Q}S^{x}x(0)\\
+    H:={(S^u)}^\top\overline{Q} S^u+\overline{R} \succ 0,\qquad F:={(S^x)}^\top\overline{Q} S^u
+\end{gather*}
+
+\newpar{}
+\ptitle{Optimal Control Solution}
+
+Setting the gradient to zero yields the optimal control action
+\begin{equation*}
+    U^*(x(0)) = -H^{-1}F^\top x(0)
+\end{equation*}
+Note that $H^{-1}$ always exists as $H\succ 0$ i.e.\ full rank.
+
+\begin{equation*}
+    J^*(x(0)) = {x(0)}^{\top}\left({(S^{x})}^{\top}\overline{Q}S^{x}- F H^{-1} F^\top\right)x(0)
+\end{equation*}
+
+\subsubsection{Recursive Approach}
+\paragraph{Bellman's Principle of Optimality}
+For any $j=0\dots N$
+\begin{align*}
+    J_{j}^{\star}(x_{j})     & =\min_{u_{j}}J(x_{i},u_{i})+J_{j+1}^{\star}(x_{j+1}) \\
+    \text{subj.\ to }x_{j+1} & =Ax_{j}+Bu_{j}
+\end{align*}
+
+\paragraph{Optimal Control Method}
+
+\ptitle{Problem Setup}
+\begin{align*}
+    J_j^\star(x(j)) & =\min_{U_{j\to N}}x_N^\top Px_N+\sum_{i=j}^{N-1}(x_i^\top Qx_i+u_i^\top Ru_i) \\
+                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,\dots,N-1                              \\
+                    & x_j=x(j)
+\end{align*}
+
+\newpar{}
+\ptitle{Optimal Control Solution}
+\noindent
+\begin{align*}
+    u_{i}^{\star}(x_i) & =F_{i} x_{i}                                  \\
+    F_{i}              & =-{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A
+\end{align*}
+
+The optimal cost-to-go is
+\begin{equation*}
+    J_{i}^{\star}(x_{i})  = {x(i)}^{\top}P_{i}x(i)
+\end{equation*}
+with cost matrices found from the Discrete Time Riccati equation / \textbf{Riccati Difference equation} (\textbf{RDE}):
+\begin{align*}
+     & P_{i} = A^\top P_{i+1} A+Q-A^\top P_{i+1} B{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A \\
+     & P_{N} = P \text{ (init.\ with terminal weight)}
+\end{align*}
+and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
+\begin{equation*}
+    {x(0)}^\top P_0 x(0)
+\end{equation*}
+
+\subsubsection{Stability of Finite Horizon LQR}
+
+There are \textbf{three common choices} for the \textbf{terminal weight} $P$ in finite horizon LQR to ensure CL stability.
+\begin{enumerate}
+    \item Choose $P$ s.t.\ it matches the infinite horizon LQR solution
+          \begin{equation*}
+              P=A^\top PA+Q-A^\top PB{(B^\top PB+R)}^{-1}B^\top PA
+          \end{equation*}
+    \item Choose $P$ assuming no control action after the end of the finite horizon
+          \begin{align*}
+              x(k+1)        & =Ax(k),k=N,\dots ,\infty      \\
+              A^{\top}PA +Q & = P\text{ (solve LE for $P$)}
+          \end{align*}
+          This approach only makes sense if the system is asymptotically stable (or no positive definite solution $P$ will exist).
+    \item Force both state and input both to be zero after the end of the finite horizon. No $P$ is needed but the constraint
+          \begin{equation*}
+              x_{i+N} = 0
+          \end{equation*}
+\end{enumerate}
+
+\subsection{Receding Horizon LQR}
+\begin{center}
+    \includegraphics[width = 0.8\linewidth]{02_receding_LQR.png}
+\end{center}
+
+\subsubsection{Stability of Receding Horizon LQR}
+
+Depending on the specific situation
+\begin{itemize}
+    \item receding horizon \textit{can} result in a stable CL trajectory with a horizon length that would yield an unstable trajectory in the OL case. However, receding horizon LQR does \textbf{not} guarantee a stable CL in general.
+    \item OL control can be sufficient to achieve stability, i.e.\ receding horizon is not always needed in theory.
+\end{itemize}
+
+\subsection{Infinite Horizon LQR}
+
+\ptitle{Problem Setup}
+\noindent
+\begin{align*}
+    J_\infty(x(0)) & =\min_{u(\cdot)}\sum_{i=0}^\infty\left(x_i^\top Qx_i+u_i^\top Ru_i\right) \\
+                   & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,\quad i=0,1,2,\dots,\infty,            \\
+                   & x_0=x(0)
+\end{align*}
+
+\newpar{}
+\ptitle{Optimal Control Solution}
+\noindent
+\begin{align*}
+    u^\star(k) & = F_\infty x(k)                                   \\
+    F_\infty   & := -{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
+\end{align*}
+\begin{equation*}
+    J_\infty(x(k))={x(k)}^\top P_\infty x(k)
+\end{equation*}
+where $P_\infty$ is the solution of the \textbf{Discrete Time Algebraic Riccati equation (DARE)} ($P_i = P_{i+1} = P_{\infty}$)
+\begin{equation*}
+    P_\infty=A^\top P_\infty A+Q-A^\top P_\infty B{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
+\end{equation*}
+
+\ptitle{Stability}
+
+Assuming
+\begin{itemize}
+    \item $(A,B)$ stabilizable
+    \item $(Q^{\frac{1}{2}}, A)$ detectable,
+\end{itemize}
+then the RDE (initialized with $Q$ at $i = \infty$ and solved for $i\searrow 0$) converges to the \textbf{unique positive definite} solution $P_{\infty}$.
+\newpar{}
+Then $J^{\star} (x) = x^T P_{\infty} x = V(x)$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.
