@@ -91,8 +91,8 @@ Then the DT model is given by
 \end{align*}
 Therefore a LTI system becomes
 \begin{align*}
-    x(k+1) & = \overbrace{(\mathbb{I} + T_s A^c)}^{=A} x(k) + \overbrace{T_s B^c}^{=B} u(k) \\
-    y(k)   & = \underbrace{C^c}_{Cd} x(k) + \underbrace{D^c}_{D} u(k)
+    x(k+1) & = \overbrace{(\mathbb{I} + T_s A^c)}^{:=A} x(k) + \overbrace{T_s B^c}^{:=B} u(k) \\
+    y(k)   & = \underbrace{C^c}_{:=C} x(k) + \underbrace{D^c}_{:=D} u(k)
 \end{align*}
 
 \newpar{}
@@ -121,7 +121,8 @@ which is linear in the input sequence and initial condition.
 
 This section only summarizes the most important properties. Further details can be found in {\small\url{https://github.com/MeierTobias/eth-control-systems-2}}.
 
-\subsubsection{Coordinate Transformastions}
+\subsubsection{Coordinate Transformations}
+\noindent
 \begin{align*}
     \widetilde{x}(k)   & = Tx(k); \qquad \det(T) \neq 0                                                                \\
     \widetilde{x}(k+1) & = \overbrace{TAT^{-1}}^{\widetilde{A}} \widetilde{x}(k) + \overbrace{TB}^{\widetilde{B}} u(k) \\
@@ -177,7 +178,7 @@ has \textbf{full row rank}.
     \item A system is stabilizable if all unstable modes are controllable.
     \item Controllability always implies stabilizability
 \end{itemize}
-Stabilizability can be checked in the modal basis or via
+Stabilizability can be checked in the modal basis or via PBH test:
 \noindent\begin{equation*}
     \text{rank}\left(\left[\lambda_{j}I-A\mid B\right]\right)=n\quad\forall\lambda_{j}\in\Lambda_{A}^{+}\Rightarrow(A,B)\text{ is stabilizable}
 \end{equation*}
@@ -257,11 +258,11 @@ An equilibrium point $\bar{x}$ of a system is globally asymptotically stable if 
 \subsubsection{Global Lyapunov Function}
 
 Consider the equilibrium point $\bar{x}=0$. A function $V:\mathbb{R}^n\to \mathbb{R}$, continuous at the origin, finite $\forall x \in \mathbb{R}^n$, and such that
-\begin{gather*}
-    \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty \text{ (radially unbounded)}\\
-    V(0)=0 \text{ and } V(x)>0, \quad \forall x \in \mathbb{R}^n \setminus\{0\}\\
-    V(g(x)) - V(x) \leq -\alpha(x) \quad \forall x \in \mathbb{R}^n
-\end{gather*}
+\begin{align*}
+    \lVert x \rVert \to \infty \Rightarrow V(x)  \to \infty      &  &  & \text{(radially unbounded)}               \\
+    V(0)=0 \text{ and } V(x)                     >0              &  &  & \forall x \in \mathbb{R}^n \setminus\{0\} \\
+    V(g(x)) - V(x)                               \leq -\alpha(x) &  &  & \forall x \in \mathbb{R}^n
+\end{align*}
 where $\alpha:\mathbb{R}^n\to \mathbb{R}$ is continuous positive definite, is called a \textbf{Lyapunov function}, a system theoretic generalization of energy. For mechanical systems: total mechanical energy.
 \subsubsection{Local Lyapunov Function}
 If the conditions on asymptotical stability only hold on a closed and bounded, positively invariant set $\Omega \subset \mathbb{R}^n$ and $V$ is finite $\forall x \in \Omega$, then the system is locally asymptotically stable in $\Omega$, where $\Omega$ is also called the \textbf{region of attraction (ROA)}.
@@ -280,7 +281,7 @@ One can take
 \begin{equation*}
     V(x) = x^\top Px
 \end{equation*}
-as a candidate Lyapunov function with $P>0$ (positive definite). It's easy to see that it satisfies
+as a candidate Lyapunov function with $P\succ0$ (positive definite). It's easy to see that it satisfies
 \begin{gather*}
     V(0) = 0 \text{ and } V(x) > 0 \\
     \lVert x \rVert \to \infty \Rightarrow V(x) \to \infty
@@ -301,7 +302,7 @@ the condition can be satisfied if a $P>0$ can be found that solves the \textbf{d
 
 The discrete-time Lyapunov equation has a unique solution $P > 0$ iff $A$ has all eigenvalues inside the unit circle, i.e.\ iff the system $x(k + 1) = Ax(k)$ is stable.
 
-%Double check if this is correct:
+%TODO: Double check if this is correct:
 \newpar{}
 \ptitle{Closed Loop Control}
 
