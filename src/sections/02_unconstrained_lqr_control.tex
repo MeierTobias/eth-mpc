@@ -71,7 +71,7 @@ and the block diagonal weight matrices
 the finite horizon cost $J(x(0), U) = X^{\top}\bar{Q}X + U^{\top}\bar{R}U$ becomes the positive definite quadratic function in $U$
 \begin{gather*}
     J(x(0), U) =U^{\top}HU+2{x(0)}^{\top}FU+{x(0)}^{\top}S^{x^{\top}}\overline{Q}S^{x}x(0)\\
-    \text{where } H:={(S^u)}^\top\overline{Q} S^u+\overline{R} > 0 \mathrm{~and~}F:={(S^x)}^\top\overline{Q} S^u
+    \text{where } H:={(S^u)}^\top\overline{Q} S^u+\overline{R} \succ 0 \mathrm{~and~}F:={(S^x)}^\top\overline{Q} S^u
 \end{gather*}
 
 \newpar{}
@@ -84,7 +84,7 @@ Setting the gradient to zero yields the optimal control action
 Note that
 \begin{itemize}
     \item This is linear in $x(0)$.
-    \item $H^{-1}$ always exists as $H>0$ i.e.\ full rank.
+    \item $H^{-1}$ always exists as $H\succ0$ i.e.\ full rank.
 \end{itemize}
 
 \newpar{}
@@ -227,7 +227,7 @@ The optimal cost-to-go is
 \begin{equation*}
     J_\infty(x(k))={x(k)}^\top P_\infty x(k)
 \end{equation*}
-where $P_\infty$ is the solution of the \textbf{Algebraic Riccati equation (ARE)} ($P_i = P_{i+1} = P_{\infty}$)
+where $P_\infty$ is the solution of the \textbf{Discrete Time Algebraic Riccati equation (DARE)} ($P_i = P_{i+1} = P_{\infty}$)
 \begin{equation*}
     P_\infty=A^\top P_\infty A+Q-A^\top P_\infty B{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
 \end{equation*}
