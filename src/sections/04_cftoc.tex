@@ -347,6 +347,7 @@ As $n_x>=1$, the CFTOC problem is a \textbf{multiparametric quadratic program (m
           are a partition of the feasible polyhedron $\mathcal{X}_0$.
     \item $J^*(x(k))$ is \textbf{convex}, \textbf{piecewise quadratic} on polyhedra.
 \end{itemize}
+\newpar{}
 \textbf{Explicit MPC} addresses how to compute this solution.
 \begin{center}
     \includegraphics[width = \linewidth]{04_CFTOC_control_law.png}
@@ -411,9 +412,9 @@ Using
 \end{align*}
 the state and input \textbf{norm constraints} amount to
 \begin{align*}
-    \text{subj.\ to } \  & -1_n \varepsilon_{x_i} \leq \pm Q x_i, \\
-                         & -1_r \varepsilon_{x_N} \leq \pm P x_N, \\
-                         & -1_m \varepsilon_{u_i} \leq \pm R u_i
+    \text{subj.\ to } \  & -\mathbf{1}_n \varepsilon_{x_i} \leq \pm Q x_i, \\
+                         & -\mathbf{1}_r \varepsilon_{x_N} \leq \pm P x_N, \\
+                         & -\mathbf{1}_m \varepsilon_{u_i} \leq \pm R u_i
 \end{align*}
 % TODO: I think we know deez nuts
 % The standard \textbf{MPC constraints} are
@@ -457,7 +458,7 @@ The constraint $-t \leq x \leq t$ bounds the absolute value of each component of
 
 \newpar{}
 \ptitle{Application to CFTOC}
-
+% TODO: should we write this one out?
 Apply the auxiliary variable formulation similar to~\ref{l_inf_CFTOC}. However,
 \begin{itemize}
     \item Introduce a vector $\varepsilon_i^x \in \mathbb{R}^n$ of auxiliary variables for each state in the trajectory
@@ -468,7 +469,7 @@ Apply the auxiliary variable formulation similar to~\ref{l_inf_CFTOC}. However,
 \paragraph[l1, linf State Feedback Solution]{$l_{1}, l_{\infty}$ State Feedback Solution}
 
 The CFTOC problem
-% TODO: Why are there no equality constraints??
+% TODO: Why are there no equality constraints?? Wieso liegt hier Stroh in der Ecke?
 \begin{align*}
     \min_{z\in\mathbb{R}^n}c^T z                            \\
     \text{subj.\ to } \bar{G}z & \leq \bar{w} + \bar{S}x(k)
