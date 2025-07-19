@@ -23,7 +23,7 @@ Design control law $u(k) = \kappa(x(k))$ such that the system:
 \subsection{Modeling Uncertainty}
 \subsubsection{Common Uncertainty Models}
 \ptitle{Measurement / Input Bias}
-
+\noindent
 \begin{equation*}
     g(x(k), u(k), w(k); \theta) = \widetilde{g}(x(k), u(k)) + \theta
 \end{equation*}
@@ -31,7 +31,7 @@ $\theta$ unknown, but constant. Note that we called $\theta = d$ in~\ref{const_d
 
 \newpar{}
 \ptitle{Linear Parameter Varying System}
-
+\noindent
 {\small
     \begin{equation*}
         g\bigl(x(k), u(k), \theta(k)\bigr) =
@@ -44,7 +44,7 @@ time-varying parameters $\theta(k)$ describe a convex combination of $A_j , B_j$
 
 \newpar{}
 \ptitle{Additive Stochastic Noise}
-
+\noindent
 \begin{equation*}
     g\bigl(x(k), u(k), w(k); \theta\bigr) = Ax(k) + Bu(k) + w(k)
 \end{equation*}
@@ -72,7 +72,7 @@ A set $\mathcal{O}_\mathcal{W}$ is said to be a robust positive invariant set fo
 \begin{equation*}
     x \in \mathcal{O}_\mathcal{W} \Rightarrow g(x, w) \in \mathcal{O}_\mathcal{W}, \quad \forall w \in \mathcal{W}
 \end{equation*}
-The same concept is used for CL systems $x(k+1)=g(x(k), \kappa(x(k), w(k)))$.
+The same concept is used for CL systems $x(k+1)=g\bigl(x(k), \kappa(x(k), w(k))\bigr)$.
 
 \newpar{}
 \ptitle{Robust Invariant Set Conditions}
@@ -128,8 +128,7 @@ where $h_\mathcal{W}$ is the support function.
     \includegraphics[width = 0.8\linewidth]{08_rob_inv_for_LTI.png}
 \end{center}
 
-\newpar{}
-\ptitle{Minkowski Sum and Pontryagin Difference}
+\paragraph{Minkowski Sum and Pontryagin Difference}
 
 Let $A,B$ be subsets of $\mathbb{R}^n$. The Minkowski Sum is:
 \begin{equation*}
@@ -205,11 +204,11 @@ and assume for now zero control input for simplicity.
 \paragraph{State Constraints}
 The state constraints can be written as
 \begin{align*}
-    \phi_i(x_0,U,W) & =\left\{\left.x_i+\sum_{j=0}^{i-1}A^i w_{i-1-j}\right|W\in W^i\right\}\subseteq\mathcal{X} \\
-                    & = x_i \in \mathcal{X} \ominus \mathcal{F}_i                                                \\
-                    & = x_i \in \left\{x | x+\bar{w}\in \mathcal{X}, \bar{w}\in \mathcal{F}_i\right\}
+    \phi_i(x_0,U,W) & =\left\{\left.x_i+\sum_{j=0}^{i-1}A^i w_{i-1-j}\right|W\in \mathcal{W}^i\right\}\subseteq\mathcal{X} \\
+                    & = x_i \in \mathcal{X} \ominus \mathcal{F}_i                                                          \\
+                    & = x_i \in \left\{x \big| x+\bar{w}\in \mathcal{X}, \bar{w}\in \mathcal{F}_i\right\}
 \end{align*}
-where the \textit{disturbance reachable set}
+where the \textit{disturbance reachable set} (DRS)
 \begin{align*}
     \mathcal{F}_i & = \mathcal{W} \oplus A \mathcal{W} \oplus \cdots A^{i-1} \mathcal{W} \\
                   & = \oplus_{j=0}^{i-1}\; A^{j} \mathcal{W}
@@ -438,8 +437,6 @@ The robust constraint-tightening MPC Problem over the nominal state $z$ and nomi
     z_0                                                                                                 & =x(k)
 \end{align*}
 
-
-
 \textbf{Note} that
 \begin{itemize}
     \item The (feedback) control law is given by
@@ -449,6 +446,19 @@ The robust constraint-tightening MPC Problem over the nominal state $z$ and nomi
           (no actual FB applied $\rightarrow$ method simply tightens constr.)
     \item The terminal set $\mathcal{X}_f^{\mathrm{ct}}$ is a robust invariant set, which for $z_{N}$ must additionally be tightened by $\mathcal{F}_N$ to ensure we actually end up in $\mathcal{X}_f^{\mathrm{ct}}$.
 \end{itemize}
+
+\paragraph{Constraint-Tightening MPC Assumptions}
+\begin{enumerate}
+    \item The stage cost $I(z,v)$ is positive definite and only zero at the origin.
+    \item The terminal set $\mathcal{X}_f^{\mathrm{ct}}$ is a robust positively invariant set for the dynamics $x(k+1) = Ax(k) + Bu(k) + w(k)$ under the terminal controller $\kappa_f^{\mathrm{ct}}z(k) = K_{\mathrm{ct}}\, z(k)$:
+          \begin{equation*}
+              (A + BK_{ct})z + w \in \mathcal{X}_f^{\mathrm{ct}}, \quad\forall z \in \mathcal{X}_f^{\mathrm{ct}}, \forall w \in \mathcal{W}
+          \end{equation*}
+          All state and input constraints are satisfied in $\mathcal{X}_f^{\mathrm{ct}}$.
+          \begin{equation*}
+              \mathcal{X}_f^{\mathrm{ct}} \subseteq \mathcal{X}, \quad K_{\mathrm{ct}} \mathcal{X}_f^{\mathrm{ct}}\subseteq \mathcal{U}
+          \end{equation*}
+\end{enumerate}
 
 \paragraph{Recursive Feasibility Guarantee}
 
@@ -476,7 +486,7 @@ Then \textbf{robust invariance} is achieved
 i.e.\ the problem is \textbf{recursively feasible}.
 \newpar{}
 \ptitle{Intuition}
-
+% insert pointing spiderman meme 
 The computed current trajectory is feasible for \textit{any} disturbance, and hence also for the one that actually occurs.
 
 \paragraph{Stability Guarantee}
@@ -503,7 +513,7 @@ Similar to before, the constraints on the state $x$ must be tightened as
 \begin{equation*}
     z_i \oplus \mathcal{E} \subseteq \mathcal{X} \quad \Leftrightarrow \quad z_i \in \mathcal{X}\ominus \mathcal{E}
 \end{equation*}
-where the DRS $\mathcal{E}$ again can be computed offline.
+where the mRPI $\mathcal{E}$ again can be computed offline.
 
 \newpar{}
 Similarly for the input constraints:
@@ -514,12 +524,12 @@ Similarly for the input constraints:
 \subsubsection{Tube MPC Problem}
 The robust tube MPC Problem over the nominal state $z$ and nominal input $v$ with tightened constraints is given by:
 \begin{align*}
-    \min_{Z,V}\;         \sum_{i=0}^{N-1}                                                                & I(z_{i},v_{i})+I_{f}(z_{N})                                      \\
-    \mathrm{subj.~to }\;                                                                         z_{i+1} & =Az_{i}+Bv_{i}                     & \forall i=0, 1, \ldots, N-1 \\
-    z_{i}                                                                                                & \in\mathcal{X}\ominus\mathcal{E}   & \forall i=0, 1, \ldots, N-1 \\
-    v_i                                                                                                  & \in\mathcal{U}\ominus K\mathcal{E} & \forall i=0, 1, \ldots, N-1 \\
-    z_N                                                                                                  & \in \mathcal{X}_f                                                \\
-    x_0                                                                                                  & \in z_0 \oplus \mathcal{E}
+    \min_{Z,V}\;\sum_{i=0}^{N-1} & I(z_{i},v_{i})+I_{f}(z_{N})                                      \\
+    \mathrm{subj.~to }\; z_{i+1} & =Az_{i}+Bv_{i}                     & \forall i=0, 1, \ldots, N-1 \\
+    z_{i}                        & \in\mathcal{X}\ominus\mathcal{E}   & \forall i=0, 1, \ldots, N-1 \\
+    v_i                          & \in\mathcal{U}\ominus K\mathcal{E} & \forall i=0, 1, \ldots, N-1 \\
+    z_N                          & \in \mathcal{X}_f                                                \\
+    x_0                          & \in z_0 \oplus \mathcal{E}
 \end{align*}
 with the applied control law
 \begin{equation*}
@@ -655,7 +665,6 @@ The cost for the nominal trajectory vanishes:
 \end{equation*}
 
 \begin{examplesection}[Proof Sketch]
-    \newpar{}
     \ptitle{Recursive Feasibility}
 
     Given the optimal solution $\left( v_0^*, \dots, v_{N-1}^*, z_0^*, \dots, z_N^* \right)$ for $x(k)$, the next state is
