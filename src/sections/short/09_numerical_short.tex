@@ -1,1 +1,340 @@
 \section{Numerical Methods and Implementation}
+\subsection{Explicit MPC}
+For \textbf{small systems} (3-6 states),
+\begin{enumerate}
+    \item The optimization problem is \textbf{solved offline and parametrically} for a set of states.
+    \item During runtime, the control input is \textbf{queried from the pre-computed solution} (piecewise affine for linear system/ constraints).
+\end{enumerate}
+
+\subsubsection{Active Set and Critical Region}
+\ptitle{Active Set}
+
+The active set $A(x)$ is the set of indices of active constraints at a given state $x\in \mathcal{X}_0$:
+\begin{equation*}
+    A(x) = \left\{ j \in \{1,\ldots,m\} \Big| G_j U - E_j x(k) = w_j \right\}
+\end{equation*}
+Its complement is the set of non-active constraints:
+\begin{equation*}
+    NA(x) = \left\{ j \in \{1,\ldots,m\} \Big| G_j U - E_j x(k) < w_j \right\}
+\end{equation*}
+
+\newpar{}
+\ptitle{Critical Region}
+
+The critical region $CR$ is the set of states $x$ for which the same active set $A(x)$ is active at the optimum:
+\begin{equation*}
+    CR = \left\{x\in \mathcal{X} : A(x)=A(x^*)\right\}
+\end{equation*}
+
+\subsubsection{Quadratic Cost}
+See quadratic cost CFTOC.
+
+\subsubsection[1/inf-Norm Cost]{1/$\infty$-Norm Cost}
+See 1/$\infty$-norm CFTOC.
+
+\subsubsection{Point Location}
+
+Given $m$ regions, two possible methods to find the critical region $CR^j$ for a given state $x(k)$. Then, the corresponding piecewise affine function must be evaluated at $x(k)$ to obtain the control input.
+
+\newpar{}
+\ptitle{Sequential Search $\mathcal{O}(m)$}
+Simply check each polyhedron until the one containing $x(k)$ is found:
+\textsf{
+    \noindent\begin{algorithmic}
+        \State{given $x=x(k)$}
+        \For{each $j$}
+        \If{$A_j x + b_j \leq 0$}
+        \State{$x$ is in region $j$}
+        \EndIf{}
+        \EndFor{}
+    \end{algorithmic}
+}
+
+\newpar{}
+\ptitle{Logarithmic/Tree Search} $(\mathcal{O}(\log(m)))$
+
+By constructing a search tree offline, the critical region can potentially be found in logarithmic time. The search tree is constructed by recursively splitting the polyhedra $CR^j$ by hyperplanes. Reasonable for $<1000$ regions.
+
+\subsection{Iterative MPC}
+Given an initial guess $x_0$, cost function $f(x)$, and a feasible set $\mathbb{Q}$, \textbf{iterative optimization methods} compute a sequence of iterates
+\begin{equation*}
+    x_{k+1} = \Psi(x_k, f, \mathbb{Q}),\quad K = 0,1,\ldots, m-1
+\end{equation*}
+that are $\epsilon$-stationary
+\begin{equation*}
+    \|f(x^{(m)}) - f(x^*)\| \leq \epsilon
+\end{equation*}
+and sufficiently feasible
+\begin{equation*}
+    \mathrm{dist}(x^{(m)},\mathbb{Q}) \leq \delta
+\end{equation*}
+
+\subsection{Iterative MPC}
+Given an initial guess $x_0$, cost function $f(x)$, and a feasible set $\mathbb{Q}$, \textbf{iterative optimization methods} compute a sequence of iterates
+\begin{equation*}
+    x_{k+1} = \Psi(x_k, f, \mathbb{Q}),\quad K = 0,1,\ldots, m-1
+\end{equation*}
+that are $\epsilon$-stationary
+\begin{equation*}
+    \|f(x^{(m)}) - f(x^*)\| \leq \epsilon
+\end{equation*}
+and sufficiently feasible
+\begin{equation*}
+    \mathrm{dist}(x^{(m)},\mathbb{Q}) \leq \delta
+\end{equation*}
+
+\subsubsection{Unconstrained Minimization}
+\ptitle{Problem}
+
+Solve
+\begin{equation*}
+    \min_x f(x)
+\end{equation*}
+where we assume
+\begin{itemize}
+    \item $f$ convex and twice continuously differentiable
+    \item $f$ differentiable at $x^*$
+    \item optimal value $p^*=\min_x f(x)$ finite
+\end{itemize}
+The goal is to iteratively solve for the necessary and sufficient condition
+\begin{equation*}
+    \nabla f(x^*) = 0
+\end{equation*}
+
+\newpar{}
+\ptitle{Descent Methods}
+
+Descent methods update the current iterate $x_k$ in the search direction $\Delta x_k$ with a step size $h_k$:
+\begin{equation*}
+    x_{k+1} = x_k +h_k \Delta x_k \quad \to \quad f(x_{k+1}) < f(x_k)
+\end{equation*}
+where
+\begin{itemize}
+    \item $\Delta x$ is a desecnt direction
+    \item There exists a $h_k>0$ such that we obtain a cost decrease, if we step to a certain extent into the opposite gradient direction:
+          \begin{equation*}
+              \exists h_k > 0 \rightarrow f(x_{k+1}) < f(x_k) \text{ if } \nabla {f(x_k)}^\top \Delta x_k < 0
+          \end{equation*}
+          The exact direction is to be chosen (e.g.\ opposite gradient or Newton).
+\end{itemize}
+
+\newpar{}
+\ptitle{Algorithm}
+\textsf{
+    \noindent\begin{algorithmic}
+        \State{given $x_0 \in \text{dom}(f)$}
+        \Repeat{}
+        \State{1. Compute a descent direction $\Delta x_k$}
+        \State{2. Line search: Choose step size $h_k > 0$ such that}
+        \State{\hspace{1em} $f(x_k + h_k \Delta x_k) < f(x_k)$}
+        \State{3. Update $x_{k+1} := x_k + h_k \Delta x_k$}
+        \Until{termination condition (e.g.\ $f(x_k) - f(x^*) \leq \varepsilon_1$ or $\|x_k - x_{k-1}\| \leq \varepsilon_2$)}
+    \end{algorithmic}
+}
+
+\paragraph{Gradient Descent / First-Order Method}
+\noindent
+Assume
+\begin{equation*}
+    \|\nabla f(x) - \nabla f(y)\| \leq L \|x - y\| \quad \forall x, y \in \mathbb{R}^n
+\end{equation*}
+The update rule becomes
+\begin{equation*}
+    x_{k+1} = x_k - \frac{1}{L} \nabla f(x_k)
+\end{equation*}
+which is guaranteed to converge to a local minimum of $f$.
+
+\paragraph{Newton's Method / Second-Order Method}
+Newton's method minimizes the second-order Taylor expansion of $f$ around the current iterate $x_k$:
+\begin{align*}
+    x_{k+1} & = \argmin_{x} \; f(x_k) + \nabla {f(x_k)}^\top (x-x_k) + \cdots                                      \\
+            & \quad + \frac{1}{2}{(x-x_k)}^\top \nabla^2 f(x_k)(x-x_k)                                             \\
+    x_{k+1} & = x_k \underbrace{- {\left( \nabla^2 f(x_k) \right)}^{-1} \nabla f(x_k)}_{\text{Newton's direction}}
+\end{align*}
+As the second-order Taylor expansion is \textbf{not} necessarily an upper bound, we can obtain a cost increase. Hence, the remaining problem is to choose $h_k > 0$ such that the update decreases $f$:
+\begin{equation*}
+    x_{k+1} = x_k - h_k {\left( \nabla^2 f(x_k) \right)}^{-1} \nabla f(x_k)
+\end{equation*}
+for example by using line search.
+
+\paragraph{Line Search}
+\ptitle{Exact Line Search}
+
+Compute the best step size $h_k$ along the direction of descent $\Delta x_k$:
+\begin{equation*}
+    h_k = \argmin_{h>0} f(x_k + h \Delta x_k)
+\end{equation*}
+This is an optimization in one variable which can be solved by bisection (slow, many evaluations of $f$).
+
+\newpar{}
+\ptitle{Backtracking Line Search (Inexact)}
+
+Find a step size $h_k$ that decreases the cost function $f$ sufficiently:
+\textsf{
+    \noindent\begin{algorithmic}
+        \State{Initialize $h_k = 1$}
+        \While{$f(x_k + h_k \Delta x_{nt}) > f(x_k) + \alpha h_k \nabla {f(x_k)}^\top \Delta x_{nt}$}
+        \State{$h_k \gets \beta h_k$}
+        \EndWhile{}
+    \end{algorithmic}
+}
+
+\noindent with $\alpha \in (0, 0.5)$ and $\beta \in (0, 1)$.
+
+% TODO: I'm not really sure how relevant these topics are for the paper exam as they are pretty involved.
+\subsubsection{Constrained Minimization}
+\begin{itemize}
+    \item \textbf{PGD}: better for small horizon lengths, faster iterations, but more iterations needed.
+    \item \textbf{Interior Point Method}: better for large horizon lengths, fewer iterations, but slower iterations.
+\end{itemize}
+
+\paragraph{Equality Constrained Newton's Method}
+Incorporating equality constraints
+\noindent\begin{align*}
+    \min_x \quad            & f(x) \\
+    \mathrm{subj.\ to}\quad & Ax=b
+\end{align*}
+into Newton's method (and rewriting $x-x_k = \Delta x$) yields
+\begin{align*}
+    \Delta x_{nt}(x_k)       & \in \argmin_{\Delta x_k} \; \frac{1}{2}\nabla^2 f(x_k) \Delta x + \nabla f(x_k)\Delta x \\
+    \mathrm{subj.\ to} \quad & A\Delta x_k = -Ax_k + b
+\end{align*}
+If the equality constraint is fulfilled at initilization, the nullspace constraint $A\Delta x = 0$ enforces that the next $x_{k+1}$ still satisfies the equality constraint:
+\begin{equation*}
+    Ax_{k+1} = Ax_k + h_k A\Delta x_k = b
+\end{equation*}
+\newpar{}
+\ptitle{Descent Direction}
+
+The corresponding descent direction can be found by solving a linear system of equations
+\begin{equation*}
+    \begin{bmatrix}
+        \nabla^2 f(x_k) & A^\top \\
+        A               & 0
+    \end{bmatrix}\begin{bmatrix}
+        \Delta x_k \\
+        \lambda_k
+    \end{bmatrix}
+    = \begin{bmatrix}
+        -\nabla f(x_k) \\
+        0
+    \end{bmatrix} \quad {\color{gray}\begin{matrix}
+            \text{\small{Stationarity}} \\
+            A\Delta x = 0
+        \end{matrix}}
+\end{equation*}
+\newpar{}
+\ptitle{Conclusion}
+
+Equality constraints yield easy optimization problems as the search directions can be found by solving a simple linear system.
+
+\paragraph{Projected Gradient Method}
+\ptitle{Problem}
+
+Consider the constrained convex optimization problem
+\begin{equation*}
+    \min f(x) \quad \text{subject to} \quad x \in \mathbb{Q}
+\end{equation*}
+where $f$ is convex and $L$-smooth, and the feasible set $\mathbb{Q}$ is convex.
+\newpar{}
+Constraints on $x$ can be incorporated by projecting the gradient onto $\mathbb{Q}$ using the euclidian projection:
+\begin{align*}
+    x_{k+1}             & = \Pi_{\mathbb{Q}}(x_k - h_k \nabla f(x_k)) \\
+    \Pi_{\mathbb{Q}}(x) & = \argmin_{y\in\mathbb{Q}} \|y-x\|^2
+\end{align*}
+Under our assumptions, if we choose step size $h_k = \frac{1}{L}$, Projected Gradient Descent (PGD) converges to a local minimum of $f$ with convergence rates similar to the unconstrained case.
+
+\newpar{}
+\ptitle{MPC}
+
+In the MPC problem setup, the optimization variable is the control input $U$. Therefore, \textbf{input constraints} can be incorporated by using PGD.
+
+\newpar{}
+MPC with \textbf{state constraints} are more complicated as the projection of the intersection $(\mathcal{U}\times \mathcal{X}) \cap \{ z|Az=b\}$ is not trivial.
+
+\paragraph{Interior Point Method}
+\ptitle{Problem}
+\begin{align*}
+    \min_x \quad            & f(x)                             \\
+    \mathrm{subj.\ to}\quad & g_i(x)\leq 0 \quad i=1,\ldots, m \\
+                            & Cx = d
+\end{align*}
+\ptitle{Assumptions}
+\begin{itemize}
+    \item $f, g_i$ are convex, and twice continuously differentiable.
+    \item $f(x^*)$ is finite and attained
+    \item strict feasibility: $\exists x$ such that $g_i(x) < 0$ and $Cx = d$.
+    \item feasible set is closed and compact
+    \item strong duality holds $\to$ KKT conditions can be used
+\end{itemize}
+
+\newpar{}
+\ptitle{Primal-Dual relaxed KKT Conditions}
+
+Primal-Dual interior-point methods solve the following relaxed KKT system of equations:
+\begin{align*}
+    \nabla f(x^{*})+\sum_{i=1}^{m}\lambda_{i}^{*}\nabla g_{i}(x^{*})+C^{T}\nu^{*} & =0        \\
+    \mathrm{Cx^*}                                                                 & =d        \\
+    g_i(x^*)+s_i^*                                                                & =0,       \\
+    \lambda_{i}^{*}g_{i}(x^{*})                                                   & =-\kappa, \\
+    \lambda_{i}^{*},s_{i}^{*}                                                     & \geq0,
+\end{align*}
+where
+\begin{itemize}
+    \item $s\in \mathbb{R}^m$ are slack variables
+    \item $\{(x,\nu,\lambda,s)|\text{above eqns.\ hold}\}$ is called \textit{primal-dual central path}.
+\end{itemize}
+
+\newpar{}
+At every iteration, the KKT conditions are linearized at the current iterate $(x_k, \nu_k, \lambda_k, s_k)$:
+
+\begin{align*}
+    \begin{bmatrix}
+        H & C^\top & {G}^\top & 0          \\
+        C & 0      & 0        & 0          \\
+        G & 0      & 0        & \mathbb{I} \\
+        0 & 0      & S        & \Lambda
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Delta x      \\
+        \Delta\nu     \\
+        \Delta\lambda \\
+        \Delta s
+    \end{bmatrix}=-
+    \begin{bmatrix}
+        \nabla f(x)+C^\top\nu+{G}^\top\lambda \\
+        Cx-d                                  \\
+        g(x)+s                                \\
+        S\lambda-v
+    \end{bmatrix}
+\end{align*}
+where
+\begin{align*}
+    S            & = \mathrm{diag}(s_1, \ldots, s_m)                          \\
+    \Lambda      & = \mathrm{diag}(\lambda_1, \ldots, \lambda_m)              \\
+    H(x,\lambda) & = \nabla^2 f(x) + \sum_{i=1}^{m} \lambda_i \nabla^2 g_i(x) \\
+    {G(x)}^\top  & = \begin{bmatrix}
+                         \nabla g_1(x) & \nabla g_2(x) & \cdots & \nabla g_m(x)
+                     \end{bmatrix}   \\
+\end{align*}
+and $v$ replaces $\kappa$ in the KKT conditions (further relaxation).
+
+\newpar{}
+The resulting direction $\Delta [x,\nu,\lambda,s](v)$ depends on the choice of the relaxation parameter $v$.
+For
+\begin{itemize}
+    \item $v=0$, the direction is a \textbf{Newton step}.
+    \item $v=\kappa \mathbf{1}$, the direction is called a centering direction that approaches the central path.
+\end{itemize}
+
+\newpar{}
+\ptitle{Predictor-Corrector Method}
+
+Predictor-Corrector methods use a linear combination of the two direction, i.e.\
+\begin{equation*}
+    \Delta [x,\nu,\lambda,s](v) =\Delta [x,\nu,\lambda,s](\sigma\kappa \mathbf{1})
+\end{equation*}
+where $\sigma\in (0,1)$, which ensures fast convergence.
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{images/09_pred_corr.png}
+\end{center}
