@@ -68,7 +68,7 @@ Is a multiparametric linear program (MPLP) with the following properties:
           \end{equation*}
     \item The polyhedra $CR^j = \left\{ x\in \mathbb{R}^n \big| H^j x \leq K^j \right\}$ are a partition of the feasible polyhedron $\mathcal{X}_0$.
     \item In case of multiple optimizers a piecewise affine control law exists.
-    \item The value function $J^*(x(k))$ is convex and piecewise quadratic on polyhedra.
+    \item The value function $J^*(x(k))$ is convex and piecewise linear on polyhedra.
 \end{itemize}
 \subsubsection{Point Location}
 
@@ -175,6 +175,7 @@ This quadratic upper bound can be minimized by choosing the negative gradient $-
     x_{k+1} = x_k - \frac{1}{L} \nabla f(x_k)
 \end{equation*}
 which is guaranteed to converge to a local minimum of $f$.
+
 \paragraph{Newton's Method / Second-Order Method}
 Newton's method minimizes the second-order Taylor expansion of $f$ around the current iterate $x_k$:
 \begin{align*}
