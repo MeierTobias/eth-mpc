@@ -98,6 +98,8 @@ At each sampling time:
     \item Solve steady-state target problem using $\widehat{d}$
     \item Solve MPC problem:
 \end{enumerate}
+% \begin{tcolorbox}[colback=paragraphColor!25!white,colframe=white, boxrule=0.0pt,arc=5pt]
+\noindent
 \begin{align*}
     \min_U       & \sum_{i=0}^{N-1} {(x_i - x_s)}^T Q (x_i - x_s)                                    \\
                  & + {(u_i - u_s)}^T R (u_i - u_s) + V_f(x_N - x_s)                                  \\
@@ -106,6 +108,7 @@ At each sampling time:
                  & d_{i+1} = d_i, \quad i = 0, \dots, N                                              \\
                  & x_i \in \mathcal{X}, \quad u_i \in \mathcal{U}, \quad x_N - x_s \in \mathcal{X}_f
 \end{align*}
+% \end{tcolorbox}
 
 \ptitle{Observability of Augmented System}
 
