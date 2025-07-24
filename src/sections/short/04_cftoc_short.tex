@@ -118,6 +118,7 @@ See Subsection~\ref{short:sec:batch_lqr}
     X = S^x x(k) + S^u U
 \end{equation*}
 
+%TODO: what exactly is $Y$  and does it matter as x(k) is constant anyway?
 \ptitle{Cost}
 \begin{align*}
     J^*(x(k), U)=          & \min_{U}\begin{bmatrix}
@@ -258,14 +259,34 @@ Introduces a \textit{scalar} auxiliary variable for each state of the trajectory
                                                                 & Fx \leq g
 \end{align*}
 
-% TODO: should we write this one out?
 \ptitle{Application to CFTOC}
-Apply the auxiliary variable formulation similar to~\ref{l_inf_CFTOC}. However,
-\begin{itemize}
-    \item Introduce a vector $\varepsilon_i^x \in \mathbb{R}^n$ of auxiliary variables for each state in the trajectory
-    \item Sum all $\mathbf{1}^\top \varepsilon_i^x$ in the cost function
-    \item Remember that the equality constraints are now element wise for each $x_i$ and corresponding entry in $\varepsilon_i^x$
-\end{itemize}
+\noindent
+\begin{align*}
+    z & := \{ {(\bm{\varepsilon}_{0}^x)}^\top, \dots, {(\bm{\varepsilon}_{N}^x)}^\top, {(\bm{\varepsilon}_{0}^u)}^\top, \dots, {(\bm{\varepsilon}_{N-1}^u)}^\top, u_0^\top, \dots, u_{N-1}^\top \} \\
+    z & \in \mathbb{R}^s \text{ with } s := n(N+1) + 2mN
+\end{align*}
+\begin{align*}
+    \min_z \quad            & \mathbf{1}^\top \bm{\varepsilon}_{0}^x + \dots + \mathbf{1}^\top \bm{\varepsilon}_{N}^x + \mathbf{1}^\top \bm{\varepsilon}_{0}^u + \dots + \mathbf{1}^\top \bm{\varepsilon}_{N-1}^u \\
+    \text{subj.\ to } \quad & -\bm{\varepsilon}_{x_i} \leq Q x_i \leq\bm{\varepsilon}_{x_i}                                                                                                                       \\
+                            & -\bm{\varepsilon}_{x_N} \leq P x_N \leq\bm{\varepsilon}_{x_N}                                                                                                                       \\
+                            & -\bm{\varepsilon}_{u_i} \leq R u_i \leq\bm{\varepsilon}_{u_i}\end{align*}
+
+\newpar{}
+\ptitle{General Formulation}
+\begin{equation*}
+    y = \begin{bmatrix}
+        x \\\mathbf{z}
+    \end{bmatrix}\in \mathbb{R}^{(n+N)}
+\end{equation*}
+\begin{align*}
+    \min_x \|Ax\|_1 &  &  & \Leftrightarrow & \min_y       & \begin{bmatrix}
+                                                                 0 & \mathbf{1}^\top
+                                                             \end{bmatrix}y \\
+                    &  &  &                 & \text{s.t. } & \begin{bmatrix}
+                                                                 A  & -\mathbb{I} \\
+                                                                 -A & -\mathbb{I}
+                                                             \end{bmatrix}y\leq0
+\end{align*}
 
 \paragraph[l1, linf State Feedback Solution]{$l_{1}, l_{\infty}$ State Feedback Solution}
 \noindent
@@ -289,7 +310,7 @@ is again a mp-LP with the following solution properties:
           \end{equation*}
           are a partition of the feasible polyhedron $\mathcal{X}_0$.
     \item In case of multiple optimizers, a \textbf{piecewise affine} control law exists.
-    \item The value function $J^*(x(0))$ is \textbf{convex} and \textbf{piecewise affine} (not convex as for QP) on polyhedra.
+    \item The value function $J^*(x(0))$ is \textbf{convex} and \textbf{piecewise affine} on polyhedra.
 \end{itemize}
 
 \subsection{Common Constraints}

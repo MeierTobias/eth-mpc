@@ -1,6 +1,6 @@
 \section{System Theory}
 \subsection{Discretization}
-\ptitle{Euler Discretization}
+\ptitle{Euler Discretization (Forward)}
 \begin{equation*}
     \dot{x}^c \approx \frac{x^c(t + T_s)-x^c(t)}{T_s}
 \end{equation*}
@@ -25,6 +25,9 @@ Therefore a LTI system becomes
     B={(A^c)}^{-1}(A-\mathbb{I})B^c
 \end{equation*}
 if $A^c$ is invertible.
+\begin{equation*}
+    e^{A^c t} := \sum_{n=0}^{\infty}\frac{{(A^c t)}^n}{n!}
+\end{equation*}
 
 \newpar{}
 \ptitle{Solution of DT LTI System}
@@ -152,5 +155,12 @@ which as a unique solution if $A$ is stable, i.e.\ all eigenvalues inside the un
 % TODO: Is this right?
 % When using LQR, the matrix $P$ that satisfies the DARE equation also satisfies the Lyapunov equation
 \begin{equation*}
-    {(A+BK)}^\top P{(A+BK)} -P = -Q, \quad Q>0
+    {(A+BK)}^\top P{(A+BK)} -P = -Q, \quad Q\succ 0
 \end{equation*}
+
+\subsubsection{Direct and Indirect Lyapunov Methods}
+\paragraph{Direct Lyapunov Method}
+The direct method involves finding a Lyapunov function $V(x)$ and proving that it satisfies the conditions for stability directly.
+
+\paragraph{Indirect Lyapunov Method}
+The indirect method uses the linearization and Hartman-Grobman theorem to conclude stability of the nonlinear system from the stability of the linearized system in a local neighborhood of the equilibrium point.

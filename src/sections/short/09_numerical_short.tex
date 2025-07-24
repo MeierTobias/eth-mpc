@@ -69,20 +69,6 @@ and sufficiently feasible
     \mathrm{dist}(x^{(m)},\mathbb{Q}) \leq \delta
 \end{equation*}
 
-\subsection{Iterative MPC}
-Given an initial guess $x_0$, cost function $f(x)$, and a feasible set $\mathbb{Q}$, \textbf{iterative optimization methods} compute a sequence of iterates
-\begin{equation*}
-    x_{k+1} = \Psi(x_k, f, \mathbb{Q}),\quad K = 0,1,\ldots, m-1
-\end{equation*}
-that are $\epsilon$-stationary
-\begin{equation*}
-    \|f(x^{(m)}) - f(x^*)\| \leq \epsilon
-\end{equation*}
-and sufficiently feasible
-\begin{equation*}
-    \mathrm{dist}(x^{(m)},\mathbb{Q}) \leq \delta
-\end{equation*}
-
 \subsubsection{Unconstrained Minimization}
 \ptitle{Problem}
 
