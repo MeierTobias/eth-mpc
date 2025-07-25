@@ -37,7 +37,8 @@ See 1/$\infty$-norm CFTOC.
 Given $m$ regions, two possible methods to find the critical region $CR^j$ for a given state $x(k)$. Then, the corresponding piecewise affine function must be evaluated at $x(k)$ to obtain the control input.
 
 \newpar{}
-\ptitle{Sequential Search $\mathcal{O}(m)$}
+\ptitle{Sequential Search ($\mathcal{O}(m)$)}
+
 Simply check each polyhedron until the one containing $x(k)$ is found:
 \textsf{
     \noindent\begin{algorithmic}
@@ -87,7 +88,6 @@ The goal is to iteratively solve for the necessary and sufficient condition
     \nabla f(x^*) = 0
 \end{equation*}
 
-\newpar{}
 \ptitle{Descent Methods}
 
 Descent methods update the current iterate $x_k$ in the search direction $\Delta x_k$ with a step size $h_k$:

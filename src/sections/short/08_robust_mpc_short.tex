@@ -141,7 +141,7 @@ Assume $0\in \mathcal{W}$ (nominal trajectory).
 \subsubsection{Cost}
 \noindent
 \begin{equation*}
-    J(x_0, U, W) := \sum_{i=0}^{N-1} l(\phi_i(x_0, U, W), u_i) + l_f(\phi_N(x_0, U, W))
+    J(x_0, U, W) := \sum_{i=0}^{N-1} I(\phi_i(x_0, U, W), u_i) + I_f(\phi_N(x_0, U, W))
 \end{equation*}
 
 There are multiple methods to achieve \textbf{independence} of $W$:
@@ -334,7 +334,7 @@ for some $\gamma > 0$.
 \newpar{}
 Then, the Lyapunov decrease can be bounded as
 \begin{equation*}
-    J^*(A x + B u^*(x) + w) - J^*(x)\leq -\ell(x, u^*(x)) + \gamma \|w\|
+    J^*(A x + B u^*(x) + w) - J^*(x)\leq -I(x, u^*(x)) + \gamma \|w\|
 \end{equation*}
 Hence,
 \begin{itemize}

@@ -261,20 +261,21 @@ With larger horizon length N, region of attraction approaches maximum control in
 \subsubsection{Soft Constrained MPC}
 \noindent
 \begin{align*}
-    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i + l_\epsilon(\epsilon_i) + x_N^\top P x_N + {\color{red}l_\epsilon(\epsilon_N)} \\
-    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                                                                                          \\
-                      & H_x x_i \leq k_x + {\color{red}\epsilon_i}                                                                                       \\
-                      & H_u u_i \leq k_u                                                                                                                 \\
+    \min_u \quad      & \sum_{i=0}^{N-1} x_i^\top Q x_i + u_i^\top R u_i +  {\color{red}\ell_\epsilon(\epsilon_i)} + x_N^\top P x_N + {\color{red}\ell_\epsilon(\epsilon_N)} \\
+    \text{s.t.} \quad & x_{i+1} = A x_i + B u_i                                                                                                                              \\
+                      & H_x x_i \leq k_x + {\color{red}\epsilon_i}                                                                                                           \\
+                      & H_u u_i \leq k_u                                                                                                                                     \\
                       & {\color{red}\epsilon_i \geq 0}
 \end{align*}
 
 \paragraph{Penalty Function Choices}
 \ptitle{Exact Penalty}
-The penalty function $l_\epsilon(\epsilon_i)$ should be as follows: If the original problem has a feasible solution $z^\star$, then the softened problem should have the same solution and $\epsilon = 0$.
+
+The penalty function $\ell_\epsilon(\epsilon_i)$ should be as follows: If the original problem has a feasible solution $z^\star$, then the softened problem should have the same solution and $\epsilon = 0$.
 \newpar{}
 \ptitle{Main Result}
 \begin{equation*}
-    l_\epsilon(\epsilon) = v \cdot \epsilon
+    \ell_\epsilon(\epsilon) = v \cdot \epsilon
 \end{equation*}
 satisfies the requirement for any $v > \lambda^\star \geq 0$, where $\lambda^\star$ is the optimal Lagrange multiplier for the original problem.
 \newpar{}
@@ -282,7 +283,7 @@ satisfies the requirement for any $v > \lambda^\star \geq 0$, where $\lambda^\st
 
 Combine linear and quadratic terms for tuning:
 \begin{equation*}
-    l_\epsilon(\epsilon) = v \cdot \epsilon + s \cdot \epsilon^2
+    \ell_\epsilon(\epsilon) = v \cdot \epsilon + s \cdot \epsilon^2
 \end{equation*}
 with $v > \lambda^\star$ and $s > 0$.
 
@@ -291,7 +292,7 @@ with $v > \lambda^\star$ and $s > 0$.
 
 Assume multiple constraints $g_j(z) \leq 0$, $j = 1, \dots, r$. The penalty then reads
 \begin{equation*}
-    l_\epsilon(\epsilon) = v \cdot \lVert \epsilon \rVert_{1/\infty} + \epsilon^\top S \epsilon
+    \ell_\epsilon(\epsilon) = v \cdot \lVert \epsilon \rVert_{1/\infty} + \epsilon^\top S \epsilon
 \end{equation*}
 where
 \begin{itemize}

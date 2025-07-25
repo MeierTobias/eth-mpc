@@ -400,7 +400,7 @@ for some $\gamma > 0$.
 \newpar{}
 Then, the Lyapunov decrease can be bounded as
 \begin{equation*}
-    J^*(A x + B u^*(x) + w) - J^*(x)\leq -\ell(x, u^*(x)) + \gamma \|w\|
+    J^*(A x + B u^*(x) + w) - J^*(x)\leq -I(x, u^*(x)) + \gamma \|w\|
 \end{equation*}
 Hence,
 \begin{itemize}
@@ -426,7 +426,7 @@ Similarly for the input constraints ($u_i = K(x_i - z_i) + K e_i + v_i$): % TODO
 \begin{equation*}
     u_i \in v_i \oplus K \mathcal{F}_i \subseteq \mathcal{U}\quad \Leftrightarrow \quad v_i \in \mathcal{U} \ominus K\mathcal{F}_i
 \end{equation*}
-Intuition: The method builds on the assumption that error prestabilization can be applied. Hence, we must ensure that $v_i$ leaves enough control action to the prestabilization part $\rightarrow$ shrink set for $v_i$.
+Intuition: The method builds on the assumption that error pre-stabilization can be applied. Hence, we must ensure that $v_i$ leaves enough control action to the prestabilization part $\rightarrow$ shrink set for $v_i$.
 
 \subsubsection{MPC Problem}
 The robust constraint-tightening MPC Problem over the nominal state $z$ and nominal input $v$ is given by:
