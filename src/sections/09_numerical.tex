@@ -72,10 +72,11 @@ Is a multiparametric linear program (MPLP) with the following properties:
 \end{itemize}
 \subsubsection{Point Location}
 
-Given $m$ regions, two possible methods to find the critical region $CR^j$ for a given state $x(k)$. Then, the corresponding piecewise affine function must be evaluated at $x(k)$ to obtain the control input.
+Given $m$ regions, there are multiple methods to find the critical region $CR^j$ for a given state $x(k)$. Then, the corresponding piecewise affine function must be evaluated at $x(k)$ to obtain the control input.
 
 \newpar{}
 \ptitle{Sequential Search $\mathcal{O}(m)$}
+
 Simply check each polyhedron until the one containing $x(k)$ is found:
 \textsf{
     \noindent\begin{algorithmic}
@@ -134,7 +135,7 @@ Descent methods update the current iterate $x_k$ in the search direction $\Delta
 \end{equation*}
 where
 \begin{itemize}
-    \item $\Delta x$ is a desecnt direction
+    \item $\Delta x$ is a descent direction
     \item There exists a $h_k>0$ such that we obtain a cost decrease, if we step to a certain extent into the opposite gradient direction:
           \begin{equation*}
               \exists h_k > 0 \rightarrow f(x_{k+1}) < f(x_k) \text{ if } \nabla {f(x_k)}^\top \Delta x_k < 0
@@ -201,7 +202,7 @@ This is an optimization in one variable which can be solved by bisection (slow, 
 \newpar{}
 \ptitle{Backtracking Line Search (Inexact)}
 
-Find a step size $h_k$ that decreases the cost function $f$ sufficiently:
+Find a step size $h_k$ that decreases the cost function $f$ sufficiently by repeatedly downscaling the step size:
 \textsf{
     \noindent\begin{algorithmic}
         \State{Initialize $h_k = 1$}
@@ -213,6 +214,12 @@ Find a step size $h_k$ that decreases the cost function $f$ sufficiently:
 
 \noindent with $\alpha \in (0, 0.5)$ and $\beta \in (0, 1)$.
 
+The condition
+\begin{equation*}
+    f(x_k + h_k \Delta x_{nt}) > f(x_k) + \alpha h_k \nabla {f(x_k)}^\top \Delta x_{nt}
+\end{equation*}
+is called \textbf{Armijo condition} and quantifies the cost decrease compared to the predicted cost decrease of the linear approximation.
+
 \subsubsection{Constrained Minimization}
 \begin{itemize}
     \item \textbf{PGD}: better for small horizon lengths, faster iterations, but more iterations needed.
@@ -220,7 +227,6 @@ Find a step size $h_k$ that decreases the cost function $f$ sufficiently:
 \end{itemize}
 
 \paragraph{Equality Constrained Newton's Method}
-% TODO: There was a comment on a Lagrangian which I didn't understand (we don't use Lagr. multipliers (i.e. solve the primal problem?) and use just Newton's method)
 Incorporating equality constraints
 \noindent\begin{align*}
     \min_x \quad            & f(x) \\
@@ -228,17 +234,19 @@ Incorporating equality constraints
 \end{align*}
 into Newton's method (and rewriting $x-x_k = \Delta x$) yields
 \begin{align*}
-    \Delta x_{nt}(x_k)       & \in \argmin_{\Delta x_k} \; \frac{1}{2}\nabla^2 f(x_k) \Delta x + \nabla f(x_k)\Delta x \\
-    \mathrm{subj.\ to} \quad & A\Delta x_k = -Ax_k + b
+    \Delta x_{nt}(x_k)       & \in \argmin_{\Delta x_k} \; \frac{1}{2} \Delta x \nabla^2 f(x_k) \Delta x + \nabla f(x_k)\Delta x \\
+    \mathrm{subj.\ to} \quad & A\Delta x_k = \underbrace{-Ax_k + b}_{=0 \text{ optimally}}
 \end{align*}
-If the equality constraint is fulfilled at initilization, the nullspace constraint $A\Delta x = 0$ enforces that the next $x_{k+1}$ still satisfies the equality constraint:
-\begin{equation*}
-    Ax_{k+1} = Ax_k + h_k A\Delta x_k = b
-\end{equation*}
+
 \newpar{}
 \ptitle{Descent Direction}
 
-The corresponding descent direction can be found by solving a linear system of equations
+By optimality on the above problem, we have to solve
+\begin{align*}
+    \nabla^2 f(x_k) \Delta x + \nabla f(x_k) + A^T \nu & = 0 \\
+    A \Delta x                                         & = 0
+\end{align*}
+This, however, is a linear system of equations, yielding the wanted search direction:
 \begin{equation*}
     \begin{bmatrix}
         \nabla^2 f(x_k) & A^\top \\
@@ -256,6 +264,12 @@ The corresponding descent direction can be found by solving a linear system of e
         \end{matrix}}
 \end{equation*}
 \newpar{}
+If the equality constraint is fulfilled at initilization, the nullspace constraint $A\Delta x = 0$ enforces that the next $x_{k+1}$ still satisfies the equality constraint:
+\begin{equation*}
+    Ax_{k+1} = Ax_k + h_k \underbrace{A\Delta x_k}_{=0} = b
+\end{equation*}
+
+\newpar{}
 \ptitle{Conclusion}
 
 Equality constraints yield easy optimization problems as the search directions can be found by solving a simple linear system.
@@ -269,6 +283,10 @@ Consider the constrained convex optimization problem
 \end{equation*}
 where $f$ is convex and $L$-smooth, and the feasible set $\mathbb{Q}$ is convex.
 \newpar{}
+\ptitle{Step Projection}
+
+\includegraphics[width = 0.5\linewidth]{09_PGD.png}
+
 Constraints on $x$ can be incorporated by projecting the gradient onto $\mathbb{Q}$ using the euclidian projection:
 \begin{align*}
     x_{k+1}             & = \Pi_{\mathbb{Q}}(x_k - h_k \nabla f(x_k)) \\
@@ -279,10 +297,10 @@ Under our assumptions, if we choose step size $h_k = \frac{1}{L}$, Projected Gra
 \newpar{}
 \ptitle{MPC}
 
-In the MPC problem setup, the optimization variable is the control input $U$. Therefore, \textbf{input constraints} can be incorporated by using PGD.
+In the MPC problem setup, the optimization variable is the control input $U$. Therefore, \textbf{input constraints} can be incorporated by using PGD in the CFTOC formulation with substitution.
 
 \newpar{}
-MPC with \textbf{state constraints} are more complicated as the projection of the intersection $(\mathcal{U}\times \mathcal{X}) \cap \{ z|Az=b\}$ is not trivial.
+MPC with \textbf{state constraints} are more complicated as the projection of the intersection $(\mathcal{U}\times \mathcal{X}) \cap \{ z|Az=b\}$ is not trivial. One approach could be to solve the dual problem (simple inequalities $\lambda>=0$ with cheap projection), which would require special attention to preserving the feasibility of the primal problem.
 
 \paragraph{Interior Point Method}
 \ptitle{Problem}
@@ -303,7 +321,7 @@ MPC with \textbf{state constraints} are more complicated as the projection of th
 \newpar{}
 \ptitle{Primal-Dual relaxed KKT Conditions}
 
-Primal-Dual interior-point methods solve the following relaxed KKT system of equations:
+Primal-Dual interior-point methods solve the following relaxed KKT system of equations for both, the primal and dual variables:
 \begin{align*}
     \nabla f(x^{*})+\sum_{i=1}^{m}\lambda_{i}^{*}\nabla g_{i}(x^{*})+C^{T}\nu^{*} & =0        \\
     \mathrm{Cx^*}                                                                 & =d        \\
@@ -314,7 +332,8 @@ Primal-Dual interior-point methods solve the following relaxed KKT system of equ
 where
 \begin{itemize}
     \item $s\in \mathbb{R}^m$ are slack variables
-    \item $\{(x,\nu,\lambda,s)|\text{above eqns.\ hold}\}$ is called \textit{primal-dual central path}.
+    \item $\{(x,\nu,\lambda,s)|\text{above eqns.\ hold}\}$ is called \textit{primal-dual central path}
+    \item one attempts to successively reduce $\kappa$ to zero (central path)
 \end{itemize}
 
 \newpar{}
@@ -352,7 +371,7 @@ where
 and $v$ replaces $\kappa$ in the KKT conditions (further relaxation).
 
 \newpar{}
-The resulting direction $\Delta [x,\nu,\lambda,s](v)$ depends on the choice of the relaxation parameter $v$.
+The resulting direction $\Delta [x,\nu,\lambda,s](v)$ is found by solving the linear system and depends on the choice of the relaxation parameter $v$.
 For
 \begin{itemize}
     \item $v=0$, the direction is a \textbf{Newton step}.
@@ -362,7 +381,7 @@ For
 \newpar{}
 \ptitle{Predictor-Corrector Method}
 
-Predictor-Corrector methods use a linear combination of the two direction, i.e.\
+Predictor-Corrector methods use a linear combination of the two directions, i.e.\
 \begin{equation*}
     \Delta [x,\nu,\lambda,s](v) =\Delta [x,\nu,\lambda,s](\sigma\kappa \mathbf{1})
 \end{equation*}
