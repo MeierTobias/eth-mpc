@@ -176,6 +176,16 @@ This quadratic upper bound can be minimized by choosing the negative gradient $-
     x_{k+1} = x_k - \frac{1}{L} \nabla f(x_k)
 \end{equation*}
 which is guaranteed to converge to a local minimum of $f$.
+\newpar{}
+\ptitle{Finding $L$}
+
+Assuming $f$ is $L$-smooth, the Lipschitz constant $L$ can be determined globally. It is the maximum spectral norm of the Hessian $\nabla^2 f(x)$, i.e.\
+\begin{align*}
+    L & = \max_{x\in\mathcal{X}} \|\nabla^2 f(x)\|_2            \\
+      & = |\max_{x\in\mathcal{X}} \sigma_{\max}(\nabla^2 f(x))| \\
+      & = |\lambda_{\max}(\nabla^2 f(x))|
+\end{align*}
+As the Hessian is always symmetric, $L$ is simply its \textbf{largest absolute eigenvalue}.
 
 \paragraph{Newton's Method / Second-Order Method}
 Newton's method minimizes the second-order Taylor expansion of $f$ around the current iterate $x_k$:
