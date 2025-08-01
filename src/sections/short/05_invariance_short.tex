@@ -126,13 +126,14 @@ If $V:\mathbb{R}^d\to\mathbb{R}$ is a Lyapunov function for the system $x(k+1)=g
 is an invariant set for all $\alpha \geq 0$.
 
 \paragraph{Linear Systems}
-\noindent
+For linear systems $x(k+1)=Ax(k)$, the Lyapunov function $V(x)=x^\top Px$ (with $P\succ 0$  and $A^\top PA-P \prec 0$) yields the ellipsoidal invariant set
 \begin{equation*}
     Y_\alpha = \left\{x\mid x^\top Px\leq \alpha\right\} \subset \mathcal{X}= \left\{x\mid Fx\leq f\right\}
 \end{equation*}
 
 \ptitle{Maxmium Invariant Set}
-\noindent
+
+If we want to find the largest such $Y_\alpha$, we must solve
 \begin{gather*}
     \max_{\alpha}\alpha \\
     \text{s.t. }h_{Y_{\alpha}}(F_{i})\leq f_{i} \quad \forall i\in\{1,...,n\}
