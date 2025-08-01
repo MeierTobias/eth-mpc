@@ -325,6 +325,20 @@ Comparison of the two variants:
     \includegraphics[width = \linewidth]{08_error_dynamics.png}
 \end{center}
 
+\newpar{}
+\ptitle{Scalar Linear DTI}
+\begin{align*}
+    x(k+1) & = Ax(k) +Bu(k) + w(k) \\
+    u(k)   & = K x(k)
+\end{align*}
+\begin{equation*}
+    \mathcal{F}_\infty = \left[\frac{a}{1-A_K}, \frac{b}{1-A_K}\right]
+\end{equation*}
+with
+\begin{equation*}
+    A_K = A + BK \quad \text{and} \quad \mathcal{W}=\left[a, b\right]
+\end{equation*}
+
 \subsubsection{Input-to-State Stability}
 Assume that the optimal cost $J^*$ is Lipschitz continuous (true for linear systems, convex constraints and continuous stage costs)
 \begin{equation*}
