@@ -294,9 +294,9 @@ Consider the constrained convex optimization problem
 where $f$ is convex and $L$-smooth, and the feasible set $\mathbb{Q}$ is convex.
 \newpar{}
 \ptitle{Step Projection}
-
-\includegraphics[width = 0.5\linewidth]{09_PGD.png}
-
+\begin{center}
+    \includegraphics[width = 0.5\linewidth]{09_PGD.png}
+\end{center}
 Constraints on $x$ can be incorporated by projecting the gradient onto $\mathbb{Q}$ using the euclidian projection:
 \begin{align*}
     x_{k+1}             & = \Pi_{\mathbb{Q}}(x_k - h_k \nabla f(x_k)) \\
