@@ -536,3 +536,55 @@ The cost for the nominal trajectory vanishes:
 \begin{equation*}
     \lim_{k \to \infty} J(z_0^*(x(k))) = 0 \quad \Rightarrow \quad \lim_{k \to \infty} z_0^*(x(k)) = 0
 \end{equation*}
+
+\begin{examplesection}[Proof Sketch]
+    \ptitle{Recursive Feasibility}
+
+    Given the optimal solution $\left( v_0^*, \dots, v_{N-1}^*, z_0^*, \dots, z_N^* \right)$ for $x(k)$, the next state is
+    \begin{equation*}
+        x(k + 1) = A x(k) + B K(x(k) - z_0^*) + B v_0^* + w, \quad w \in \mathcal{W}
+    \end{equation*}
+    By construction, $x(k + 1) \in z_1^* \oplus \mathcal{E}$. The shifted trajectory
+    \begin{equation*}
+        \left\{ v_1^*, \dots, v_{N-1}^*, \kappa_f(z_N^*) \right\}, \quad \left\{ z_1^*, \dots, z_N^*, A z_N^* + B \kappa_f(z_N^*) \right\}
+    \end{equation*}
+    is feasible for all $x(k+1)$.
+
+    \newpar{}
+    Details:
+    \begin{itemize}
+        \item Feasibility of $\left\{ v_1^*, \dots, v_{N-1}^*, \kappa_f(z_N^*) \right\}$
+              \begin{itemize}
+                  \item $v_i^* \in \mathcal{U} \ominus K\mathcal{E}$ for $i=1,\ldots,N-1$ given from feas.\ at $k$.
+                  \item $\kappa_f(z_N^*) \in \mathcal{U} \ominus K\mathcal{E}$ for $z_N^*\in\mathcal{X}_f$ by Assumption 2. (Section~\ref{08_tube_assumptions})
+              \end{itemize}
+        \item Feasibility of $\left\{ z_1^*, \dots, z_N^*, A z_N^* + B \kappa_f(z_N^*) \right\}$
+              \begin{itemize}
+                  \item $z_i^* \in \mathcal{X}\ominus\mathcal{E}$ for $i=1,\ldots,N-1$ given from feas.\ at $k$.
+                  \item $z_N^* \in \mathcal{X}_f\subseteq\mathcal{X}\ominus\mathcal{E}$ given from feasibility at $k$.
+                  \item $Az_N^* + B\kappa_f(z_N^*) \in \mathcal{X}_f$ from invariance of $\mathcal{X}_f$ by Assumption 2. (Section~\ref{08_tube_assumptions})
+                  \item $x(k+1) \in z_1^* \oplus \mathcal{E}$ follows from:
+                        \begin{align*}
+                            \underbrace{x(k+1) -z_1^*}_{e_{k+1}} & = Ax(k) +BK(x(k)-z_0^*)+Bv_0^* + w                      \\
+                                                                 & \qquad\qquad\qquad\qquad\qquad -Az_0^* + Bv_0^*         \\
+                                                                 & = (A+BK)\underbrace{(x(k)-z_0^*)}_{e_k} + w(k)          \\
+                                                                 & \in \mathcal{E} \text{ if } (x(k)-z_0^*)\in \mathcal{E} \\
+                                                                 & \Rightarrow x(k+1) \in z_1^* \oplus \mathcal{E}
+                        \end{align*}
+              \end{itemize}
+    \end{itemize}
+    \newpar{}
+    \ptitle{Stability}
+
+    As in standard MPC, we have the value function expression
+    \begin{equation*}
+        J^*(x(k)) = \sum_{i=0}^{N-1} \ell(z_i^*, v_i^*) + \ell_f(z_N^*)
+    \end{equation*}
+    At the next time step $k + 1$, it holds that
+    \begin{align*}
+        J^*(x(k + 1)) & \leq \sum_{i=1}^{N} \ell(z_i^*, v_i^*) + \ell_f(z_{N+1})                                     \\
+                      & = J^*(x(k)) - \underbrace{\ell(z_0^*, v_0^*)}_{\geq 0}                                       \\
+                      & \quad - \underbrace{\ell_f(z_N^*) - \ell_f(z_{N+1}) - \ell(z_N^*, \kappa_f(z_N^*))}_{\leq 0}
+    \end{align*}
+    where the last inequality uses the fact that $\ell_f$ is a Lyapunov function on $\mathcal{X}_f$.
+\end{examplesection}
