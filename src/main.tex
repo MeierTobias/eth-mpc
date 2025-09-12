@@ -1,51 +1,9 @@
-% Define all the needed variable like it is shown in the var.tex.example
-% (Just copy the var.tex.example file and remove the ".example" from the filename.)
-\input{var.tex}
-
-\documentclass[\fontheight]{extarticle}
-
-% load the template headers
-\input{\templatePath/summary_headers.tex} % ChkTex 27
+\documentclass{article}
+\usepackage{pdfpages}
 
 \begin{document}
-\begin{multicols*}{6}
 
-    % create the title section
-    \input{\templatePath/summary_title.tex} % ChkTex 27
+\includepdf[pages=-, fitpaper]{main_summary}
+\includepdf[pages=-, fitpaper]{main_cheatsheet}
 
-    \input{diagrams/bsb_header.tex}
-
-    \setcounter{section}{-1} % Section stating from 0 to align with the file and chapter numbering
-    \input{sections/00_notation.tex}
-
-    \input{sections/01_system_theory.tex}
-    \input{sections/02_unconstrained_lqr_control.tex}
-    \input{sections/03_convex_optimization.tex}
-    \input{sections/04_cftoc.tex}
-    \input{sections/05_invariance.tex}
-    \input{sections/06_feasibility_stability.tex}
-    \input{sections/07_practical_mpc.tex}
-    \input{sections/08_robust_mpc.tex}
-    \input{sections/09_numerical.tex}
-
-    \newpage{}
-    \input{sections/99_appendix.tex}
-
-    \newpage{}
-    \setcounter{section}{0}
-    \setcounter{page}{1}
-    \input{sections/short/01_system_theory_short.tex}
-    \input{sections/short/02_lqr_short.tex}
-    \input{sections/short/03_convex_optimization_short.tex}
-    \input{sections/short/04_cftoc_short.tex}
-    \input{sections/short/05_invariance_short.tex}
-    \input{sections/short/06_feasibility_stability_short.tex}
-    \input{sections/short/07_practical_mpc_short.tex}
-    \input{sections/short/08_robust_mpc_short.tex}
-    \input{sections/short/09_numerical_short.tex}
-    \input{sections/short/99_appendix_short.tex}
-
-
-
-\end{multicols*}
 \end{document}
