@@ -1,0 +1,27 @@
+% Define all the needed variable like it is shown in the var.tex.example
+% (Just copy the var.tex.example file and remove the ".example" from the filename.)
+\input{var_cheatsheet.tex}
+
+\documentclass[\fontheight]{extarticle}
+
+% load the template headers
+\input{\templatePath/summary_headers.tex} % ChkTex 27
+
+\begin{document}
+\begin{multicols*}{6}
+
+    \input{diagrams/bsb_header.tex}
+
+    \input{sections/cheatsheet/01_system_theory_short.tex}
+    \input{sections/cheatsheet/02_lqr_short.tex}
+    \input{sections/cheatsheet/03_convex_optimization_short.tex}
+    \input{sections/cheatsheet/04_cftoc_short.tex}
+    \input{sections/cheatsheet/05_invariance_short.tex}
+    \input{sections/cheatsheet/06_feasibility_stability_short.tex}
+    \input{sections/cheatsheet/07_practical_mpc_short.tex}
+    \input{sections/cheatsheet/08_robust_mpc_short.tex}
+    \input{sections/cheatsheet/09_numerical_short.tex}
+    \input{sections/cheatsheet/99_appendix_short.tex}
+
+\end{multicols*}
+\end{document}

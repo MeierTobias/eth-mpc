@@ -1,0 +1,168 @@
+\section{System Theory}
+\subsection{Discretization}
+\ptitle{Euler Discretization (Forward)}
+\begin{equation*}
+    \dot{x}^c \approx \frac{x^c(t + T_s)-x^c(t)}{T_s}
+\end{equation*}
+with $T_s$ describing the sampling time, hence
+\begin{align*}
+    x(k) & := x^c(t_0 + kT_s) \\
+    u(k) & := u^c(t_0 + kT_s)
+\end{align*}
+
+Therefore a LTI system becomes
+\begin{align*}
+    x(k+1) & = (\mathbb{I} + T_s A^c) x(k) + T_s B^c u(k) & = A x(k) + B u(k) \\
+    y(k)   & = C^c x(k) + D^c u(k)                        & = C x(k) + D u(k)
+\end{align*}
+
+\newpar{}
+\ptitle{Exact Discretization of LTI (ZOH)}
+\begin{equation*}
+    x(t_{k+1}) = \underbrace{e^{A^c T_s}}_{=A} x(t_k) + \underbrace{\int_{0}^{T_s} e^{A^c(T_s - \tau)}B^c d\tau}_{B} u(t_k)
+\end{equation*}
+\begin{equation*}
+    B={(A^c)}^{-1}(A-\mathbb{I})B^c
+\end{equation*}
+if $A^c$ is invertible.
+\begin{equation*}
+    e^{A^c t} := \sum_{n=0}^{\infty}\frac{{(A^c t)}^n}{n!}
+\end{equation*}
+
+\newpar{}
+\ptitle{Solution of DT LTI System}
+\begin{equation*}
+    x(k+N) = A^N x(k) + \sum_{i=0}^{N-1} A^i B u(k+N-1-i)
+\end{equation*}
+
+\subsection{LTI DT System Analysis}
+\subsubsection{Similarity Transform}
+\noindent
+\begin{align*}
+    \widetilde{x}(k)   & = Tx(k);                              &  & \det(T) \neq 0                                        \\
+    \widetilde{x}(k+1) & = TAT^{-1} \widetilde{x}(k) + TB u(k) &  & = \widetilde{A} \widetilde{x}(k) + \widetilde{B} u(k) \\
+    y(k)               & = CT^{-1} \widetilde{x}(k) + D u(k)   &  & = \widetilde{C} \widetilde{x}(k) + \widetilde{D} u(k)
+\end{align*}
+
+\subsubsection{Controllability and Observability}
+\noindent\begin{equation*}
+    \mathcal{R} \subseteq \mathcal{C}, \quad \mathcal{R} \subset\mathcal{S}, \quad \mathcal{O} \subset \mathcal{D}
+\end{equation*}
+\input{diagrams/reach_observability.tex}
+
+\paragraph{Controllability}
+Controllable iff
+\begin{equation*}
+    \mathcal{C} :=
+    \begin{bmatrix}
+        B & AB & \cdots & A^{n-1} B
+    \end{bmatrix}
+\end{equation*}
+has \textbf{full row rank}.
+
+\newpar{}
+\ptitle{Stabilizability}
+
+iff all uncontrollable modes are stable, i.e.\
+\begin{itemize}
+    \item A system is stabilizable if all unstable modes are controllable.
+    \item Controllability always implies stabilizability
+\end{itemize}
+
+\ptitle{PBH test}:
+
+\noindent\begin{equation*}
+    \text{rank}\left(\left[\lambda_{j}I-A\mid B\right]\right)=n\quad\forall\lambda_{j}\in\Lambda_{A}^{+}\Rightarrow(A,B)\text{ is stabilizable}
+\end{equation*}
+where $\Lambda_{A}^{+}$ is the set of unstable eigenvalues.
+
+\paragraph{Observability}
+Observable iff
+\begin{equation*}
+    \mathcal{O} :=
+    \begin{bmatrix}
+        C^{\top}        &
+        {(CA)}^{\top}   &
+        {(CA^2)}^{\top} &
+        \cdots          &
+        {(CA^{n-1})}^{\top}
+    \end{bmatrix}^{\top}
+\end{equation*}
+has \textbf{full column rank}.
+\newpar{}
+\ptitle{Detectability}
+
+iff all unobservable modes are stable
+\begin{itemize}
+    \item A system is detectable if all unstable modes are observable.
+    \item Observability always implies detectability.
+\end{itemize}
+
+\newpar{}
+\ptitle{PBH test}:
+
+\noindent\begin{equation*}
+    \text{rank}\left(\left[A^{\top}-\lambda_{j}I|C^{\top}\right]\right)=n\;\forall\lambda_{j}\in\Lambda_{A}^{+}\Rightarrow (A,C) \text{ is detectable}
+\end{equation*}
+
+
+\subsection{Nonlinear System Analysis}
+\subsubsection{Lyapunov Stability}
+The equilibrium point $\bar{x}$ of a DT system is \textbf{Lyapunov stable} iff for every $\epsilon >0$ there exists a $\delta(\epsilon)$ such that
+\begin{equation*}
+    \lVert x(0) - \bar{x} \rVert < \delta(\epsilon) \to \lVert x(k) - \bar{x} \rVert < \epsilon, \; \forall k \geq 0
+\end{equation*}
+
+\newpar{}
+\ptitle{Global Asymptotic Stability}
+
+An equilibrium point $\bar{x}$ of a system is globally asymptotically stable if it is Lyapunov stable and attractive
+
+\begin{equation*}
+    \lim_{k\to\infty} \lVert x(k) - \bar{x} \rVert = 0, \; \forall x(0) \in \mathbb{R}
+\end{equation*}
+
+\subsubsection{Global Lyapunov Function}
+A function $V:\mathbb{R}^n\to \mathbb{R}$, continuous at the origin, finite $\forall x \in \mathbb{R}^n$ that satisfies
+\begin{align*}
+    \lVert x \rVert \to \infty \Rightarrow V(x)  \to \infty      &  &  & \text{(radially unbounded)}                                         \\
+    V(0)=0 \text{ and } V(x)                     >0              &  &  & \forall x \in \mathbb{R}^n \setminus\{0\}                           \\
+    V(g(x)) - V(x)                               \leq -\alpha(x) &  &  & \forall x \in \mathbb{R}^n, \alpha\succ0:\mathbb{R}^n\to \mathbb{R}
+\end{align*}
+is called a \textbf{Lyapunov function}.
+
+\subsubsection{Local Lyapunov Function}
+If the conditions on asymptotical stability only hold on a closed and bounded, positively invariant set $\Omega \subset \mathbb{R}^n$ and $V$ is finite $\forall x \in \Omega$, then the system is locally asymptotically stable in $\Omega$, where $\Omega$ is also called the \textbf{region of attraction (ROA)}.
+
+\subsubsection{Global Lyapunov Stability}
+If a system admits a Lyapunov function $V(x)$, then $x=0$ is \textbf{globally asymptotically stable}.
+\newpar{}
+If $V(x)$ satisfies the conditions only with $\alpha(x)$ being positive \textbf{semi}definite, then $x=0$ is \textbf{globally Lyapunov stable}.
+
+\subsection{Global Lyapunov Stability of LTI DT System}
+For a DT LTI system one can construct a Lyapunov function by choosing
+\begin{equation*}
+    V(x) = x^\top Px,\quad \alpha(x) = x^\top Q x, \;Q \succ 0
+\end{equation*}
+where $P\succ0$ is the solution of the DT Lyapunov equation
+\begin{equation*}
+    A^\top PA -P = -Q, \quad Q \succ 0
+\end{equation*}
+which as a unique solution if $A$ is stable, i.e.\ all eigenvalues inside the unit circle.
+
+\newpar{}
+\ptitle{Closed Loop Control}
+% TODO: Is this right?
+% When using LQR, the matrix $P$ that satisfies the DARE equation also satisfies the Lyapunov equation
+\begin{equation*}
+    {(A+BK)}^\top P{(A+BK)} -P = -Q, \quad Q\succ 0
+\end{equation*}
+
+\textbf{Note} that $Q$ is not the stage cost matrix!
+
+\subsubsection{Direct and Indirect Lyapunov Methods}
+\paragraph{Direct Lyapunov Method}
+The direct method involves finding a Lyapunov function $V(x)$ and proving that it satisfies the conditions for stability directly.
+
+\paragraph{Indirect Lyapunov Method}
+The indirect method uses the linearization and Hartman-Grobman theorem to conclude stability of the nonlinear system from the stability of the linearized system in a local neighborhood of the equilibrium point.

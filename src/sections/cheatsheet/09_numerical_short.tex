@@ -1,8 +1,8 @@
-\section{Numerical Methods and Implementation}
+\newpage{}
 
+\section{Numerical Methods and Implementation}
 \subsection{Explicit MPC}
-Online computation time of the optimal control law can be drastically reduced by pre-computing the control law as a function of the state $x$.
-In other words, for \textbf{small systems} (3-6 states),
+For \textbf{small systems} (3-6 states),
 \begin{enumerate}
     \item The optimization problem is \textbf{solved offline and parametrically} for a set of states.
     \item During runtime, the control input is \textbf{queried from the pre-computed solution} (piecewise affine for linear system/ constraints).
@@ -29,53 +29,17 @@ The critical region $CR$ is the set of states $x$ for which the same active set 
 \end{equation*}
 
 \subsubsection{Quadratic Cost}
-The CFTOC problem
-\begin{align*}
-    J^*(x(k)) = \min_U \; & \begin{bmatrix}
-                                U^\top & {x(k)}^\top
-                            \end{bmatrix}\begin{bmatrix}
-                                             H & F^\top \\
-                                             F & Y
-                                         \end{bmatrix}\begin{bmatrix}
-                                                          U \\ {x(k)}
-                                                      \end{bmatrix} \\
-    \mathrm{subj.\ to}\;  & GU\leq w+E\, x(k)
-\end{align*}
-is a \textbf{multiparametric quadratic program} (MPQP) with the following properties:
-\begin{itemize}
-    \item The optimal solution is continuous and piecewise affine on polyhedra $CR^j$
-          \begin{equation*}
-              u_0^* = \kappa(x(k)) = F^j x + g^j \quad \text{if } x\in CR^j\; j=1,\ldots, N^r
-          \end{equation*}
-    \item The polyhedra $CR^j = \left\{ x\in \mathbb{R}^n \Big| H^j x \leq K^j \right\}$ are a partition of the feasible polyhedron $\mathcal{X}_0$.
-    \item The value function $J^*(x(k))$ is convex and piecewise quadratic on polyhedra.
-\end{itemize}
-
-% Should we add the example?
+See quadratic cost CFTOC.
 
 \subsubsection[1/inf-Norm Cost]{1/$\infty$-Norm Cost}
-The CFTOC problem
-\begin{align*}
-    \min_U \quad            & c^\top U                              \\
-    \mathrm{subj.\ to}\quad & \bar{G} U \leq \bar{w} + \bar{E} x(k) \\
-\end{align*}
+See 1/$\infty$-norm CFTOC.
 
-Is a multiparametric linear program (MPLP) with the following properties:
-\begin{itemize}
-    \item The optimal solution is continuous and piecewise affine on polyhedra $CR^j$
-          \begin{equation*}
-              u_0^* = \kappa(x(k)) = F^j x + g^j \quad \text{if } x\in CR^j\; j=1,\ldots, N^r
-          \end{equation*}
-    \item The polyhedra $CR^j = \left\{ x\in \mathbb{R}^n \big| H^j x \leq K^j \right\}$ are a partition of the feasible polyhedron $\mathcal{X}_0$.
-    \item In case of multiple optimizers a piecewise affine control law exists.
-    \item The value function $J^*(x(k))$ is convex and piecewise linear on polyhedra.
-\end{itemize}
 \subsubsection{Point Location}
 
-Given $m$ regions, there are multiple methods to find the critical region $CR^j$ for a given state $x(k)$. Then, the corresponding piecewise affine function must be evaluated at $x(k)$ to obtain the control input.
+Given $m$ regions, two possible methods to find the critical region $CR^j$ for a given state $x(k)$. Then, the corresponding piecewise affine function must be evaluated at $x(k)$ to obtain the control input.
 
 \newpar{}
-\ptitle{Sequential Search $\mathcal{O}(m)$}
+\ptitle{Sequential Search ($\mathcal{O}(m)$)}
 
 Simply check each polyhedron until the one containing $x(k)$ is found:
 \textsf{
@@ -126,7 +90,6 @@ The goal is to iteratively solve for the necessary and sufficient condition
     \nabla f(x^*) = 0
 \end{equation*}
 
-\newpar{}
 \ptitle{Descent Methods}
 
 Descent methods update the current iterate $x_k$ in the search direction $\Delta x_k$ with a step size $h_k$:
@@ -158,20 +121,12 @@ where
 }
 
 \paragraph{Gradient Descent / First-Order Method}
+\noindent
 Assume
 \begin{equation*}
     \|\nabla f(x) - \nabla f(y)\| \leq L \|x - y\| \quad \forall x, y \in \mathbb{R}^n
 \end{equation*}
-i.e.\
-\begin{itemize}
-    \item $\nabla f$ is Lipschitz-continuous with constant $L$
-    \item $f$ can be upper bounded by a quadratic function
-          \begin{equation*}
-              f(x) \leq f(y) + \nabla {f(y)}^\top (x - y) + \frac{L}{2} \|x - y\|^2 \quad \forall x, y \in \mathbb{R}^n
-          \end{equation*}
-\end{itemize}
-\newpar{}
-This quadratic upper bound can be minimized by choosing the negative gradient $-\nabla f$ as the direction of descent and step size $\frac{1}{L}$ (Lipschitz constant of the gradient). The update rule becomes
+The update rule becomes
 \begin{equation*}
     x_{k+1} = x_k - \frac{1}{L} \nabla f(x_k)
 \end{equation*}
@@ -212,7 +167,7 @@ This is an optimization in one variable which can be solved by bisection (slow, 
 \newpar{}
 \ptitle{Backtracking Line Search (Inexact)}
 
-Find a step size $h_k$ that decreases the cost function $f$ sufficiently by repeatedly downscaling the step size:
+Find a step size $h_k$ that decreases the cost function $f$ sufficiently:
 \textsf{
     \noindent\begin{algorithmic}
         \State{Initialize $h_k = 1$}
@@ -224,12 +179,7 @@ Find a step size $h_k$ that decreases the cost function $f$ sufficiently by repe
 
 \noindent with $\alpha \in (0, 0.5)$ and $\beta \in (0, 1)$.
 
-The condition
-\begin{equation*}
-    f(x_k + h_k \Delta x_{nt}) > f(x_k) + \alpha h_k \nabla {f(x_k)}^\top \Delta x_{nt}
-\end{equation*}
-is called \textbf{Armijo condition} and quantifies the cost decrease compared to the predicted cost decrease of the linear approximation.
-
+% TODO: I'm not really sure how relevant these topics are for the paper exam as they are pretty involved.
 \subsubsection{Constrained Minimization}
 \begin{itemize}
     \item \textbf{PGD}: better for small horizon lengths, faster iterations, but more iterations needed.
@@ -245,18 +195,13 @@ Incorporating equality constraints
 into Newton's method (and rewriting $x-x_k = \Delta x$) yields
 \begin{align*}
     \Delta x_{nt}(x_k)       & \in \argmin_{\Delta x_k} \; \frac{1}{2} \Delta x \nabla^2 f(x_k) \Delta x + \nabla f(x_k)\Delta x \\
-    \mathrm{subj.\ to} \quad & A\Delta x_k = \underbrace{-Ax_k + b}_{=0 \text{ optimally}}
+    \mathrm{subj.\ to} \quad & A\Delta x_k = -Ax_k + b
 \end{align*}
 
 \newpar{}
 \ptitle{Descent Direction}
 
-By optimality on the above problem, we have to solve
-\begin{align*}
-    \nabla^2 f(x_k) \Delta x + \nabla f(x_k) + A^T \nu & = 0 \\
-    A \Delta x                                         & = 0
-\end{align*}
-This, however, is a linear system of equations, yielding the wanted search direction:
+The corresponding descent direction can be found by solving a linear system of equations
 \begin{equation*}
     \begin{bmatrix}
         \nabla^2 f(x_k) & A^\top \\
@@ -276,7 +221,7 @@ This, however, is a linear system of equations, yielding the wanted search direc
 \newpar{}
 If the equality constraint is fulfilled at initilization, the nullspace constraint $A\Delta x = 0$ enforces that the next $x_{k+1}$ still satisfies the equality constraint:
 \begin{equation*}
-    Ax_{k+1} = Ax_k + h_k \underbrace{A\Delta x_k}_{=0} = b
+    Ax_{k+1} = Ax_k + h_k A\Delta x_k = b
 \end{equation*}
 
 \newpar{}
@@ -294,9 +239,7 @@ Consider the constrained convex optimization problem
 where $f$ is convex and $L$-smooth, and the feasible set $\mathbb{Q}$ is convex.
 \newpar{}
 \ptitle{Step Projection}
-\begin{center}
-    \includegraphics[width = 0.5\linewidth]{09_PGD.png}
-\end{center}
+
 Constraints on $x$ can be incorporated by projecting the gradient onto $\mathbb{Q}$ using the euclidian projection:
 \begin{align*}
     x_{k+1}             & = \Pi_{\mathbb{Q}}(x_k - h_k \nabla f(x_k)) \\
@@ -331,7 +274,7 @@ MPC with \textbf{state constraints} are more complicated as the projection of th
 \newpar{}
 \ptitle{Primal-Dual relaxed KKT Conditions}
 
-Primal-Dual interior-point methods solve the following relaxed KKT system of equations for both, the primal and dual variables:
+Primal-Dual interior-point methods solve the following relaxed KKT system of equations simultaneously for both, the primal and dual variables:
 \begin{align*}
     \nabla f(x^{*})+\sum_{i=1}^{m}\lambda_{i}^{*}\nabla g_{i}(x^{*})+C^{T}\nu^{*} & =0        \\
     \mathrm{Cx^*}                                                                 & =d        \\

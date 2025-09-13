@@ -1,38 +1,29 @@
 \section{Unconstrained Linear Quadratic Optimal Control}
-In this section, DT LTI systems with quadratic cost function are treated, where the goal is to regulate the state to the origin, without any state or input constraints.
 \subsection{Finite Horizon LQR}
-
-The \textbf{unconstrained finite horizon control problem} has the objective of finding a sequence of inputs
-\begin{equation*}
-    U := \begin{bmatrix} u_0^\top & u_1^\top & \dots & u_{N-1}^\top \end{bmatrix}^\top
-\end{equation*}
-that minimizes the objective function:
+\noindent
 \begin{align*}
-    J^*(x(0))                & := \min_U J(x_0,U)                                                                          \\
-                             & = \min_U \left( x_N^\top P x_N + \sum_{i=0}^{N-1} (x_i^\top Q x_i + u_i^\top R u_i) \right) \\
-    \text{subj.\ to }x_{i+1} & = A x_i + B u_i, \quad i = 0, \dots, N-1                                                    \\
+    J^*(x(0))                & = \min_U x_N^\top P x_N + \sum_{i=0}^{N-1} (x_i^\top Q x_i + u_i^\top R u_i) \\
+    \text{subj.\ to }x_{i+1} & = A x_i + B u_i, \quad i = 0, \dots, N-1                                     \\
     x_0                      & = x(0)
 \end{align*}
+\subsubsection{Comparison: Batch vs.\ Recursive Approach}
 
-In practice, the optimization variables include also the state $x_0, x_1, \dots, x_N$.
-
-\newpar{}
-\ptitle{Weight Matrices}
-
+\ptitle{Batch Approach}
 \begin{itemize}
-    \item $P \succeq 0$, with $P = P^\top$ is the terminal weight.
-    \item $Q \succeq 0$, with $Q = Q^\top$ is the state weight.
-    \item $R \succ 0$, with $R = R^\top$ is the input weight.
-    \item $N$ is the horizon length.
+    \item open-loop control sequence
+    \item [+] Allows for constraints
+    \item [-] large matrix inversions
 \end{itemize}
 
-\subsubsection{Batch Approach}\label{unconst_lqr}
-The batch approach yields a FFW series $U$ of numerical values for the input, as a function of $x(0)$. A constrained problem could theoretically still yield a solution through matrix inversion, which however might be unfeasible.
-
 \newpar{}
-\ptitle{Problem Setup}
+\ptitle{Recursive Approach}
+\begin{itemize}
+    \item [+] feedback policy $\to$ disturbance robustness
+\end{itemize}
 
-Defining
+
+\subsubsection{Batch Approach}\label{short:sec:batch_lqr}
+\ptitle{Problem Setup}
 \begin{align*}
     X:              & =S^x x(0)+S^u U \\
     \begin{bmatrix}
@@ -64,14 +55,12 @@ Defining
         u_{N-1}
     \end{bmatrix}
 \end{align*}
-and the block diagonal weight matrices
 \begin{equation*}
     \overline{Q}:=\mathrm{blockdiag}(Q,\dots,Q,P),\; \overline{R}:=\mathrm{blockdiag}(R,\dots,R)
 \end{equation*}
-the finite horizon cost $J(x(0), U) = X^{\top}\bar{Q}X + U^{\top}\bar{R}U$ becomes the positive definite quadratic function in $U$
 \begin{gather*}
     J(x(0), U) =U^{\top}HU+2{x(0)}^{\top}FU+{x(0)}^{\top}S^{x^{\top}}\overline{Q}S^{x}x(0)\\
-    \text{where } H:={(S^u)}^\top\overline{Q} S^u+\overline{R} \succ 0 \mathrm{~and~}F:={(S^x)}^\top\overline{Q} S^u
+    H:={(S^u)}^\top\overline{Q} S^u+\overline{R} \succ 0,\qquad F:={(S^x)}^\top\overline{Q} S^u
 \end{gather*}
 
 \newpar{}
@@ -81,29 +70,15 @@ Setting the gradient to zero yields the optimal control action
 \begin{equation*}
     U^*(x(0)) = -H^{-1}F^\top x(0)
 \end{equation*}
-Note that
-\begin{itemize}
-    \item This is linear in $x(0)$.
-    \item $H^{-1}$ always exists as $H\succ0$ i.e.\ full rank.
-\end{itemize}
-
-\newpar{}
-The \textbf{optimal cost} is
+Note that $H^{-1}$ always exists as $H\succ 0$ i.e.\ full rank.
 
 \begin{equation*}
     J^*(x(0)) = {x(0)}^{\top}\left({(S^{x})}^{\top}\overline{Q}S^{x}- F H^{-1} F^\top\right)x(0)
 \end{equation*}
 
 \subsubsection{Recursive Approach}
-The recursive approach uses Dynamic Programming (DP) to compute an optimal policy, i.e.\ an optimal control action per state.
-
 \paragraph{Bellman's Principle of Optimality}
-
-Bellman's Principle of Optimality justifies the recursive approach, stating that:
-
-\textit{For any solution for steps $0$ to $N$ to be optimal, any solution for steps $j$ to $N$ with $j \geq 0$, taken from the $0$ to $N$ solution, must itself be optimal for the $j$-to-$N$ problem.}
-
-Hence, for any $j=0\dots N$
+For any $j=0\dots N$
 \begin{align*}
     J_{j}^{\star}(x_{j})     & =\min_{u_{j}}J(x_{i},u_{i})+J_{j+1}^{\star}(x_{j+1}) \\
     \text{subj.\ to }x_{j+1} & =Ax_{j}+Bu_{j}
@@ -112,21 +87,17 @@ Hence, for any $j=0\dots N$
 \paragraph{Optimal Control Method}
 
 \ptitle{Problem Setup}
-
-We define the $j$-step optimal cost-to-go (\textit{minimum} cost after step $j$) as the optimal cost attainable for the step $j$ problem
 \begin{align*}
-    J_j^\star(x(j)) & :=\min_{U_{j\to N}}x_N^\top Px_N+\sum_{i=j}^{N-1}(x_i^\top Qx_i+u_i^\top Ru_i) \\
-                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,\dots,N-1                               \\
+    J_j^\star(x(j)) & =\min_{U_{j\to N}}x_N^\top Px_N+\sum_{i=j}^{N-1}(x_i^\top Qx_i+u_i^\top Ru_i) \\
+                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,i=j,\dots,N-1                              \\
                     & x_j=x(j)
 \end{align*}
 
-\newpar{}
 \ptitle{Optimal Control Solution}
-
-Solving the local subproblem yields the optimal control input
+\noindent
 \begin{align*}
-    u_{i}^{\star} & =F_{i} x_{i}                                   \\
-    F_{i}         & :=-{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A
+    u_{i}^{\star}(x_i) & =F_{i} x_{i}                                  \\
+    F_{i}              & =-{(B^\top P_{i+1} B+R)}^{-1}B^\top P_{i+1} A
 \end{align*}
 
 The optimal cost-to-go is
@@ -143,27 +114,9 @@ and the full-trajectory \textbf{optimal cost} $J^*(x(0))$ is
     {x(0)}^\top P_0 x(0)
 \end{equation*}
 
-\subsubsection{Comparison: Batch vs.\ Recursive Approach}
-
-\ptitle{Batch Approach}
-\begin{itemize}
-    \item open-loop control sequence
-    \item [+] Allows for constraints
-    \item [-] large matrix inversions
-\end{itemize}
-
-\newpar{}
-\ptitle{Recursive Approach}
-\begin{itemize}
-    \item [+] feedback policy $\to$ disturbance robustness
-\end{itemize}
-
-% The recursive approach yields a policy instead of a fixed input sequence. Hence, in presence of \textbf{disturbances} or noise, the recursive approach is more robust. Additionally, the problem is broken down into smaller \textbf{subproblems}, avoiding large matrix inversions (Hessian in the batch approach). However, the batch approach is more favorable for \textbf{constrained} problems as constrained minimization can be performed.
-
 \subsubsection{Stability of Finite Horizon LQR}
-\ptitle{Choice of Terminal Weight}
 
-There are three common choices for the terminal weight $P$ in finite horizon LQR to ensure CL stability.
+There are \textbf{three common choices} for the \textbf{terminal weight} $P$ in finite horizon LQR to ensure CL stability.
 \begin{enumerate}
     \item Choose $P$ s.t.\ it matches the infinite horizon LQR solution
           \begin{equation*}
@@ -182,20 +135,8 @@ There are three common choices for the terminal weight $P$ in finite horizon LQR
 \end{enumerate}
 
 \subsection{Receding Horizon LQR}
-
-% Receding horizon control calculates open-loop control sequences, yet introducing feedback through repeated calculation, which takes the actual state evolution into account.
-
 \begin{center}
     \includegraphics[width = 0.8\linewidth]{02_receding_LQR.png}
-\end{center}
-
-\newpar{}
-\ptitle{Horizon Length}
-
-Stability depends on the choice of the weight matrices $Q, R, P$ and the horizon length $N$.
-
-\begin{center}
-    \includegraphics[width = 0.6\linewidth]{02_horizon_stability.png}
 \end{center}
 
 \subsubsection{Stability of Receding Horizon LQR}
@@ -209,6 +150,7 @@ Depending on the specific situation
 \subsection{Infinite Horizon LQR}
 
 \ptitle{Problem Setup}
+\noindent
 \begin{align*}
     J_\infty(x(0)) & =\min_{u(\cdot)}\sum_{i=0}^\infty\left(x_i^\top Qx_i+u_i^\top Ru_i\right) \\
                    & \text{subj.\ to }x_{i+1}=Ax_i+Bu_i,\quad i=0,1,2,\dots,\infty,            \\
@@ -217,13 +159,11 @@ Depending on the specific situation
 
 \newpar{}
 \ptitle{Optimal Control Solution}
-
-Solving the local subproblem yields the optimal control input
+\noindent
 \begin{align*}
     u^\star(k) & = F_\infty x(k)                                   \\
     F_\infty   & := -{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
 \end{align*}
-The optimal cost-to-go is
 \begin{equation*}
     J_\infty(x(k))={x(k)}^\top P_\infty x(k)
 \end{equation*}
@@ -232,9 +172,7 @@ where $P_\infty$ is the solution of the \textbf{Discrete Time Algebraic Riccati 
     P_\infty=A^\top P_\infty A+Q-A^\top P_\infty B{(B^\top P_\infty B+R)}^{-1}B^\top P_\infty A
 \end{equation*}
 
-
-\newpar{}
-\ptitle{Technical Conditions}
+\ptitle{Stability}
 
 Assuming
 \begin{itemize}
@@ -242,13 +180,5 @@ Assuming
     \item $(Q^{\frac{1}{2}}, A)$ detectable,
 \end{itemize}
 then the RDE (initialized with $Q$ at $i = \infty$ and solved for $i\searrow 0$) converges to the \textbf{unique positive definite} solution $P_{\infty}$.
-
-\subsubsection{Stability of Infinite Horizon LQR}
-
-If the technical conditions are fulfilled, the optimal value function $J^{\star} (x) = x^T P_{\infty} x = V(x)$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.
-
-This can be shown by substituting the CL dynamics into the Lyapunov function $J^{\star} (x)$.
-
-
-
-
+\newpar{}
+Then $J^{\star} (x) = x^T P_{\infty} x = V(x)$ is a Lyapunov function for the CL system $x^+ = (A + BF_{\infty} )x$, i.e.\ the system is asymptotically stable.

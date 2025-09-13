@@ -55,7 +55,7 @@ $x\in \mathcal{X}$ is \textbf{globally optimal} if
 \subsection{Convex Sets}
 A set $\mathcal{X}$ is convex \textbf{iff} for any pair of points $x$ and $y$ in $\mathcal{X}$:
 \begin{equation*}
-    \lambda x+(1-\lambda)y\in\mathcal{X},\forall\lambda\in[0,1],\forall x,y\in\mathcal{X}
+    \lambda x+(1-\lambda)y\in\mathcal{X}, \quad\forall\lambda\in[0,1],\;\forall x,y\in\mathcal{X}
 \end{equation*}
 \newpar{}
 \ptitle{Convex Combination}
@@ -70,10 +70,10 @@ A \textbf{hyperplane} is defined by $\left\{x \in \mathbb{R}^n \mid a^\top x = b
 \newpar{}
 A \textbf{halfspace} is everything on one side of a hyperplane $\left\{x \in \mathbb{R}^n \mid a^\top x \leq b\right\}$ for $a \neq 0$. It can either be open (strict inequality) or closed (non-strict inequality).
 \newpar{}
-Hyperplanes are affine and convex, halfspaces are convex.
+Hyperplanes are affine and convex, halfspaces are convex. % TODO: issa subsection of convex sets...
 
 \subsubsection{Polyhedra and Polytopes}
-Polyhedra and polytopes are always convex.
+Polyhedra and polytopes are always convex. %TODO: else they would not be convex sets, right?
 \paragraph{Polyhedra}
 A polyhedron is the intersection of a finite number of closed halfspaces:
 \begin{equation*}
@@ -103,7 +103,7 @@ An ellipsoid is a set defined as
 \begin{equation*}
     \{x \mid {(x - x_c)}^\top A^{-1}(x - x_c) \leq 1\}
 \end{equation*}
-where $x_c$ is the centre of the ellipsoid, and $A > 0$ (i.e. $A$ is symmetric and positive definite).   %TODO: I added symmetric
+where $x_c$ is the centre of the ellipsoid, and $A \succ 0$ (i.e. $A$ is symmetric and positive definite).   %TODO: I added symmetric
 
 \subsubsection{Norm Balls}
 The norm ball, defined by $\{x|\;||x-x_{\mathrm{c}}||\leq r\}$ where $x_{\mathrm{c}}$ is the centre of the ball
@@ -178,7 +178,7 @@ The \textbf{sublevel set} $C_{\alpha}$ of a function $f$ for value $\alpha$ is d
 \newpar{}
 $f$ is convex $\Rightarrow$ sublevel sets of $f$ are convex $\forall \alpha$.
 
-But, sublevel sets of $f$ are convex $\forall \alpha \nRightarrow f$ is convex.
+But, sublevel sets of $f$ are convex $\forall \alpha \nRightarrow f$ is convex. % isn't the one sided arrow clear enough?
 
 \subsubsection{Examples of Convex Functions}
 \ptitle{Convex}
@@ -188,7 +188,7 @@ But, sublevel sets of $f$ are convex $\forall \alpha \nRightarrow f$ is convex.
     \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $\alpha \leq 0, \alpha \geq1$
     \item Vector norms on $\mathbb{R}^n$:
           \begin{align*}
-              ||x||_p      & ={(\sum_{i=1}^n|x|^p)}^{1/p},\mathrm{~for~}p\geq1 \\
+              ||x||_p      & ={\left(\sum_{i=1}^n|x|^p\right)}^{1/p},\mathrm{~for~}p\geq1 \\
               ||x||_\infty & =\max_i|x_i|
           \end{align*}
 \end{itemize}
@@ -258,6 +258,7 @@ is equivalent to
 \end{align*}
 
 \subsubsection{Linear Program (LP)}\label{optimizer_location_LP}
+\noindent
 \begin{align*}
     \min_{x\in\mathbb{R}^n}\; & c^\top x  \\
     \mathrm{s.t.}\;           & Gx \leq h \\
@@ -285,8 +286,8 @@ The general QP
 \end{align*}
 is convex if $H>0$.
 \newpar{}
-Problems with concave objective $H<0$ are quadratic programs, but hard.
-% where $H$ is positive semi-definite ($H\succeq 0$).       % TODO: Where is this from? It's basically everything except for the lecture content :O.
+Problems with concave objective $H\prec 0$ are quadratic programs, but hard.
+
 
 \newpar{}
 If feasible, in general two cases can occur:
@@ -306,7 +307,7 @@ The standard (possibly non-convex) optimization problem
 \begin{align*}
     \min_{x\in\text{dom}(f)} & f(x)                                \\
     \text{subject to}\quad   & g_i(x)\leq 0 \quad i = 1, \ldots, m \\
-                             & h_i(x) = 0 \quad i = 1, \ldots m p
+                             & h_i(x) = 0 \quad i = 1, \ldots  p
 \end{align*}
 with (primal) decision variable $x$, domain dom$(f)$ and optimal value $p^*$ can be transformed into a dual problem using the \textbf{Lagrangian Function} $L: \mathrm{dom}\left(f\right)\times\mathbb{R}^m\times\mathbb{R}^p\to\mathbb{R}$ is a weighted sum of the objective and constraint functions
 \begin{equation*}
@@ -383,8 +384,8 @@ The primal problem of a QP is
 the \textbf{dual function} is therefore
 
 \begin{align*}
-    d(\lambda) & = \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + c^\top x \lambda^\top(Cx-e)\right]               \\
-               & =  \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x {(c+C^\top\lambda)}^\top x - e^\top\lambda\right]
+    d(\lambda) & = \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + c^\top x +  \lambda^\top(Cx-e)\right]              \\
+               & =  \min_{x\in\mathbb{R}^n}\left[\frac{1}{2}x^\top Q x + {(c+C^\top\lambda)}^\top x - e^\top\lambda\right]
 \end{align*}
 for which the unconstrained minimization over $x$ is convex for every $\lambda$. To get the optimal $x$ the dual function is differentiated and set equal to zero (requires $Q>0$)
 \begin{gather*}
@@ -405,6 +406,10 @@ hence the \textbf{dual problem} is to maximize $d(\lambda)$ over $\lambda\geq0$,
 The \textbf{dual problem} of a QP is another QP.
 
 \subsubsection{Weak and Strong Duality}
+\ptitle{Duality Gap}:
+\begin{equation*}
+    p^* - d^*
+\end{equation*}
 
 \ptitle{Weak Duality}
 
@@ -522,6 +527,7 @@ In the case where strong duality holds for the unperturbed problem, the weak dua
 \end{align*}
 
 \newpar{}
+%TODO: why are we only listing some of the possible combinations of magnitudes and signs of two variables (i.e. 4 instead of 2^4)? and why are we listing them at all?
 \ptitle{Global Sensitivity Analysis}
 
 If a (large) Lagrangian multiplier and the corresponding perturbation have opposite sign, the problem is sensitive to the perturbation. In particular,

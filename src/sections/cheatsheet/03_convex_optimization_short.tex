@@ -1,0 +1,372 @@
+\section{Convex Optimization}
+\subsection{Problem Formulation and Terminology}
+\ptitle{Primal Problem}
+\noindent\begin{align*}
+    \min_{x\in\mathrm{dom}(f)} & f(x)                          \\
+    \text{subj.\ to\;\; }      & g_i(x)\leq0\quad i=1,\ldots,m \\
+                               & h_{i}(x)=0\quad i=1,\ldots,p
+\end{align*}
+\subsubsection{Constraints}
+$g_i(x)$ is \textbf{active} at $\bar{x}$ if $g_i(\bar{x})=0$. Thus, equality constraints are always active.
+
+\newpar{}
+A \textbf{redundant} constraint does not change the feasible set.
+
+\subsubsection{Optimality}
+$x\in \mathcal{X}$ is \textbf{locally optimal} if, for some $R>0$
+\begin{equation*}
+    y\in \mathcal{X},\; {\|x-y\|}<R\quad \Rightarrow\quad f(x)\leq f(y)
+\end{equation*}
+$x\in \mathcal{X}$ is \textbf{globally optimal} if
+\begin{equation*}
+    f(x)\leq f(y)\quad \forall y\in \mathcal{X}
+\end{equation*}
+
+\subsection{Convex Sets}
+A set $\mathcal{X}$ is convex \textbf{iff} for any pair of points $x$ and $y$ in $\mathcal{X}$:
+\begin{equation*}
+    \lambda x+(1-\lambda)y\in\mathcal{X}, \quad\forall\lambda\in[0,1],\;\forall x,y\in\mathcal{X}
+\end{equation*}
+
+\subsubsection{Hyperplanes and Halfspaces}
+A \textbf{hyperplane} is defined by $\left\{x \in \mathbb{R}^n \mid a^\top x = b\right\}$ for $a \neq 0$, where $a \in \mathbb{R}^n$ is the normal vector to the hyperplane.
+\newpar{}
+A \textbf{halfspace} is everything on one side of a hyperplane $\left\{x \in \mathbb{R}^n \mid a^\top x \leq b\right\}$ for $a \neq 0$. It can either be open (strict inequality) or closed (non-strict inequality).
+
+\subsubsection{Polyhedra and Polytopes}
+\ptitle{Polyhedra}
+
+A polyhedron is the intersection of a finite number of closed halfspaces:
+\begin{equation*}
+    P := \left\{ x \mid a_i^\top x \leq b_i, i = 1, \ldots, m \right\} = \left\{ x \mid Ax \leq b \right\}
+\end{equation*}
+\begin{equation*}
+    A := \begin{bmatrix} a_1 & a_2 & \ldots & a_m \end{bmatrix}^\top \quad \text{and} \quad b := \begin{bmatrix} b_1 & b_2 & \ldots & b_m \end{bmatrix}^\top
+\end{equation*}
+\ptitle{Polytopes}
+
+A polytope is a bounded polyhedron.
+\newpar{}
+\ptitle{Minkowski-Weyl Theorem}
+
+For a set $P\subseteq \mathbb{R}^d$, the following are equivalent:
+\begin{itemize}
+    \item $P$ is a polytope $\left\{ x \mid Ax \leq b \right\}$ (bounded)
+    \item $P$ is finitely generated, i.e., these exist a finite set of vectors $\{v_i\}$ such that $P=\mathrm{co}(\{v_1, \dots, v_s\})$
+\end{itemize}
+
+\subsubsection{Ellipsoids}
+\noindent
+\begin{equation*}
+    \{x \mid {(x - x_c)}^\top A^{-1}(x - x_c) \leq 1\}, \quad A\succ 0
+\end{equation*}
+
+\subsubsection{Norm Balls}
+The norm ball, defined by $\{x|\;||x-x_{\mathrm{c}}||\leq r\}$ where $x_{\mathrm{c}}$ is the centre of the ball
+and $r\geq0$ is the radius, is always convex for any norm.
+\newpar{}
+\ptitle{Euclidean Ball}
+
+The Euclidean ball $B(x_c,r)$ is a special case of the ellipsoid, for which $A=r^2 \mathbb{I}$, so that $B(x_c,r):=\{x| \|x-x_c\|_2\leq r\}$.
+
+\subsubsection{Set Operations}
+The intersection of convex sets is convex, whereas the union of convex sets is not necessarily convex.
+
+\subsubsection{Convex Hull}
+For any subset $S$ of $\mathbb{R}^d$, the \textit{convex hull} $\mathrm{co}(S)$ is the intersection of all convex sets containing $S$, i.e.\ the smallest convex set containing $S$.
+
+% TODO: do we need this?
+% \newpar{}
+% \ptitle{Vertex Representation}
+
+% Given a set of points $S=\{v_1, v_2, \ldots, v_k\} \in \mathbb{R}^d$, their convex hull is
+% \begin{equation*}
+%     \mathrm{co}(S) = \left\{ x\Bigg| x = \sum_i \lambda_i v_i, \; \lambda_i \geq 0,\; \sum_i \lambda_i = 1,\; \forall i=1,\ldots k \right\}
+% \end{equation*}
+
+\subsection{Convex Functions}
+A function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is convex \textbf{iff} $\text{dom}(f)$ is convex and $\forall x,y \in \text{dom}(f)$
+\begin{equation*}
+    f(\lambda x + (1-\lambda)y) \leq \lambda f(x) + (1-\lambda)f(y),\quad \forall \lambda \in (0,1)
+\end{equation*}
+
+\newpar{}
+The function $f:\text{dom}(f) \rightarrow \mathbb{R}$ is strictly convex if this inequality is strict.
+
+\newpar{}
+The function $f$ is \textbf{concave} \textbf{iff} $\operatorname{dom}(f)$ is convex and $-f$ is convex.
+
+\newpar{}
+\ptitle{First Order Condition}
+\begin{equation*}
+    f(y) \geq f(x) + \nabla {f(x)}^{\top}(y-x), \quad \forall x, y \in \operatorname{dom}(f)
+\end{equation*}
+
+\newpar{}
+\ptitle{Second Order Condition}
+\begin{equation*}
+    \nabla^2 f(x) \geq 0, \quad \forall x \in \text{dom}\,(f), \quad \nabla^2 {f(x)}_{ij} = \frac{\partial^2 f(x)}{\partial x_i \partial x_j}
+\end{equation*}
+
+\subsubsection{Level and Sublevel Sets}
+\ptitle{Level Sets}
+\begin{equation*}
+    L_{\alpha} := \{ x | x \in \operatorname{dom}(f),\; f(x) = \alpha \}
+\end{equation*}
+\newpar{}
+
+\ptitle{Sublevel Sets}
+\begin{equation*}
+    C_{\alpha} := \{x | x \in \text{dom}(f),\; f(x) \leq \alpha\}
+\end{equation*}
+
+\newpar{}
+$f$ is convex $\Rightarrow$ sublevel sets of $f$ are convex $\forall \alpha$.
+
+\subsubsection{Examples of Convex Functions}
+\ptitle{Convex}
+\begin{itemize}
+    \item Affine functions: $ ax + b,\; \forall a,b\in \mathbb{R}$
+    \item Exponential functions: $e^{ax}\; \forall a\in \mathbb{R}$
+    \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $\alpha \leq 0, \alpha \geq1$
+    \item Vector norms on $\mathbb{R}^n$:
+          \begin{align*}
+              ||x||_p      & ={\biggl(\sum_{i=1}^n|x|^p\biggr)}^{\frac{1}{p}},\mathrm{~for~}p\geq1 \\
+              ||x||_\infty & =\max_i|x_i|
+          \end{align*}
+\end{itemize}
+\newpar{}
+\ptitle{Convexity Preserving Operations}
+\begin{itemize}
+    \item Nonnegative weighted sums: $\sum_{i=1}^{n} \theta_i f_i(x)$ for $\theta_i \geq 0$
+    \item Composition with an affine function: $f(ax+b)$
+    \item Pointwise maximum/supremum: $\max(f_1(x),f_2(x))$
+    \item Partial minimization
+\end{itemize}
+
+\newpar{}
+\ptitle{Concave}
+
+\begin{itemize}
+    \item Affine functions: $ ax + b$
+    \item Powers: $x^\alpha$ on domain $\mathbb{R}_{++}$ for $0\leq\alpha \leq 1$
+    \item Logarithm: $\log(x)$ on domain $\mathbb{R}_{++}$
+    \item Entropy: $-x\log(x)$ on domain $\mathbb{R}_{++}$
+\end{itemize}
+
+\subsection{Convex Optimization Problems}
+\noindent\begin{align*}
+    \min_{x\in\mathrm{dom}(f)} & f(x)                                     \\
+    \text{subj.\ to\;\; }      & g_i(x)\leq0\quad i=1,\ldots,m            \\
+                               & a_i^{\top} x=b_i \quad i=1,\ldots,p      \\
+                               & (Ax =b\quad A\in \mathbb{R}^{p\times n})
+\end{align*}
+\begin{equation*}
+    \begin{cases}
+        f,g_i                    & \text{convex functions} \\
+        \mathrm{dom}(f)          & \text{convex set}       \\
+        h_i(x) = a_i^{\top} x -b & \text{affine functions}
+    \end{cases}
+\end{equation*}
+As a result, the feasible set $\mathcal{X}$ is convex.
+
+% TODO: remove if more space is needed
+\subsubsection{Equivalent Optimization Problems}
+\ptitle{Slack Variables}
+\begin{align*}
+    \min\;          & f(x)                                \\
+    \mathrm{s.t.}\; & A_i x \leq b_i, &  & i = 1,\ldots,m
+\end{align*}
+is equivalent to
+\begin{align*}
+    \min\;          & f(x)                                 \\
+    \mathrm{s.t.}\; & A_i x +s_i= b_i, &  & i = 1,\ldots,m \\
+                    & s_i \geq 0,      &  & i = 1,\ldots,m
+\end{align*}
+
+\subsubsection{Linear Program (LP)}
+\noindent
+\begin{align*}
+    \min_{x\in\mathbb{R}^n}\; & c^\top x  \\
+    \mathrm{s.t.}\;           & Gx \leq h \\
+                              & Ax = b
+\end{align*}
+where the feasible set $\mathcal{P}$ is a polyhedron (convex).
+
+\newpar{}
+For the set of optimizers $\mathcal{X}_{opt}$, generally, three cases can occur:
+\begin{enumerate}
+    \item \textbf{Unbounded} $\mathcal{P}$ is unbounded below
+    \item \textbf{Bounded with unique optimizer}: $\mathcal{X}_{opt}$ is a \textbf{singleton}.\ \textit{At least} $n$ constraints are active.
+    \item \textbf{Bounded with multiple optimizers}: $\mathcal{X}_{opt}$ is a (bounded or unbounded) subset of $\mathbb{R}^n$.\ \textit{At least} one constraint is active. In this case, the solution is sensitive to noise. % TODO: Why "s"?. I think this is a typo or a miss match with the images shown in the lecture. I changed it to an n. 
+\end{enumerate}
+
+\subsubsection{Quadratic Program (QP)}
+\noindent
+\begin{align*}
+    \min_{x\in\mathbb{R}^n}\; & \frac{1}{2}x^\top H x + q^\top x + r \\
+    \mathrm{s.t.}\;           & Gx \leq h                            \\
+                              & Ax = b
+\end{align*}
+is convex if $H>0$.
+\newpar{}
+Problems with concave objective $H\prec 0$ are quadratic programs, but hard.
+\newpar{}
+If feasible, in general two cases can occur:
+\begin{enumerate}
+    \item \textbf{Case 1}: optimizer lies strictly inside the feasible polyhedron. No constraints active.
+    \item \textbf{Case 2}: optimizer lies on the boundary of the feasible polyhedron. At least one constraint active.
+\end{enumerate}
+
+\subsection{Optimality Conditions}
+
+\subsubsection{Lagrange Dual Problem}
+The possibly non-convex primal problem can be transformed into a convex dual problem using the \textbf{Lagrangian Function}:
+\begin{align*}
+    L                & : \mathrm{dom}\left(f\right)\times\mathbb{R}^m\times\mathbb{R}^p \to\mathbb{R}                   \\
+    L(x,\lambda,\nu) & =f(x)+\sum_{i=1}^{m}\lambda_i g_i(x) + \sum_{i=1}^{p}\nu_i h_i(x),             & \lambda_i\geq 0
+\end{align*}
+
+and the \textbf{dual function} $d$ which is a lower bound for the primal optimal value $p^*$:
+\begin{equation*}
+    d(\lambda, \nu) = \underset{x\in\text{dom}(f)}{\text{inf}} L(x,\lambda,\nu)\leq p^*, \quad \forall(\lambda \geq 0, \nu \in \mathbb{R}^p)
+\end{equation*}
+
+\ptitle{Dual Problem}
+\noindent\begin{gather*}
+    \max_{\lambda,\nu} d(\lambda, \nu) \\
+    \text{subject to}\quad \lambda \geq 0
+\end{gather*}
+\begin{itemize}
+    \item is \text{convex} ($\min_{\lambda,\nu} -d(\lambda, \nu) $), even if the primal is not. % Does this always hold?
+    \item has an optimal value $d^* \leq p^*$.
+    \item the point $(\lambda,\nu)$ is \textbf{dual feasible} if $\lambda \geq 0$ and $(\lambda, \nu) \in \text{dom}(d)$.
+    \item Can often impose the constraint $(\lambda, \nu)\in \mathrm{dom}(d)$ explicitly. % TODO ?
+\end{itemize}
+
+\paragraph{Dual of a Linear Program (LP)}
+\noindent
+\begin{align*}
+    d(\lambda, \nu) & =\begin{cases*}
+                           -b^\top\nu - e^\top \lambda & if $A^\top\nu+ C^\top\lambda+c = 0$ \\
+                           -\infty                     & otherwise
+                       \end{cases*}
+\end{align*}
+\begin{align*}
+    \min_{x\in\mathbb{R}^n}\quad & c^\top x    & \max_{\lambda,\nu}\quad & - b^\top \nu - e^\top\lambda  \\
+    \text{s.t.}\quad             & Ax-b = 0    & \text{s.t.}\quad        & A^\top\nu+C^\top\lambda+c = 0 \\
+                                 & Cx-e \leq 0 &                         & \lambda \geq 0
+\end{align*}
+Both are LPs
+
+\paragraph{Dual of a Quadratic Program (QP)}
+\noindent
+\begin{equation*}
+    d(\lambda) = -\frac{1}{2}{\left(c+C^\top\lambda\right)}^\top Q^{-1}\left(c+C^\top\lambda\right) -e^\top\lambda
+\end{equation*}
+\begin{align*}
+    \min_{x\in\mathbb{R}^n} & \frac{1}{2}x^\top Qx + c^\top x \\
+    \text{s.t.}\quad        & Cx-e \leq 0                     \\
+                            & Q \succ 0
+\end{align*}
+\begin{gather*}
+    \min_{\lambda} \frac{1}{2}\lambda^\top C Q^{-1}C^\top\lambda+{\left(CQ^{-1}c+e\right)}^\top + \frac{1}{2}c^\top Q^{-1}c \\
+    \text{s.t.}\quad \lambda \geq 0
+\end{gather*}
+Both are QPs
+
+\subsubsection{Weak and Strong Duality}
+\ptitle{Duality Gap}: $p^* - d^*$
+
+\ptitle{Weak Duality}
+
+It is always true that
+\begin{equation*}
+    d^* \leq p^*.
+\end{equation*}
+
+\ptitle{Strong Duality}
+
+It is sometimes true that
+\begin{equation*}
+    p^* = d^*.
+\end{equation*}
+
+\ptitle{Slater Condition}
+
+If the problem is \textbf{convex}, then the Slater condition states:
+\newpar{}
+If there exists at least one \textbf{strictly feasible point}, i.e.
+\begin{equation*}
+    \left\{x | Ax = b,\; g_i(x) < 0,\; \forall i \in \left\{1, \ldots, m\right\}\right\} \neq \emptyset
+\end{equation*}
+this \textbf{always implies strong duality}.
+
+\subsubsection{Karush-Kuhn-Tucker (KKT) Conditions}
+
+Assume that $f$, all $g_i$ and $h_i$ are differentiable.
+\begin{enumerate}
+    \item Primal Feasibility:
+          \begin{gather*}
+              g_i(x^*) \leq 0 \quad i = 1, \ldots, m \\
+              h_i(x^*) = 0 \quad i = 1, \ldots, p
+          \end{gather*}
+    \item Dual Feasibility:
+          \begin{equation*}
+              \lambda^* \geq 0
+          \end{equation*}
+    \item Complementary Slackness:
+          \begin{equation*}
+              \lambda_i^*g_i(x^*)=0 \quad i = 1, \ldots, m
+          \end{equation*}
+          implying
+          \begin{align*}
+              \lambda_{i}^{*} & =0\text{ for every }g_{i}(x^{*})<0.   \\
+              g_{i}(x^{*})    & =0\text{ for every }\lambda_{i}^{*}>0
+          \end{align*}
+    \item Stationarity:
+          \begin{align*}
+              \nabla_x L(x^*, \lambda^*, \nu^*) =\nabla f(x^*) +\sum_{i=1}^{m}\lambda_i^*\nabla g_i(x^*) \\
+              \ldots+\sum_{i=1}^{p}\nu_i^*\nabla h_i(x^*) = 0
+          \end{align*}
+\end{enumerate}
+
+\newpar{}
+\ptitle{Convex Problems}
+
+\textbf{Iff} $(x^*,\lambda^*,\nu^*)$ satisfy the KKT conditions, then they are optimal and Slater's condition holds, hence strong duality holds\begin{equation*}
+    p^*=d^*.
+\end{equation*}
+
+\newpar{}
+\ptitle{General Problems}
+
+For a general optimization problem there is only a necessary condition that states:
+
+If $x^*$ and $(\lambda^*,\nu^*)$ are primal and dual optimal solutions and strong duality holds, then $x^*$ and $(\lambda^*,\nu^*)$ satisfy the KKT conditions.
+
+
+\subsubsection{Sensitivity Analysis}
+\noindent
+\begin{align*}
+    \min_{x} \quad   & f(x)            & \max_{\lambda,\nu}\quad & d(\lambda,\nu) - u^\top \lambda - v^\top \nu \\
+    \text{s.t.}\quad & g_i(x) \leq u_i & \text{s.t.}\quad        & \lambda \geq 0                               \\
+                     & h_i(x) = v_i
+\end{align*}
+where $u$ and $v$ represent the perturbation.
+
+\ptitle{Global Sensitivity Analysis}
+
+In the case where strong duality holds for the unperturbed problem, the weak duality of the perturbed problem implies
+\begin{align*}
+    p^*(u,v) & \geq d^*(\lambda^*,\nu^*) - u^\top \lambda^* -v^\top\nu^* \\
+             & = p^*(0,0) - u^\top \lambda^* -v^\top\nu^*
+\end{align*}
+
+\newpar{}
+\ptitle{Local Sensitivity Analysis}
+
+If in addition $p^*(u,v)$ is differentiable at $(0,0)$, then
+\begin{equation*}
+    \lambda_i^* = -\frac{\partial p^*(0,0)}{\partial u_i}, \qquad  \nu_i^* = -\frac{\partial p^*(0,0)}{\partial v_i},
+\end{equation*}

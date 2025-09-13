@@ -1,0 +1,87 @@
+\section{Feasibility and Stability}
+\subsection{Zero Terminal Constraint}
+\subsubsection{Feasibility}
+Assume feasibility for $x(k)$ with optimal solution
+\begin{equation*}
+    \{u_0^*, u_1^*, \ldots, u_{N-1}^*\}, \quad \{x(k),x_1^*, x_2^*, \ldots, x_N^*\}
+\end{equation*}
+
+Applying the first control input $u_0^*$ to the system, the state will evolve as
+\begin{equation*}
+    x(k+1) = Ax(k) + Bu(k) = Ax(k) + B u_0^* = x_1^*
+\end{equation*}
+it follows directly that the sequence
+\begin{equation*}
+    \widetilde{U}=\{u_1^*, \ldots, u_{N-1}^*, 0\}\; \to \; \widetilde{X}=\{x_1^*, \ldots, x_N^*, \underbrace{Ax_N^* + Bu_N}_{0}\}
+\end{equation*}
+is feasible too. And therefore, recursive feasibility is guaranteed and the feasible set is \textbf{control invariant}.
+
+\subsubsection{Stability}
+\noindent
+\begin{align*}
+    J^*(x(k+1)) & \leq \widetilde{J}(x(k+1))                                                                                                         \\
+                & = \sum_{i=1}^{N-1} I(x_i^*, u_i^*) + I(x_N^*, 0)                                                                                   \\
+                & =\underbrace{\sum_{i=0}^{N-1} I(x_i^*, u_i^*)}_{J^*(x(k))} - \underbrace{I(x_0^*, u_0^*)}_{\geq 0}  + \underbrace{I(x_N^*, 0)}_{0} \\
+                & \leq J^*(x(k))
+\end{align*}
+
+\subsection{Terminal Subset Constraint}
+\subsubsection{Stability and Recursive Feasibility: Main Result}
+\begin{enumerate}[leftmargin=24pt]
+    \item[S1.1] Stage cost is positive definite, i.e.\ it is strictly positive and only zero at the origin.
+    \item[S1.2] The terminal set $\mathcal{X}_f$ is \textbf{invariant} under the local control law $\kappa_f(x_i)$:
+          \begin{equation*}
+              x_{i+1} = Ax_i +B\kappa_f(x_i) \in \mathcal{X}_f, \quad \forall\: x_i \in \mathcal{X}_f
+          \end{equation*}
+          All state and input \textbf{constraints are satisfied} in $\mathcal{X}_f$:
+          \begin{equation*}
+              \mathcal{X}_f \subseteq \mathcal{X}, \: \kappa_f(x_i) \in \mathcal{U}, \quad \forall\: x_i \in \mathcal{X}_f
+          \end{equation*}
+    \item[S1.3] The terminal cost is a continuous \textbf{Lyapunov function} in the terminal set $\mathcal{X}_f$ and satisfies:
+          \begin{equation*}
+              I_f(x_{i+1})-I_f(x_i) \leq -I(x_i,\kappa_f(x_i)), \quad \forall\: x_i \in \mathcal{X}_f
+          \end{equation*}
+\end{enumerate}
+where 1.\ \& 2.\ ensure recursive feasibility, 3.\ ensures stability.
+\newpar{}
+Then the closed-loop system under the MPC control law $u_0^*(x)$ is asymptotically stable and the set $\mathcal{X}_N$ (region of attraction) is positive invariant (and equal to the feasible set) for the system.
+
+\subsubsection{Choice of Terminal Sets and Cost}
+\begin{enumerate}
+    \item Design a local control law $\kappa_f$ around $x=0$.
+    \item Determine the terminal cost to stay in that set under the local control law.
+    \item Compute the maximum invariant set for the closed loop system under the local control law hence $\mathcal{X}_f$.
+\end{enumerate}
+
+\paragraph{Linear System, Quadratic Cost}
+\begin{itemize}
+    \item Choose $P=P_\infty$ as the solution of the ARE.
+    \item Choose the terminal set to be the maximum invariant set for the closed loop dynamics $(A+BF_\infty)$ including state constraints:
+          \begin{equation*}
+              \mathcal{X}_{cl} := \left\{x \left|
+              \begin{bmatrix}
+                  A_x \\ A_u F_\infty
+              \end{bmatrix}
+              x \leq
+              \begin{bmatrix}
+                  b_x \\
+                  b_u
+              \end{bmatrix}\right.\right\}
+          \end{equation*}
+\end{itemize}
+
+\paragraph{Horizon Length Versus Feasible Set}
+
+For an MPC \textbf{without} terminal constraint, increasing $N$ shrinks the feasible set, as more constraints are added. One has
+\begin{equation*}
+    \mathcal{X}_{N+j} \subseteq \mathcal{X}_N
+\end{equation*}
+\newpar{}
+For an MPC \textbf{with} terminal constraint, with larger $N$, the feasible set and region of attraction \textbf{grow}. The region of attraction ultimately approaches the maximum control invariant set. One has
+\begin{equation*}
+    \mathcal{X}_{N} \subseteq \mathcal{X}_{N+j}
+\end{equation*}
+
+\ptitle{Practical Note}
+
+In practice, one can enlarge $N$ and check stability by sampling.

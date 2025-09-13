@@ -1,0 +1,147 @@
+\section{Invariance}
+\subsection{Invariance}
+\subsubsection{Invariant Sets}
+\ptitle{Positively Invariant Set}
+
+A set $\mathcal{O}$ is said to be a positively invariant set for an autonomous system if
+\begin{equation*}
+    x(k) \in \mathcal{O} \Rightarrow x(k + 1) \in \mathcal{O}, \quad \forall k \in \{0, 1, \dots \}
+\end{equation*}
+
+\newpar{}
+\ptitle{Maximal Positively Invariant Set $\mathcal{O}_\infty$}
+
+The set $\mathcal{O}_\infty \subset \mathcal{X}$ is the maximal positively invariant set with respect to $\mathcal{X}$ if $\mathcal{O}_\infty$ is positively invariant and $\mathcal{O}_\infty$ contains all positively invariant sets.
+
+\newpar{}
+\ptitle{Geometric Condition for Invariance}
+
+A set $\mathcal{O}$ is a positively invariant set if and only if
+\begin{equation*}
+    \mathcal{O} \subseteq \text{pre}(\mathcal{O})
+\end{equation*}
+\begin{equation*}
+    \mathcal{O} \subseteq \text{pre}(\mathcal{O}) \iff \text{pre}(\mathcal{O})\cap \mathcal{O} = \mathcal{O}
+\end{equation*}
+
+\subsubsection{Pre-Sets}
+
+Given a set $S$ and the dynamic system $x(k + 1) = g(x(k))$, the pre-set of $S$ is the set of states that evolve into the target set $S$ in \textbf{one} time step:
+\begin{equation*}
+    \text{pre}(S) := \{x \mid g(x) \in S \}
+\end{equation*}
+
+\ptitle{Linear Autonomous Systems}
+\begin{equation*}
+    \text{pre}(S) = \{x \mid F A x \leq f \}
+\end{equation*}
+
+\subsubsection{Computing Invariant Sets}
+
+\begin{algorithmic}
+    \State{} \textbf{Input:} $g$, $X$
+    \State{} \textbf{Output:} $\mathcal{O}_\infty$
+    \State{} $\Omega_0 \gets X$
+    \While{true}
+    \State{} $\Omega_{i+1} \gets \text{pre}(\Omega_i) \cap \Omega_i$
+    \If{$\Omega_{i+1} = \Omega_i$}
+    \State{} \textbf{return} $\mathcal{O}_\infty = \Omega_i$
+    \EndIf{}
+    \EndWhile{}
+\end{algorithmic}
+
+\subsection{Control Invariance}
+\subsubsection{Control Invariant Sets}
+A set $\mathcal{C} \subseteq \mathcal{X}$ is said to be a control invariant set if
+\begin{gather*}
+    x(k) \in \mathcal{C} \Rightarrow \exists u(k) \in \mathcal{U}\\
+    \text{such that } g(x(k), u(k)) \in \mathcal{C} \text{ for all } k \in \mathbb{N}^+
+\end{gather*}
+
+\newpar{}
+\ptitle{Maximal Control Invariant Set $\mathcal{C}_\infty$}
+
+The set $\mathcal{C}_\infty$ is said to be the maximal control invariant set for the system $x(k + 1) = g(x(k), u(k))$ subject to the constraints $(x, u) \in \mathcal{X} \times \mathcal{U}$ if it is control invariant and \textbf{contains all control invariant sets} contained in $\mathcal{X}$.
+
+
+\subsubsection{Conceptual Calculation of Control Invariant Sets}
+
+The concept of a pre-set extends to systems with exogenous inputs:
+\begin{equation*}
+    \text{pre}(S) := \{x \mid \exists u \in \mathcal{U} \text{ s.t. } g(x, u) \in S \}
+\end{equation*}
+A set $\mathcal{C}$ is a control invariant set if and only if $\mathcal{C} \subseteq \text{pre}(\mathcal{C})$.
+
+\newpar{}
+\ptitle{Pre-set Computation for Constrained LTI System}
+\begin{align*}
+    \text{pre}(S) & = \{x \mid \exists u \in \mathcal{U}, \; Ax + Bu \in S \}                                                                                                            \\
+                  & = \{x \mid \exists u \in \mathcal{U}, \; F A x + F B u \leq f \}                                                                                                     \\
+                  & = \left\{ x \mid \exists u, \begin{bmatrix} F A & F B \\ 0 & G \end{bmatrix} \begin{bmatrix} x \\ u \end{bmatrix} \leq \begin{bmatrix} f \\ g \end{bmatrix} \right\}
+\end{align*}
+
+\paragraph{Usefulness}
+MPC implicitly describes a (suboptimal) control invariant set such that it's easy to represent and compute.
+
+\paragraph{Control Laws from Control Invariant Sets}
+
+We can synthesize a control law from a control invariant set by solving the following \textbf{optimization problem}:
+\begin{equation*}
+    \kappa(x) := \arg\min \{ f(x, u) \mid g(x, u) \in \mathcal{C},\; u \in \mathcal{U} \},
+\end{equation*}
+that will satisfy constraints (but not necessarily converges).
+
+\subsection{Computation of Simple Invariant Sets}
+
+\subsubsection{Polytopes}
+\paragraph{Intersection}
+\noindent
+\begin{equation*}
+    S \cap T = \left\{x \Bigg|\begin{bmatrix}
+        C \\D
+    \end{bmatrix}x \leq \begin{bmatrix}
+        c \\d
+    \end{bmatrix}\right\}
+\end{equation*}
+
+\paragraph{Equality Test (Subset Test)}
+$P=\{x\mid Cx\leq c\}$ is a subset of $Q=\{x\mid Dx\leq d\}$ if for each row, the \textbf{support function} is a subset of $D$:
+\begin{equation*}
+    h_P(D_i) \leq d_i
+\end{equation*}
+where the support (extremum of $P$ in direction $D_i$) is
+\begin{align*}
+    h_p(D_i) :=     & \max_x D_i x \\
+    \mathrm{s.t.}\; & Cx\leq c
+\end{align*}
+% \begin{center}
+%     \includegraphics[width = 0.6\linewidth]{05_support_fnc.png}
+% \end{center}
+
+\subsubsection{Ellipsoids}
+If $V:\mathbb{R}^d\to\mathbb{R}$ is a Lyapunov function for the system $x(k+1)=g(x(k))$, then the sublevel set
+\begin{equation*}
+    Y = \{x\mid V(x)\leq \alpha\}
+\end{equation*}
+is an invariant set for all $\alpha \geq 0$.
+
+\paragraph{Linear Systems}
+For linear systems $x(k+1)=Ax(k)$, the Lyapunov function $V(x)=x^\top Px$ (with $P\succ 0$  and $A^\top PA-P \prec 0$) yields the ellipsoidal invariant set
+\begin{equation*}
+    Y_\alpha = \left\{x\mid x^\top Px\leq \alpha\right\} \subset \mathcal{X}= \left\{x\mid Fx\leq f\right\}
+\end{equation*}
+
+\ptitle{Maxmium Invariant Set}
+
+If we want to find the largest such $Y_\alpha$, we must solve
+\begin{gather*}
+    \max_{\alpha}\alpha \\
+    \text{s.t. }h_{Y_{\alpha}}(F_{i})\leq f_{i} \quad \forall i\in\{1,...,n\}
+\end{gather*}
+\begin{equation*}
+    h_{Y_\alpha}(F_i)=\|P^{-1/2}F_i^T\|\sqrt{\alpha}
+\end{equation*}
+\noindent
+\begin{equation*}
+    \alpha^* = \min_{i\in \{1,\ldots, n\}} \frac{f_i^2}{F_i P^{-1} F_i^\top}
+\end{equation*}

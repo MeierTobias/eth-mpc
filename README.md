@@ -6,8 +6,7 @@ This repository contains the LaTex source of the Model Predictive Control course
 
 A pre-build pdf file can be downloaded here:
 
-- [eth-mpc-full.pdf](https://meiertobias.github.io/eth-mpc/main_full.pdf)
-- [eth-mpc.pdf (without examples)](https://meiertobias.github.io/eth-mpc/main.pdf)
+- [eth-mpc.pdf](https://meiertobias.github.io/eth-mpc/main.pdf)
 
 ## Getting-Started
 

@@ -10,13 +10,15 @@ jobs:
         with:
           submodules: recursive
           lfs: true
-      - name: build latex pdf (with examples)
+      - name: build summary pdf
         uses: docker://texlive/texlive:latest
         with:
-          args: latexmk -xelatex -cd -interaction=nonstopmode -file-line-error -jobname=main_full -outdir=../build ./src/main.tex
-      - name: change flags
-        run: sed '0,/{1}/s//{0}/' -i src/var.tex ;
-      - name: build latex pdf (without examples)
+          args: latexmk -xelatex -cd -interaction=nonstopmode -file-line-error -jobname=main_summary -outdir=../build ./src/main_summary.tex
+      - name: build cheatsheet pdf
+        uses: docker://texlive/texlive:latest
+        with:
+          args: latexmk -xelatex -cd -interaction=nonstopmode -file-line-error -jobname=main_cheatsheet -outdir=../build ./src/main_cheatsheet.tex
+      - name: build main pdf
         uses: docker://texlive/texlive:latest
         with:
           args: latexmk -xelatex -cd -interaction=nonstopmode -file-line-error -jobname=main -outdir=../build ./src/main.tex
@@ -24,5 +26,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: compiled-pdf
-          path: build/*.pdf
+          path: build/main.pdf
           retention-days: 5
